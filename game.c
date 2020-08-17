@@ -538,6 +538,24 @@ void dave_state_jumping_enter(game_context_t *game, tile_t map[TILEMAP_WIDTH * T
 void dave_state_jumping_routine(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
 
 */
+void check_dave_interactions(game_context_t *game, tile_t *map)
+{
+    int idx = 0;
+    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
+        if (map[idx].mod != 0) {
+
+            if (map[idx].is_inside(&map[idx], game->dave->x + 4, game->dave->y + 4)) {
+                printf("PICK \n");
+                return;
+            }
+
+/*            if (map[idx].is_inside(&map[idx], game->dave->x+14, game->dave->y+15)) {
+                printf("PICK2 \n");
+                return;
+            }*/
+        }
+    }
+}
 
 int start_game()
 {
@@ -561,6 +579,9 @@ int start_game()
     tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
     for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++){
         map[i].sprites[0] = 0;
+        map[i].mod = 0;
+        map[i].x = 0;
+        map[i].y = 0;
     }
     tile_file_parse(map, "res/levels/level0.ndt");
     printf("map0 x,y: %d, %d \n", map[0].x, map[0].y);
@@ -577,7 +598,7 @@ int start_game()
         }
 
         game->dave->tick(game->dave, map, key_state.left, key_state.right, key_state.jump);
-
+        check_dave_interactions(game, map);
         SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
@@ -615,7 +636,7 @@ int start_game()
 
 		delay = 14 - (timer_end-timer_begin);
 		delay = delay > 14 ? 0 : delay;
-		printf("DELAY=%d \n", delay);
+		//printf("DELAY=%d \n", delay);
 		SDL_Delay(delay);
 		if (game->quit) {
 			should_quit = 1;
@@ -843,7 +864,7 @@ void draw_dave2(dave_t *dave, struct game_assets* assets)
     dest.h = dave->height;
 
     int walk_mod = dave->step_count%8;
-    printf("WALKMOD:      %d \n", walk_mod);
+    //printf("WALKMOD:      %d \n", walk_mod);
     
     if (dave->state == DAVE_STATE_FREEFALLING) {
         if (dave->freefall_direction == DAVE_DIRECTION_LEFT) {
@@ -931,7 +952,7 @@ void draw_dave2(dave_t *dave, struct game_assets* assets)
         printf("DRAW FRONG \n");
         sprite = SPRITE_IDX_DAVE_FRONT;
     }*/
-    printf("DRAWING SPRITE: %d \n", sprite);
+    //printf("DRAWING SPRITE: %d \n", sprite);
     SDL_RenderCopy(g_renderer, assets->graphics_tiles[sprite], NULL, &dest); 
 }
 
@@ -946,124 +967,5 @@ void draw_tile(tile_t* tile, struct game_assets* assets)
 //	printf("drawing tile of size W:%d, H:%d, into (%d,%d)\n", dest.w, dest.h, dest.x,dest.y);
 	SDL_RenderCopy(g_renderer, assets->graphics_tiles[tile->get_sprite(tile)], NULL, &dest); 
 
-}
-
-
-/* Render all UI elements */
-void draw_ui(game_context_t *game, struct game_assets *assets, SDL_Renderer *renderer)
-{
-	SDL_Rect dest;
-	uint8_t i;
-
-	/* Screen border */
-	dest.x = 0;
-	dest.y = 16;
-	dest.w = 960;
-	dest.h = 1;
-	SDL_SetRenderDrawColor(renderer, 0xEE, 0xEE, 0xEE, 0xFF);
-	SDL_RenderFillRect(renderer, &dest);
-	dest.y = 176;
-	SDL_RenderFillRect(renderer, &dest);
-
-	/* Score banner */
-	dest.x = 1;
-	dest.y = 2;
-	dest.w = 62;
-	dest.h = 11;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[137], NULL, &dest);
-
-	/* Level banner */
-	dest.x = 120;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[136], NULL, &dest);
-
-	/* Lives banner */
-	dest.x = 200;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[135], NULL, &dest);
-
-	/* Score 10000s digit */
-	dest.x = 64;
-	dest.w = 8;
-	dest.h = 11;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[148 + (game->score / 10000) % 10], NULL, &dest);
-
-	/* Score 1000s digit */
-	dest.x = 72;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[148 + (game->score / 1000) % 10], NULL, &dest);
-
-	/* Score 100s digit */
-	dest.x = 80;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[148 + (game->score / 100) % 10], NULL, &dest);
-
-
-    /* Score 10s digit */
-    dest.x = 88;
-    SDL_RenderCopy(renderer, assets->graphics_tiles[148 + (game->score / 10) % 10], NULL, &dest);
-
-	/* Score LSD is always zero */
-	dest.x = 96;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[148], NULL, &dest);
-
-	/* Level 10s digit */
-	dest.x = 170;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[148 + (game->current_level + 1)/10], NULL, &dest);
-
-	/* Level unit digit */
-	dest.x = 178;
-	SDL_RenderCopy(renderer, assets->graphics_tiles[148 + (game->current_level + 1) % 10], NULL, &dest);
-
-	/* Life count icon */
-	for (i=0; i<game->lives;i++)
-	{
-		dest.x = (255+16*i);
-		dest.w = 16;
-		dest.h = 12;
-		SDL_RenderCopy(renderer, assets->graphics_tiles[143], NULL, &dest);
-	}
-
-	/* Trophy pickup banner */
-	if (game->trophy)
-	{
-		dest.x = 72;
-		dest.y = 180;
-		dest.w = 176;
-		dest.h = 14;
-		SDL_RenderCopy(renderer, assets->graphics_tiles[138], NULL, &dest);
-	}
-
-	/* Gun pickup banner */
-	if (game->gun)
-	{
-		dest.x = 255;
-		dest.y = 180;
-		dest.w = 62;
-		dest.h = 11;
-		SDL_RenderCopy(renderer, assets->graphics_tiles[134], NULL, &dest);
-	}
-
-	/* Jetpack UI elements */
-	if (game->jetpack)
-	{
-		/* Jetpack banner */
-		dest.x = 1;
-		dest.y = 177;
-		dest.w = 62;
-		dest.h = 11;
-		SDL_RenderCopy(renderer, assets->graphics_tiles[133], NULL, &dest);
-
-        /* Jetpack fuel counter */
-        dest.x = 1;
-        dest.y = 190;
-        dest.w = 62;
-        dest.h = 8;
-        SDL_RenderCopy(renderer, assets->graphics_tiles[141], NULL, &dest);
-
-        /* Jetpack fuel bar */
-        dest.x = 2;
-        dest.y = 192;
-        dest.w = game->jetpack * 0.23;
-        dest.h = 4;
-        SDL_SetRenderDrawColor(renderer, 0xEE, 0x00, 0x00, 0xFF);
-        SDL_RenderFillRect(renderer, &dest);
-    }
 }
 

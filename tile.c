@@ -43,6 +43,7 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->mod = BRICK;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -139,24 +140,6 @@ void tile_create_bottom_separator(tile_t* t, int x, int y)
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
-/*
-void tile_dave_tick(tile_dave_t* dave, int new_mod)
-{
-    dave->mod = new_mod;
-    if (dave->mod == TILE_DAVE_MOD_FRONT) {
-    } else if (dave->mod == TILE_DAVE_MOD_LEFT) {
-                        dave->walk_cycle_offset++;
-                        if (dave->walk_cycle_offset == 8) {
-                                dave->walk_cycle_offset = 0;
-                        }
-        } else if (dave->mod == TILE_DAVE_MOD_RIGHT) {
-                dave->walk_cycle_offset++;
-                if (dave->walk_cycle_offset == 8) {
-                        dave->walk_cycle_offset = 0;
-                }
-        }
-}
-*/
 
 int tile_dave_get_sprite(tile_dave_t* dave)
 {
@@ -174,40 +157,23 @@ int tile_dave_get_sprite(tile_dave_t* dave)
 
     return -1;
 }
-/*
-void tile_create_dave(tile_dave_t* dave, int x, int y)
+
+void tile_create_purple_gem(tile_t *t, int x, int y)
 {
-        dave->x = x;
-        dave->y = y;
-        dave->width = 20;
-        dave->height = 16;
-        dave->mod = TILE_DAVE_MOD_FRONT;
-        dave->sprite_front = SPRITE_IDX_DAVE_FRONT;
-        dave->sprites_right[0] = SPRITE_IDX_DAVE_RIGHT_STAND;
-        dave->sprites_right[1] = SPRITE_IDX_DAVE_RIGHT_STAND;
-        dave->sprites_right[2] = SPRITE_IDX_DAVE_RIGHT_HANDSFREE;
-        dave->sprites_right[3] = SPRITE_IDX_DAVE_RIGHT_HANDSFREE;
-        dave->sprites_right[4] = SPRITE_IDX_DAVE_RIGHT_STAND;
-        dave->sprites_right[5] = SPRITE_IDX_DAVE_RIGHT_STAND;
-        dave->sprites_right[6] = SPRITE_IDX_DAVE_RIGHT_SERIOUS;
-        dave->sprites_right[7] = SPRITE_IDX_DAVE_RIGHT_SERIOUS;
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_PURPLE_GEM;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = ITEM;
 
-        dave->sprites_left[0] = SPRITE_IDX_DAVE_LEFT_STAND;
-        dave->sprites_left[1] = SPRITE_IDX_DAVE_LEFT_STAND;
-        dave->sprites_left[2] = SPRITE_IDX_DAVE_LEFT_HANDSFREE;
-        dave->sprites_left[3] = SPRITE_IDX_DAVE_LEFT_HANDSFREE;
-        dave->sprites_left[4] = SPRITE_IDX_DAVE_LEFT_STAND;
-        dave->sprites_left[5] = SPRITE_IDX_DAVE_LEFT_STAND;
-        dave->sprites_left[6] = SPRITE_IDX_DAVE_LEFT_SERIOUS;
-        dave->sprites_left[7] = SPRITE_IDX_DAVE_LEFT_SERIOUS;
-
-	dave->sprite_jump_right = SPRITE_IDX_DAVE_JUMP_RIGHT;
-	dave->sprite_jump_left = SPRITE_IDX_DAVE_JUMP_LEFT;
-	dave->walk_cycle_offset = 0;
-        dave->get_sprite = &tile_dave_get_sprite;
-        dave->tick = &tile_dave_tick;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
 }
-*/
+
 void tile_create(tile_t* t, char tag[4], int x, int y)
 {
     printf("CREATE TILE AT %d, %d \n", x, y);
@@ -219,6 +185,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y)
         tile_create_block(t, SPRITE_IDX_PIPE_RIGHT, x, y, 16, 16);
     } else if (strcmp(tag, " X ") == 0) {
         tile_create_block(t, SPRITE_IDX_DOOR, x, y, 16, 16);
+    } else if (strcmp(tag, " * ") == 0) {
+        tile_create_purple_gem(t, x, y);
     }
 }
 

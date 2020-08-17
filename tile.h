@@ -77,14 +77,14 @@ static const int ITEM      = 3;
 
 
 // SPRITE INDEXES
-static const int SPRITE_IDX_DOOR       = 2;
-static const int SPRITE_IDX_FIRE1      = 6;
-static const int SPRITE_IDX_FIRE2      = 7;
-static const int SPRITE_IDX_FIRE3      = 8;
-static const int SPRITE_IDX_FIRE4      = 9;
-static const int SPRITE_IDX_PIPE_RIGHT = 15;
-static const int SPRITE_IDX_RED_BRICK  = 17;
-static const int SPRITE_IDX_DIRT       = 18;
+static const int SPRITE_IDX_DOOR                   = 2;
+static const int SPRITE_IDX_FIRE1                  = 6;
+static const int SPRITE_IDX_FIRE2                  = 7;
+static const int SPRITE_IDX_FIRE3                  = 8;
+static const int SPRITE_IDX_FIRE4                  = 9;
+static const int SPRITE_IDX_PIPE_RIGHT             = 15;
+static const int SPRITE_IDX_RED_BRICK              = 17;
+static const int SPRITE_IDX_DIRT                   = 18;
 static const int SPRITE_IDX_CROWN                  = 50;
 static const int SPRITE_IDX_CURSOR1                = 167;
 static const int SPRITE_IDX_CURSOR2                = 168;
@@ -94,7 +94,7 @@ static const int SPRITE_IDX_TITLE_FLAMES1          = 144;
 static const int SPRITE_IDX_TITLE_FLAMES2          = 145;
 static const int SPRITE_IDX_TITLE_FLAMES3          = 146;
 static const int SPRITE_IDX_TITLE_FLAMES4          = 147;
-
+static const int SPRITE_IDX_PURPLE_GEM             = 48;
 static const int SPRITE_IDX_DAVE_RIGHT_HANDSFREE   = 53;
 static const int SPRITE_IDX_DAVE_RIGHT_STAND       = 54;
 static const int SPRITE_IDX_DAVE_RIGHT_SERIOUS     = 55;
@@ -104,7 +104,6 @@ static const int SPRITE_IDX_DAVE_LEFT_STAND        = 58;
 static const int SPRITE_IDX_DAVE_LEFT_SERIOUS      = 59;
 static const int SPRITE_IDX_DAVE_JUMP_RIGHT        = 67;
 static const int SPRITE_IDX_DAVE_JUMP_LEFT         = 68;
-
 static const int SPRITE_IDX_POPUP_BOX_T1           = 158;
 static const int SPRITE_IDX_POPUP_BOX_T2           = 159;
 static const int SPRITE_IDX_POPUP_BOX_T3           = 160;
@@ -114,7 +113,6 @@ static const int SPRITE_IDX_POPUP_BOX_M3           = 163;
 static const int SPRITE_IDX_POPUP_BOX_B1           = 164;
 static const int SPRITE_IDX_POPUP_BOX_B2           = 165;
 static const int SPRITE_IDX_POPUP_BOX_B3           = 166;
-
 static const int SPRITE_IDX_BOTTOM_BAR             = 171;
 static const int SPRITES_MAX                       = 171;
 
