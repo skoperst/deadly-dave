@@ -174,6 +174,22 @@ void tile_create_purple_gem(tile_t *t, int x, int y)
     t->is_inside = &tile_is_inside;
 }
 
+void tile_create_teal_gem(tile_t *t, int x, int y)
+{
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_TEAL_GEM;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = ITEM;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
 void tile_create(tile_t* t, char tag[4], int x, int y)
 {
     printf("CREATE TILE AT %d, %d \n", x, y);
@@ -187,6 +203,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y)
         tile_create_block(t, SPRITE_IDX_DOOR, x, y, 16, 16);
     } else if (strcmp(tag, " * ") == 0) {
         tile_create_purple_gem(t, x, y);
+    } else if (strcmp(tag, " v ") == 0) {
+        tile_create_teal_gem(t, x, y);
     }
 }
 

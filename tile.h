@@ -94,6 +94,7 @@ static const int SPRITE_IDX_TITLE_FLAMES1          = 144;
 static const int SPRITE_IDX_TITLE_FLAMES2          = 145;
 static const int SPRITE_IDX_TITLE_FLAMES3          = 146;
 static const int SPRITE_IDX_TITLE_FLAMES4          = 147;
+static const int SPRITE_IDX_TEAL_GEM               = 47;
 static const int SPRITE_IDX_PURPLE_GEM             = 48;
 static const int SPRITE_IDX_DAVE_RIGHT_HANDSFREE   = 53;
 static const int SPRITE_IDX_DAVE_RIGHT_STAND       = 54;
