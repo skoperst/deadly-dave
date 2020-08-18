@@ -22,12 +22,12 @@ static int dave_collision_right(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
 {
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
-        if (map[idx].sprites[0] != 0) {
+        if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
             if(map[idx].is_inside(&map[idx], dave->x+14, dave->y)) {
-                return map[idx].mod;
+                return 1;
             }
             if (map[idx].is_inside(&map[idx], dave->x+14, dave->y+15)) {
-                return map[idx].mod;
+                return 1;
             }
         }
     }
@@ -41,12 +41,12 @@ static int dave_collision_top(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
 {
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
-        if (map[idx].sprites[0] != 0) {
+        if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
             if( map[idx].is_inside(&map[idx], dave->x+4, dave->y)) {
-                return map[idx].mod;
+                return 1;
             }
             if( map[idx].is_inside(&map[idx], dave->x+9, dave->y)) {
-                return map[idx].mod;
+                return 1;
             }
         }
     }
@@ -60,12 +60,12 @@ static int dave_collision_left(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_
 {
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
-        if (map[idx].sprites[0] != 0) {
+        if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
             if( map[idx].is_inside(&map[idx], dave->x - 2, dave->y)) {
-                return map[idx].mod;
+                return 1;
             }
             if( map[idx].is_inside(&map[idx], dave->x - 2, dave->y + 15)) {
-                return map[idx].mod;
+                return 1;
             }
         }
     }
@@ -79,7 +79,7 @@ static int dave_on_ground(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGH
 {
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
-        if (map[idx].sprites[0] != 0) {
+        if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
 
             if(map[idx].is_inside(&map[idx], dave->x + 9, dave->y+16)) {
                 return 1;
@@ -106,9 +106,7 @@ void dave_state_walking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
 //    printf("WALKING-ENTER\n");
 
     if (key_left) {
-        int mod = dave_collision_left(dave, map);
-
-        if (mod == BRICK) {
+        if (dave_collision_left(dave, map)) {
             dave->state = DAVE_STATE_STANDING;
         } else {
             dave->state = DAVE_STATE_WALKING;
@@ -118,8 +116,8 @@ void dave_state_walking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
             dave->step_count++;
         }
     } else if (key_right) {
-        int mod = dave_collision_right(dave, map);
-        if (mod == BRICK) {
+
+        if (dave_collision_right(dave, map)) {
             dave->state = DAVE_STATE_STANDING;
         } else {
             dave->state = DAVE_STATE_WALKING;
@@ -185,7 +183,6 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         return;
     }
 
-
     if (dave->jump_state >= 90) {
         dave_state_freefalling_enter(dave, map, key_left, key_right, key_up);
         return;
@@ -203,6 +200,7 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
     } else if (deltay < 0) {
         while(deltay < 0) {
             dave->y = dave->y - 1;
+
             if (dave_collision_top(dave, map)) {
                 deltay = 0;
                 dave->jump_state = 88;
@@ -223,8 +221,7 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
     if (key_left) {
         if (dave->walk_state == DAVE_STATE_STANDING){
             dave->face_direction = DAVE_DIRECTION_LEFT;
-            int mod = dave_collision_left(dave, map);
-            if (mod == BRICK) {
+            if (dave_collision_left(dave,map)) {
             } else {
                 dave->x-=2;
                 dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
@@ -234,8 +231,7 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
     } else if (key_right) {
         if (dave->walk_state == DAVE_STATE_STANDING) {
             dave->face_direction = DAVE_DIRECTION_RIGHT;
-            int mod = dave_collision_right(dave, map);
-            if (mod == BRICK) {
+            if (dave_collision_right(dave, map)) {
             } else {
                 dave->x+=2;
                 dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_RIGHT;
@@ -263,11 +259,11 @@ void dave_state_freefalling_routine(dave_t *dave,
         }
 
         if (dave->freefall_direction == DAVE_DIRECTION_LEFT) {
-            if (!dave_collision_left(dave, map)) {
+            if ( !dave_collision_left(dave, map)) {
                 dave->x = dave->x - 1;
             }
         } else if (dave->freefall_direction == DAVE_DIRECTION_RIGHT) {
-            if (!dave_collision_right(dave, map)) {
+            if ( !dave_collision_right(dave, map)) {
                 dave->x = dave->x + 1;
             }
         }

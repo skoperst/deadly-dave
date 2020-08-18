@@ -546,6 +546,8 @@ void check_dave_interactions(game_context_t *game, tile_t *map)
 
             if (map[idx].is_inside(&map[idx], game->dave->x + 4, game->dave->y + 4)) {
                 printf("PICK \n");
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
                 return;
             }
 
