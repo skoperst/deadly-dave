@@ -551,10 +551,26 @@ void check_dave_interactions(game_context_t *game, tile_t *map)
                 return;
             }
 
-/*            if (map[idx].is_inside(&map[idx], game->dave->x+14, game->dave->y+15)) {
+            if (map[idx].is_inside(&map[idx], game->dave->x+4, game->dave->y+11)) {
                 printf("PICK2 \n");
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
                 return;
-            }*/
+            }
+
+            if (map[idx].is_inside(&map[idx], game->dave->x+13, game->dave->y+4)) {
+                printf("PICK3 \n");
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
+                return;
+            }
+
+            if (map[idx].is_inside(&map[idx], game->dave->x+13, game->dave->y+11)) {
+                printf("PICK4 \n");
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
+                return;
+            }
         }
     }
 }
