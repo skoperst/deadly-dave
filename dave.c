@@ -254,8 +254,10 @@ void dave_state_freefalling_routine(dave_t *dave,
 
         if (key_left) {
             dave->freefall_direction = DAVE_DIRECTION_LEFT;
+            dave->face_direction = DAVE_DIRECTION_LEFT;
         } else if (key_right) {
             dave->freefall_direction = DAVE_DIRECTION_RIGHT;
+            dave->face_direction = DAVE_DIRECTION_RIGHT;
         }
 
         if (dave->freefall_direction == DAVE_DIRECTION_LEFT) {

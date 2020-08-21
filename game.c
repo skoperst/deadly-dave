@@ -538,38 +538,45 @@ void dave_state_jumping_enter(game_context_t *game, tile_t map[TILEMAP_WIDTH * T
 void dave_state_jumping_routine(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
 
 */
-void check_dave_interactions(game_context_t *game, tile_t *map)
+void check_dave_pick_item(game_context_t *game, tile_t *map)
 {
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
         if (map[idx].mod != 0) {
 
             if (map[idx].is_inside(&map[idx], game->dave->x + 4, game->dave->y + 4)) {
-                printf("PICK \n");
-                map[idx].mod = 0;
-                map[idx].sprites[0] = 0;
-                return;
+                if (map[idx].mod == ITEM){
+                    map[idx].mod = 0;
+                    map[idx].sprites[0] = 0;
+                    return;
+                }
             }
 
             if (map[idx].is_inside(&map[idx], game->dave->x+4, game->dave->y+11)) {
-                printf("PICK2 \n");
-                map[idx].mod = 0;
-                map[idx].sprites[0] = 0;
-                return;
+                if (map[idx].mod == ITEM) {
+                    printf("PICK2 \n");
+                    map[idx].mod = 0;
+                    map[idx].sprites[0] = 0;
+                    return;
+                }
             }
 
-            if (map[idx].is_inside(&map[idx], game->dave->x+13, game->dave->y+4)) {
-                printf("PICK3 \n");
-                map[idx].mod = 0;
-                map[idx].sprites[0] = 0;
-                return;
+            if (map[idx].is_inside(&map[idx], game->dave->x+12, game->dave->y+4)) {
+                if (map[idx].mod == ITEM) {
+                    printf("PICK3 \n");
+                    map[idx].mod = 0;
+                    map[idx].sprites[0] = 0;
+                    return;
+                }
             }
 
-            if (map[idx].is_inside(&map[idx], game->dave->x+13, game->dave->y+11)) {
-                printf("PICK4 \n");
-                map[idx].mod = 0;
-                map[idx].sprites[0] = 0;
-                return;
+            if (map[idx].is_inside(&map[idx], game->dave->x+12, game->dave->y+11)) {
+                if (map[idx].mod == ITEM) {
+                    printf("PICK4 \n");
+                    map[idx].mod = 0;
+                    map[idx].sprites[0] = 0;
+                    return;
+                }
             }
         }
     }
@@ -616,7 +623,7 @@ int start_game()
         }
 
         game->dave->tick(game->dave, map, key_state.left, key_state.right, key_state.jump);
-        check_dave_interactions(game, map);
+        check_dave_pick_item(game, map);
         SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
