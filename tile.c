@@ -190,6 +190,41 @@ void tile_create_teal_gem(tile_t *t, int x, int y)
     t->is_inside = &tile_is_inside;
 }
 
+void tile_create_grail(tile_t *t, int x, int y)
+{
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
+    t->sprites[4] = t->sprites[5] = t->sprites[6] = t->sprites[7] = 
+    t->sprites[8] = t->sprites[9] = t->sprites[10] = t->sprites[11] = SPRITE_IDX_GRAIL0;
+
+    t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] =
+    t->sprites[16] = t->sprites[17] = t->sprites[18] = t->sprites[19] =
+    t->sprites[20] = t->sprites[21] = t->sprites[22] = t->sprites[23] = SPRITE_IDX_GRAIL1;
+
+    t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] =
+    t->sprites[28] = t->sprites[29] = t->sprites[30] = t->sprites[31] =
+    t->sprites[32] = t->sprites[33] = t->sprites[34] = t->sprites[35] = SPRITE_IDX_GRAIL2;
+
+    t->sprites[36] = t->sprites[37] = t->sprites[38] = t->sprites[39] =
+    t->sprites[40] = t->sprites[41] = t->sprites[42] = t->sprites[43] =
+    t->sprites[44] = t->sprites[45] = t->sprites[46] = t->sprites[47] = SPRITE_IDX_GRAIL3;
+
+    t->sprites[48] = t->sprites[49] = t->sprites[50] = t->sprites[51] =
+    t->sprites[52] = t->sprites[53] = t->sprites[54] = t->sprites[55] =
+    t->sprites[56] = t->sprites[57] = t->sprites[58] = t->sprites[59] = SPRITE_IDX_GRAIL4;
+
+    t->sprites[60] = 0;
+    t->mod = ITEM;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
 void tile_create(tile_t* t, char tag[4], int x, int y)
 {
     printf("CREATE TILE AT %d, %d \n", x, y);
@@ -205,6 +240,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y)
         tile_create_purple_gem(t, x, y);
     } else if (strcmp(tag, " v ") == 0) {
         tile_create_teal_gem(t, x, y);
+    } else if (strcmp(tag, " Y ") == 0) {
+        tile_create_grail(t, x, y);
     }
 }
 

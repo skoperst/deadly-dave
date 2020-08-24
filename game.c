@@ -488,47 +488,6 @@ int start_intro()
 }
 
 /*
-int dave_is_walking(game_context_t* game)
-{
-    if (game->dave_walk_state == 0) {
-        return 0;
-    }
-
-    return 1;
-}
-
-void dave_set_walking_left(game_context_t* game)
-{
-    game->dave_walk_state = DAVE_WALKING_STATE_LEFT;
-}
-
-void dave_set_walking_right(game_context_t* game)
-{
-    game->dave_walk_state = DAVE_WALKING_STATE_RIGHT;
-}
-
-void dave_set_jumping(game_context_t* game, int is_jumping)
-{
-    game->dave_jump_state = is_jumping;
-}
-
-int dave_is_freefalling(game_context_t* game)
-{
-    if (game->dave_jump_state >= 90) {
-        return 1;
-    }
-    return 0;
-}
-
-int dave_is_jumping(game_context_t* game)
-{
-    if (game->dave_jump_state > 0 && game->dave_jump_state <= 90) {
-        return 1;
-    }
-    return 0;
-}
-*/
-/*
 void dave_state_freefalling_enter(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
 void dave_state_freefalling_routine(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
 void dave_state_walking_enter(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
@@ -623,6 +582,10 @@ int start_game()
         }
 
         game->dave->tick(game->dave, map, key_state.left, key_state.right, key_state.jump);
+        for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+            if (map[i].sprites[0] != 0)
+                map[i].tick(&map[i]);
+        }
         check_dave_pick_item(game, map);
         SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
