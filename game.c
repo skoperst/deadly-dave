@@ -552,10 +552,12 @@ int start_game()
     int should_quit = 0;
     int i, j;
     tile_t bottom_separator;
+    tile_t top_separator;
     // Initialize game state
     game = malloc(sizeof(game_context_t));
     init_game(game);
     tile_create_bottom_separator(&bottom_separator, 0, 166);
+    tile_create_bottom_separator(&top_separator, 0, 20);
 
 
     // Start level 1
@@ -603,6 +605,8 @@ int start_game()
 
 		// ============== draw misc items ================
 		draw_tile(&bottom_separator, g_assets);
+		draw_tile(&top_separator, g_assets);
+        draw_score(500);
 		// ===============================================
 		
 		// ================ draw dave ===================
@@ -840,6 +844,28 @@ void draw_char(char c, int x, int y, font_t* font, SDL_Renderer* renderer)
     dest.w = 8;
     dest.h = 6;
     SDL_RenderCopy(renderer, font->letter_texture[(int)c], NULL, &dest);	
+}
+
+void draw_score(int score)
+{
+    int i;
+    SDL_Rect dest;
+    dest.x = 0;
+    dest.y = 0;
+    dest.w = 62;
+    dest.h = 11;
+    SDL_RenderCopy(g_renderer, g_assets->graphics_tiles[137], NULL, &dest); 
+
+    SDL_Rect digit_dest;
+    digit_dest.x = 64;
+    digit_dest.y = 1;
+    digit_dest.w = 8;
+    digit_dest.h = 11;
+
+    for (i = 0; i < 5; i++) {
+        SDL_RenderCopy(g_renderer, g_assets->graphics_tiles[148], NULL, &digit_dest);
+        digit_dest.x = digit_dest.x + 8;
+    }
 }
 
 void draw_dave2(dave_t *dave, struct game_assets* assets)
