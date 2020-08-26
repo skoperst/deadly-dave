@@ -128,6 +128,19 @@ void tile_create_flashing_cursor(tile_t* t, int x, int y)
         t->tick = &tile_tick;
 }
 
+void tile_create_top_separator(tile_t* t, int x, int y)
+{
+    t->x = x;
+    t->y = y;
+    t->width = 320;
+    t->height = 4;
+    t->sprites[0] = SPRITE_IDX_TOP_BAR;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+}
+
 void tile_create_bottom_separator(tile_t* t, int x, int y)
 {
     t->x = x;

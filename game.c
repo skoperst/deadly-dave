@@ -83,7 +83,7 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer)
     uint8_t *mask_p;
     uint8_t mask_offset;
 
-    for (i=0; i<172; i++)
+    for (i=0; i<173; i++)
     {
         fname[0]='\0';
         strcat(fname, "res/tiles/tile");
@@ -557,7 +557,7 @@ int start_game()
     game = malloc(sizeof(game_context_t));
     init_game(game);
     tile_create_bottom_separator(&bottom_separator, 0, 166);
-    tile_create_bottom_separator(&top_separator, 0, 20);
+    tile_create_top_separator(&top_separator, 0, 11);
 
 
     // Start level 1

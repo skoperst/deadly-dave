@@ -66,6 +66,7 @@ void tile_create_flashing_cursor(tile_t* t, int x, int y);
 
 // Game screen top & bottom bars
 void tile_create_bottom_separator(tile_t* t, int x, int y);
+void tile_create_top_separator(tile_t* t, int x, int y);
 
 int tile_file_parse(tile_t* map, const char* path);
 int tile_map_parse(tile_t* map, char* map_str);
@@ -120,6 +121,7 @@ static const int SPRITE_IDX_POPUP_BOX_B1           = 164;
 static const int SPRITE_IDX_POPUP_BOX_B2           = 165;
 static const int SPRITE_IDX_POPUP_BOX_B3           = 166;
 static const int SPRITE_IDX_BOTTOM_BAR             = 171;
-static const int SPRITES_MAX                       = 171;
+static const int SPRITE_IDX_TOP_BAR                = 172;
+static const int SPRITES_MAX                       = 172;
 
 #endif
