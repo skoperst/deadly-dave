@@ -503,7 +503,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map)
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
         if (map[idx].mod != 0) {
 
-            if (map[idx].is_inside(&map[idx], game->dave->x + 4, game->dave->y + 4)) {
+            if (map[idx].is_inside(&map[idx], game->dave->x, game->dave->y+2)) {
                 if (map[idx].mod == ITEM){
                     map[idx].mod = 0;
                     map[idx].sprites[0] = 0;
@@ -511,7 +511,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map)
                 }
             }
 
-            if (map[idx].is_inside(&map[idx], game->dave->x+4, game->dave->y+11)) {
+            if (map[idx].is_inside(&map[idx], game->dave->x, game->dave->y+12)) {
                 if (map[idx].mod == ITEM) {
                     printf("PICK2 \n");
                     map[idx].mod = 0;
@@ -520,7 +520,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map)
                 }
             }
 
-            if (map[idx].is_inside(&map[idx], game->dave->x+12, game->dave->y+4)) {
+            if (map[idx].is_inside(&map[idx], game->dave->x+14, game->dave->y+2)) {
                 if (map[idx].mod == ITEM) {
                     printf("PICK3 \n");
                     map[idx].mod = 0;
@@ -529,7 +529,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map)
                 }
             }
 
-            if (map[idx].is_inside(&map[idx], game->dave->x+12, game->dave->y+11)) {
+            if (map[idx].is_inside(&map[idx], game->dave->x+14, game->dave->y+12)) {
                 if (map[idx].mod == ITEM) {
                     printf("PICK4 \n");
                     map[idx].mod = 0;
