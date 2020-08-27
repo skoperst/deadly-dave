@@ -315,6 +315,7 @@ dave_t* dave_create()
     dave->step_count = 0;
     dave->walk_state = DAVE_STATE_STANDING;
     dave->freefall_direction = DAVE_DIRECTION_FRONT;
+    dave->has_grail = 0;
     dave->tick = &dave_tick;
     return dave;
 }

@@ -154,6 +154,19 @@ void tile_create_bottom_separator(tile_t* t, int x, int y)
     t->tick = &tile_tick;
 }
 
+void tile_create_grail_banner(tile_t* t, int x, int y)
+{
+    t->x = x;
+    t->y = y;
+    t->width = 176;
+    t->height = 14;
+    t->sprites[0] = SPRITE_IDX_GRAIL_BANNER;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+}
+
 int tile_dave_get_sprite(tile_dave_t* dave)
 {
     if (dave->mod == TILE_DAVE_MOD_FRONT) {

@@ -59,7 +59,7 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
 // Intro related
 void tile_create_intro_fire(tile_t* t, int x, int y);
 void tile_create_intro_banner(tile_t* t, int x, int y);
-
+void tile_create_grail_banner(tile_t *t, int x, int y);
 // Popup box
 void tile_create_popup_part(tile_t* t, int x, int y);
 void tile_create_flashing_cursor(tile_t* t, int x, int y);
@@ -96,6 +96,7 @@ static const int SPRITE_IDX_CURSOR1                = 167;
 static const int SPRITE_IDX_CURSOR2                = 168;
 static const int SPRITE_IDX_CURSOR3                = 169;
 static const int SPRITE_IDX_CURSOR4                = 170;
+static const int SPRITE_IDX_GRAIL_BANNER           = 138;
 static const int SPRITE_IDX_TITLE_FLAMES1          = 144;
 static const int SPRITE_IDX_TITLE_FLAMES2          = 145;
 static const int SPRITE_IDX_TITLE_FLAMES3          = 146;

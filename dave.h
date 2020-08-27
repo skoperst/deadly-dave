@@ -32,6 +32,7 @@ typedef struct dave_struct {
     int face_direction;
     int jump_state;
     int freefall_direction;
+    int has_grail;
 
     void (*tick)(struct dave_struct *dave,
             tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], int left, int right, int up);

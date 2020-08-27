@@ -23,6 +23,7 @@ void draw_text_line(const char* line, int x, int y, font_t* font, SDL_Renderer* 
 void draw_text_line_black(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer);
 void draw_dave2(dave_t *dave, struct game_assets* assets);
 
+void draw_score(int score);
 void start_level(game_context_t *game);
 
 void draw_popup_box(int x, int y, int rows, int columns)
@@ -141,45 +142,45 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer)
 /* Set game and monster properties to default values */
 void init_game(game_context_t *game)
 {
-	int i,j;
-	FILE *file_level;
-	char fname[100];
-	char file_num[4];
+    int i,j;
+    FILE *file_level;
+    char fname[100];
+    char file_num[4];
 
-	game->quit = 0;
-	game->tick = 0;
-	game->current_level = 0;
-	game->lives = 3;
-	game->score = 0;
-	game->view_x = 0;
-	game->view_y = 0;
-	game->scroll_x = 0;
-	//game->dave_x = 2;
-	//game->dave_y = 8;
-	game->dbullet_px = 0;
-	game->dbullet_py = 0;
-	game->dbullet_dir = 0;
-	game->ebullet_px = 0;
-	game->ebullet_py = 0;
-	game->ebullet_dir = 0;
-	game->try_right = 0;
-	game->try_left = 0;
-	game->try_jump = 0;
-	game->try_fire = 0;
-	game->try_jetpack = 0;
-	game->try_down = 0;
-	game->dave_right = 0;
-	game->dave_left = 0;
-	game->dave_jump = 0;
-	game->dave_fire = 0;
-	game->dave_down = 0;
-	game->dave_up = 0;
-	game->dave_climb = 0;
-	game->dave_jetpack = 0;
-	game->jetpack_delay = 0;
-	game->last_dir = 0;
-	game->jump_timer = 0;
-	game->on_ground = 1;
+    game->quit = 0;
+    game->tick = 0;
+    game->current_level = 0;
+    game->lives = 3;
+    game->score = 0;
+    game->view_x = 0;
+    game->view_y = 0;
+    game->scroll_x = 0;
+    //game->dave_x = 2;
+    //game->dave_y = 8;
+    game->dbullet_px = 0;
+    game->dbullet_py = 0;
+    game->dbullet_dir = 0;
+    game->ebullet_px = 0;
+    game->ebullet_py = 0;
+    game->ebullet_dir = 0;
+    game->try_right = 0;
+    game->try_left = 0;
+    game->try_jump = 0;
+    game->try_fire = 0;
+    game->try_jetpack = 0;
+    game->try_down = 0;
+    game->dave_right = 0;
+    game->dave_left = 0;
+    game->dave_jump = 0;
+    game->dave_fire = 0;
+    game->dave_down = 0;
+    game->dave_up = 0;
+    game->dave_climb = 0;
+    game->dave_jetpack = 0;
+    game->jetpack_delay = 0;
+    game->last_dir = 0;
+    game->jump_timer = 0;
+    game->on_ground = 1;
 	//game->dave_px = game->dave_x * TILE_SIZE;
 	//game->dave_py = game->dave_y * TILE_SIZE;
 	game->check_pickup_x = 0;
@@ -285,9 +286,9 @@ void show_quit_popup()
     tile_t flashing_cursor;
     tile_create_flashing_cursor(&flashing_cursor, 224, 96);
 
-	printf("Starting Quit Popup \n");
-	while (!popup_should_finish) {
-		timer_begin = SDL_GetTicks();
+    printf("Starting Quit Popup \n");
+    while (!popup_should_finish) {
+        timer_begin = SDL_GetTicks();
 
 		while(SDL_PollEvent(&event)) {
 
@@ -553,12 +554,14 @@ int start_game()
     int i, j;
     tile_t bottom_separator;
     tile_t top_separator;
+    tile_t grail_banner;
+
     // Initialize game state
     game = malloc(sizeof(game_context_t));
     init_game(game);
     tile_create_bottom_separator(&bottom_separator, 0, 166);
     tile_create_top_separator(&top_separator, 0, 11);
-
+    tile_create_grail_banner(&grail_banner, 60, 180);
 
     // Start level 1
     start_level(game);
@@ -603,9 +606,10 @@ int start_game()
         }
         // ===============================================
 
-		// ============== draw misc items ================
-		draw_tile(&bottom_separator, g_assets);
-		draw_tile(&top_separator, g_assets);
+        // ============== draw misc items ================
+        draw_tile(&bottom_separator, g_assets);
+        draw_tile(&top_separator, g_assets);
+        draw_tile(&grail_banner, g_assets);
         draw_score(500);
 		// ===============================================
 		
@@ -643,24 +647,33 @@ int main(int argc, char* argv[])
     int ret = 0;
     const uint8_t DISPLAY_SCALE = 2;
 
+    printf("start\n");
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO)) {
         printf("Failed to initialize SDL video. Error: (%s) \n", SDL_GetError());
         return -1;
     }
-
+    printf("creating SDL window \n");
     g_window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 400, 0);
-    g_renderer = SDL_CreateRenderer(g_window, -1, /*SDL_RENDERER_SOFTWARE | */SDL_RENDERER_TARGETTEXTURE);
+
+    printf("creating renderer \n");
+    //g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_TARGETTEXTURE);
+    //g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
+    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
+    printf("creating textures \n");
     g_render_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 320, 200);
 
     // Easy onversion between original world (320x200) and current screen size
     SDL_RenderSetScale(g_renderer, DISPLAY_SCALE, DISPLAY_SCALE);
 
+    printf("initializing assets \n");
     g_assets = malloc(sizeof(struct game_assets));
     init_assets(g_assets, g_renderer);
 
+    printf("loading font \n");
     g_font = font_create(g_renderer);
 
+    printf("starting intro  \n");
     ret = start_intro();
     if (ret == 0) {
         start_game();
@@ -902,6 +915,8 @@ void draw_dave2(dave_t *dave, struct game_assets* assets)
                 sprite = SPRITE_IDX_DAVE_RIGHT_HANDSFREE;
             } else if (walk_mod == 6 || walk_mod == 7) {
                 sprite = SPRITE_IDX_DAVE_RIGHT_SERIOUS;
+            } else {
+                sprite = 0;
             }
         } else if (dave->face_direction == DAVE_DIRECTION_LEFT) {
             if (walk_mod == 0 || walk_mod == 1 || walk_mod == 4 || walk_mod == 5) {
@@ -910,6 +925,8 @@ void draw_dave2(dave_t *dave, struct game_assets* assets)
                 sprite = SPRITE_IDX_DAVE_LEFT_HANDSFREE;
             } else if (walk_mod == 6 || walk_mod == 7) {
                 sprite = SPRITE_IDX_DAVE_LEFT_SERIOUS;
+            } else {
+                sprite = 0;
             }
         } else {
             sprite = SPRITE_IDX_DAVE_FRONT;
