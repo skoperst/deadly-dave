@@ -244,7 +244,7 @@ void tile_create_grail(tile_t *t, int x, int y)
     t->sprites[56] = t->sprites[57] = t->sprites[58] = t->sprites[59] = SPRITE_IDX_GRAIL4;
 
     t->sprites[60] = 0;
-    t->mod = ITEM;
+    t->mod = GRAIL;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;

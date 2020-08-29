@@ -72,9 +72,12 @@ int tile_file_parse(tile_t* map, const char* path);
 int tile_map_parse(tile_t* map, char* map_str);
 
 // TILE MODIFIER
+static const int EMPTY     = 0;
 static const int CLEAR     = 1;
 static const int BRICK     = 2;
 static const int ITEM      = 3;
+static const int GRAIL     = 4;
+static const int FIRE      = 5;
 
 
 // SPRITE INDEXES

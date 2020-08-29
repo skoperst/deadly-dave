@@ -181,11 +181,9 @@ void init_game(game_context_t *game)
     game->last_dir = 0;
     game->jump_timer = 0;
     game->on_ground = 1;
-	//game->dave_px = game->dave_x * TILE_SIZE;
-	//game->dave_py = game->dave_y * TILE_SIZE;
-	game->check_pickup_x = 0;
-	game->check_pickup_y = 0;
-	game->check_door = 0;
+    game->check_pickup_x = 0;
+    game->check_pickup_y = 0;
+    game->check_door = 0;
 
     game->dave = dave_create();
     game->dave->x = 20;
@@ -195,12 +193,6 @@ void init_game(game_context_t *game)
     game->dave->state = DAVE_STATE_STANDING;
     game->dave->jump_state = 0;
     game->dave->step_count = 0;
-	//game->dave_move_cooldown = 0;
-	//game->dave_jump_state = 0;
-	//game->dave_walk_state = 0;
-	//game->dave_walk_direction = RIGHT;
-    //game->dave_state = DAVE_STATE_STANDING;
-	/* Deactivate all monsters */
 	for (j=0;j<5;j++)
 		game->monster[j].type = 0;
 
@@ -498,10 +490,55 @@ void dave_state_jumping_enter(game_context_t *game, tile_t map[TILEMAP_WIDTH * T
 void dave_state_jumping_routine(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
 
 */
+
+int is_tile_empty(tile_t *tile)
+{
+    if (tile->mod == 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
+int is_dave_collision_tile(dave_t *dave, tile_t *tile)
+{
+    if (is_tile_empty(tile)) {
+        return 0;
+    }
+
+    if (tile->is_inside(tile, dave->x-2, dave->y+2)) {
+        return 1;
+    }
+    if (tile->is_inside(tile, dave->x-2, dave->y+12)) {
+        return 1;
+    }
+    if (tile->is_inside(tile, dave->x+14, dave->y+2)) {
+        return 1;
+    }
+    if (tile->is_inside(tile, dave->x+14, dave->y+12)) {
+        return 1;
+    }
+
+    return 0;
+}
+
 void check_dave_pick_item(game_context_t *game, tile_t *map)
 {
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
+        if (is_dave_collision_tile(game->dave, &map[idx])) {
+            if (map[idx].mod == ITEM) {
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
+                return;
+            } else if (map[idx].mod == GRAIL) {
+                game->dave->has_grail = 1;
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
+            }
+        }
+    }
+/*
         if (map[idx].mod != 0) {
 
             if (map[idx].is_inside(&map[idx], game->dave->x-2, game->dave->y+2)) {
@@ -539,7 +576,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map)
                 }
             }
         }
-    }
+    }*/
 }
 
 int start_game()
@@ -561,7 +598,7 @@ int start_game()
     init_game(game);
     tile_create_bottom_separator(&bottom_separator, 0, 166);
     tile_create_top_separator(&top_separator, 0, 11);
-    tile_create_grail_banner(&grail_banner, 60, 180);
+    tile_create_grail_banner(&grail_banner, 70, 180);
 
     // Start level 1
     start_level(game);
@@ -609,7 +646,9 @@ int start_game()
         // ============== draw misc items ================
         draw_tile(&bottom_separator, g_assets);
         draw_tile(&top_separator, g_assets);
-        draw_tile(&grail_banner, g_assets);
+        if (game->dave->has_grail) {
+            draw_tile(&grail_banner, g_assets);
+        }
         draw_score(500);
 		// ===============================================
 		
