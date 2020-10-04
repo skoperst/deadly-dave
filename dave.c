@@ -161,7 +161,6 @@ void dave_state_walking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
 void dave_state_jumping_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], int key_left, int key_right, int key_up)
 {
     printf("JUMPING-ENTER\n");
-    dave->face_direction = DAVE_DIRECTION_FRONT;
     dave->state = DAVE_STATE_JUMPING;
     dave->jump_state = 1;
 }
@@ -218,28 +217,27 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
             dave->walk_state == DAVE_WALKING_STATE_COOLDOWN2_RIGHT) {
         dave->walk_state = DAVE_STATE_STANDING;
      //   return;
-    }else {
+    } else {
 
-    if (key_left) {
-        if (dave->walk_state == DAVE_STATE_STANDING){
-            dave->face_direction = DAVE_DIRECTION_LEFT;
-            if (dave_collision_left(dave,map)) {
-            } else {
-                dave->x-=2;
-                dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
+        if (key_left) {
+            if (dave->walk_state == DAVE_STATE_STANDING){
+                dave->face_direction = DAVE_DIRECTION_LEFT;
+                if (dave_collision_left(dave,map)) {
+                } else {
+                    dave->x-=2;
+                    dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
+                }
             }
-
-        }
-    } else if (key_right) {
-        if (dave->walk_state == DAVE_STATE_STANDING) {
-            dave->face_direction = DAVE_DIRECTION_RIGHT;
-            if (dave_collision_right(dave, map)) {
-            } else {
-                dave->x+=2;
-                dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_RIGHT;
+        } else if (key_right) {
+            if (dave->walk_state == DAVE_STATE_STANDING) {
+                dave->face_direction = DAVE_DIRECTION_RIGHT;
+                if (dave_collision_right(dave, map)) {
+                } else {
+                    dave->x+=2;
+                    dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_RIGHT;
+                }
             }
         }
-    }
     }
 
 }
@@ -288,6 +286,7 @@ void dave_state_freefalling_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEM
 {
     dave->state = DAVE_STATE_FREEFALLING;
     dave->freefall_direction = DAVE_DIRECTION_FRONT;
+    dave->face_direction = DAVE_DIRECTION_FRONT;
 }
 
 void dave_state_standing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], int key_left, int key_right, int key_up)
