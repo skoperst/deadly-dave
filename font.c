@@ -126,8 +126,12 @@ font_t* font_create(SDL_Renderer* renderer)
     font->letter_texture[(int)')'] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("res/font/pthesis_r.bmp"));
     font->black[(int)')'] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("res/font/black/pthesis_r.bmp"));
 
+    font->letter_texture[(int)'!'] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("res/font/exclamation.bmp"));
+//    font->black[(int)'!'] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("res/font/black/exclamation.bmp"));
+
 
     font->black[(int)'?'] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("res/font/black/question.bmp"));
+    font->black[(int)'!'] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("res/font/black/question.bmp"));
     font->black[(int)':'] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("res/font/black/colon.bmp"));
 
     return font;
