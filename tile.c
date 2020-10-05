@@ -256,6 +256,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y)
     printf("CREATE TILE AT %d, %d \n", x, y);
     if (strcmp(tag, "RBK") == 0) {
         tile_create_block(t, SPRITE_IDX_RED_BRICK, x, y, 16, 16);
+    } else if (strcmp(tag, "BBK") == 0) {
+        tile_create_block(t, SPRITE_IDX_BLUE_BRICK, x, y, 16, 16);
     } else if (strcmp(tag, "DRT") == 0) {
         tile_create_block(t, SPRITE_IDX_DIRT, x, y, 16, 16);
     } else if (strcmp(tag, "PIR") == 0) {
@@ -275,7 +277,7 @@ int tile_file_parse(tile_t* map, const char* path)
 {
     long fsize;
     char *buf;
-    FILE* f = fopen("res/levels/level0.ndt", "rb");
+    FILE* f = fopen(path, "rb");
     fseek(f, 0, SEEK_END);
     fsize = ftell(f);
     fseek(f, 0, SEEK_SET);

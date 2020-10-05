@@ -82,6 +82,7 @@ static const int FIRE      = 5;
 
 // SPRITE INDEXES
 static const int SPRITE_IDX_DOOR                   = 2;
+static const int SPRITE_IDX_BLUE_BRICK             = 5;
 static const int SPRITE_IDX_FIRE1                  = 6;
 static const int SPRITE_IDX_FIRE2                  = 7;
 static const int SPRITE_IDX_FIRE3                  = 8;

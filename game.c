@@ -21,10 +21,9 @@ void draw_char(char c, int x, int y, font_t* font, SDL_Renderer* renderer);
 void draw_text_line(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer);
 
 void draw_text_line_black(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer);
-void draw_dave2(dave_t *dave, struct game_assets* assets);
+void draw_dave(dave_t *dave, struct game_assets* assets);
 
 void draw_score(int score);
-void start_level(game_context_t *game);
 
 void draw_popup_box(int x, int y, int rows, int columns)
 {
@@ -480,17 +479,6 @@ int start_intro()
     return result;
 }
 
-/*
-void dave_state_freefalling_enter(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
-void dave_state_freefalling_routine(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
-void dave_state_walking_enter(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
-void dave_state_walking_routine(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
-
-void dave_state_jumping_enter(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
-void dave_state_jumping_routine(game_context_t *game, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], tile_dave_t *dave, keys_state_t *key_state);
-
-*/
-
 int is_tile_empty(tile_t *tile)
 {
     if (tile->mod == 0) {
@@ -538,45 +526,116 @@ void check_dave_pick_item(game_context_t *game, tile_t *map)
             }
         }
     }
-/*
-        if (map[idx].mod != 0) {
+}
 
-            if (map[idx].is_inside(&map[idx], game->dave->x-2, game->dave->y+2)) {
-                if (map[idx].mod == ITEM){
-                    map[idx].mod = 0;
-                    map[idx].sprites[0] = 0;
-                    return;
-                }
-            }
+int start_warp_right()
+{
+    uint32_t timer_begin;
+    uint32_t timer_end;
+    uint32_t delay;
 
-            if (map[idx].is_inside(&map[idx], game->dave->x-2, game->dave->y+12)) {
-                if (map[idx].mod == ITEM) {
-                    printf("PICK2 \n");
-                    map[idx].mod = 0;
-                    map[idx].sprites[0] = 0;
-                    return;
-                }
-            }
+    game_context_t* game;
+    keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0};
+    int should_quit = 0;
+    int i, j;
+    tile_t bottom_separator;
+    tile_t top_separator;
+    tile_t grail_banner;
 
-            if (map[idx].is_inside(&map[idx], game->dave->x+14, game->dave->y+2)) {
-                if (map[idx].mod == ITEM) {
-                    printf("PICK3 \n");
-                    map[idx].mod = 0;
-                    map[idx].sprites[0] = 0;
-                    return;
-                }
-            }
+    // Initialize game state
+    game = malloc(sizeof(game_context_t));
+    init_game(game);
+    tile_create_bottom_separator(&bottom_separator, 0, 166);
+    tile_create_top_separator(&top_separator, 0, 11);
+    tile_create_grail_banner(&grail_banner, 70, 180);
 
-            if (map[idx].is_inside(&map[idx], game->dave->x+14, game->dave->y+12)) {
-                if (map[idx].mod == ITEM) {
-                    printf("PICK4 \n");
-                    map[idx].mod = 0;
-                    map[idx].sprites[0] = 0;
-                    return;
+    // Start level 1
+    tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
+    for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++){
+        map[i].sprites[0] = 0;
+        map[i].mod = 0;
+        map[i].x = 0;
+        map[i].y = 0;
+    }
+    tile_file_parse(map, "res/levels/warp_right.ndt");
+    printf("map0 x,y: %d, %d \n", map[0].x, map[0].y);
+
+    game->dave->x = 40;
+    game->dave->y = 80;
+
+    while (!should_quit) {
+        timer_begin = SDL_GetTicks();
+
+        check_input2(&key_state);
+        key_state.jump = 0;
+        key_state.left = 0;
+        key_state.right = 1;
+        if (key_state.quit) {
+            should_quit = 1;
+        }
+        printf("dave: [%d,%d] \n", game->dave->x, game->dave->y);
+        if (game->dave->x > 300) {
+            return 1;
+        }
+
+        game->dave->tick(game->dave, map, key_state.left, key_state.right, key_state.jump);
+        for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+            if (map[i].sprites[0] != 0)
+                map[i].tick(&map[i]);
+        }
+        check_dave_pick_item(game, map);
+        SDL_SetRenderTarget(g_renderer, g_render_texture);
+        SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
+        SDL_RenderClear(g_renderer);
+
+        // ================ draw map =====================
+        for (i=TILEMAP_SCENE_Y; i<TILEMAP_SCENE_HEIGHT; i++) {
+            for (j=TILEMAP_SCENE_X; j < TILEMAP_SCENE_WIDTH; j++) {
+                if (map[i*20 + j].sprites[0] != 0) {
+                    draw_tile(&map[i*20 + j], g_assets);
                 }
             }
         }
-    }*/
+        // ===============================================
+
+        // ============== draw misc items ================
+        draw_tile(&bottom_separator, g_assets);
+        draw_tile(&top_separator, g_assets);
+        if (game->dave->has_grail) {
+            draw_tile(&grail_banner, g_assets);
+        }
+        draw_score(500);
+        // ===============================================
+		
+		// ================ draw dave ===================
+		draw_dave(game->dave, g_assets);
+		// ==============================================
+
+        draw_text_line("GOOD WORK! ONLY 9 MORE TO GO!", 50, 58, g_font, g_renderer);
+
+		// Set the screen as the target of renderer
+		SDL_SetRenderTarget(g_renderer, NULL);
+
+		// Clear the render (clear screen)
+		SDL_RenderClear(g_renderer);
+
+		// Render texture into screen
+		SDL_RenderCopy(g_renderer, g_render_texture, NULL,NULL);
+
+		// Swaps display buffers (puts above drawing on the screen)
+		SDL_RenderPresent(g_renderer);
+		timer_end = SDL_GetTicks();
+
+		delay = 14 - (timer_end-timer_begin);
+		delay = delay > 14 ? 0 : delay;
+		//printf("DELAY=%d \n", delay);
+		SDL_Delay(delay);
+		if (game->quit) {
+			should_quit = 1;
+		}
+	}
+
+    return 0;
 }
 
 int start_game()
@@ -601,7 +660,6 @@ int start_game()
     tile_create_grail_banner(&grail_banner, 70, 180);
 
     // Start level 1
-    start_level(game);
     tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
     for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++){
         map[i].sprites[0] = 0;
@@ -653,7 +711,7 @@ int start_game()
 		// ===============================================
 		
 		// ================ draw dave ===================
-		draw_dave2(game->dave, g_assets);
+		draw_dave(game->dave, g_assets);
 		// ==============================================
 
 		// Set the screen as the target of renderer
@@ -715,151 +773,14 @@ int main(int argc, char* argv[])
     printf("starting intro  \n");
     ret = start_intro();
     if (ret == 0) {
-        start_game();
+        ret = start_game();
+        if (ret == 0) {
+            ret = start_warp_right();
+        }
     }
     SDL_Quit();
 
     return 0;
-}
-
-// Start a new level
-void start_level(game_context_t *game)
-{
-    uint8_t i;
-    //restart_level(game);
-
-    /* Deactivate monsters */
-    for (i=0;i<5;i++)
-    {
-        game->monster[i].type = 0;
-        game->monster[i].path_index = 0;
-        game->monster[i].dead_timer = 0;
-        game->monster[i].next_px = 0;
-        game->monster[i].next_py = 0;
-    }
-
-	/* Activate monsters based on level
-	   current_level counting starts at 0
-	   (i.e Level 3 is case 2) */
-	switch (game->current_level)
-	{
-		case 2:
-		{
-			game->monster[0].type = 89;
-			game->monster[0].monster_px = 44 * TILE_SIZE;
-			game->monster[0].monster_py = 4 * TILE_SIZE;
-
-			game->monster[1].type = 89;
-			game->monster[1].monster_px = 59 * TILE_SIZE;
-			game->monster[1].monster_py = 4 * TILE_SIZE;
-		} break;
-		case 3:
-		{
-			game->monster[0].type = 93;
-			game->monster[0].monster_px = 32 * TILE_SIZE;
-			game->monster[0].monster_py = 2 * TILE_SIZE;
-		} break;
-		case 4:
-		{
-			game->monster[0].type = 97;
-			game->monster[0].monster_px = 15 * TILE_SIZE;
-			game->monster[0].monster_py = 3 * TILE_SIZE;
-			game->monster[1].type = 97;
-			game->monster[1].monster_px = 33 * TILE_SIZE;
-			game->monster[1].monster_py = 3 * TILE_SIZE;
-			game->monster[2].type = 97;
-			game->monster[2].monster_px = 49 * TILE_SIZE;
-			game->monster[2].monster_py = 3 * TILE_SIZE;
-		} break;
-		case 5:
-		{
-			game->monster[0].type = 101;
-			game->monster[0].monster_px = 10 * TILE_SIZE;
-			game->monster[0].monster_py = 8 * TILE_SIZE;
-			game->monster[1].type = 101;
-			game->monster[1].monster_px = 28 * TILE_SIZE;
-			game->monster[1].monster_py = 8 * TILE_SIZE;
-			game->monster[2].type = 101;
-			game->monster[2].monster_px = 45 * TILE_SIZE;
-			game->monster[2].monster_py = 2 * TILE_SIZE;
-			game->monster[3].type = 101;
-			game->monster[3].monster_px = 40 * TILE_SIZE;
-			game->monster[3].monster_py = 8 * TILE_SIZE;
-		} break;
-		case 6:
-		{
-			game->monster[0].type = 105;
-			game->monster[0].monster_px = 5 * TILE_SIZE;
-			game->monster[0].monster_py = 2 * TILE_SIZE;
-			game->monster[1].type = 105;
-			game->monster[1].monster_px = 16 * TILE_SIZE;
-			game->monster[1].monster_py = 1 * TILE_SIZE;
-			game->monster[2].type = 105;
-			game->monster[2].monster_px = 46 * TILE_SIZE;
-			game->monster[2].monster_py = 2 * TILE_SIZE;
-			game->monster[3].type = 105;
-			game->monster[3].monster_px = 56 * TILE_SIZE;
-			game->monster[3].monster_py = 3 * TILE_SIZE;
-		} break;
-		case 7:
-		{
-			game->monster[0].type = 109;
-			game->monster[0].monster_px = 53 * TILE_SIZE;
-			game->monster[0].monster_py = 5 * TILE_SIZE;
-			game->monster[1].type = 109;
-			game->monster[1].monster_px = 72 * TILE_SIZE;
-			game->monster[1].monster_py = 2 * TILE_SIZE;
-			game->monster[2].type = 109;
-			game->monster[2].monster_px = 84 * TILE_SIZE;
-			game->monster[2].monster_py = 1 * TILE_SIZE;
-		} break;
-		case 8:
-		{
-			game->monster[0].type = 113;
-			game->monster[0].monster_px = 35 * TILE_SIZE;
-			game->monster[0].monster_py = 8 * TILE_SIZE;
-			game->monster[1].type = 113;
-			game->monster[1].monster_px = 41 * TILE_SIZE;
-			game->monster[1].monster_py = 8 * TILE_SIZE;
-			game->monster[2].type = 113;
-			game->monster[2].monster_px = 49 * TILE_SIZE;
-			game->monster[2].monster_py = 8 * TILE_SIZE;
-			game->monster[3].type = 113;
-			game->monster[3].monster_px = 65 * TILE_SIZE;
-			game->monster[3].monster_py = 8 * TILE_SIZE;
-		} break;
-		case 9:
-		{
-			game->monster[0].type = 117;
-			game->monster[0].monster_px = 45 * TILE_SIZE;
-			game->monster[0].monster_py = 8 * TILE_SIZE;
-			game->monster[1].type = 117;
-			game->monster[1].monster_px = 51 * TILE_SIZE;
-			game->monster[1].monster_py = 2 * TILE_SIZE;
-			game->monster[2].type = 117;
-			game->monster[2].monster_px = 65 * TILE_SIZE;
-			game->monster[2].monster_py = 3 * TILE_SIZE;
-			game->monster[3].type = 117;
-			game->monster[3].monster_px = 82 * TILE_SIZE;
-			game->monster[3].monster_py = 5 * TILE_SIZE;
-		} break;
-	}
-
-	/* Reset various state variables at the start of each level */
-	game->dave_dead_timer = 0;
-	game->trophy = 0;
-	game->gun = 0;
-	game->jetpack = 0;
-	game->dave_jetpack = 0;
-	game->check_door = 0;
-	game->view_x = 0;
-	game->view_y = 0;
-	game->last_dir = 0;
-	game->dbullet_px = 0;
-	game->dbullet_py = 0;
-	game->ebullet_px = 0;
-	game->ebullet_py = 0;
-	game->jump_timer = 0;
 }
 
 void draw_text_line(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer)
@@ -920,7 +841,7 @@ void draw_score(int score)
     }
 }
 
-void draw_dave2(dave_t *dave, struct game_assets* assets)
+void draw_dave(dave_t *dave, struct game_assets* assets)
 {
     SDL_Rect dest;
     int sprite;
@@ -931,17 +852,22 @@ void draw_dave2(dave_t *dave, struct game_assets* assets)
 
     int walk_mod = dave->step_count%8;
     //printf("WALKMOD:      %d \n", walk_mod);
-    
+
     if (dave->state == DAVE_STATE_FREEFALLING) {
         if (dave->freefall_direction == DAVE_DIRECTION_LEFT) {
             sprite = SPRITE_IDX_DAVE_LEFT_HANDSFREE;
         } else if (dave->freefall_direction == DAVE_DIRECTION_RIGHT) {
             sprite = SPRITE_IDX_DAVE_RIGHT_HANDSFREE;
+        } else if (dave->freefall_direction == DAVE_DIRECTION_FRONTR) {
+            sprite = SPRITE_IDX_DAVE_JUMP_RIGHT;
+        } else if (dave->freefall_direction == DAVE_DIRECTION_FRONTL) {
+            sprite = SPRITE_IDX_DAVE_JUMP_LEFT;
         } else {
             sprite = SPRITE_IDX_DAVE_FRONT;
         }
     } else if (dave->state == DAVE_STATE_JUMPING) {
-        if (dave->face_direction == DAVE_DIRECTION_LEFT) {
+        if (dave->face_direction == DAVE_DIRECTION_LEFT ||
+                dave->face_direction == DAVE_DIRECTION_FRONTL) {
             sprite = SPRITE_IDX_DAVE_JUMP_LEFT;
         } else {
             sprite = SPRITE_IDX_DAVE_JUMP_RIGHT;

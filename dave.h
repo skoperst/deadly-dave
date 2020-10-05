@@ -17,9 +17,10 @@
 #define DAVE_STATE_FREEFALLING 3
 #define DAVE_STATE_DEAD        4
 
-#define DAVE_DIRECTION_FRONT    0
-#define DAVE_DIRECTION_LEFT  1
-#define DAVE_DIRECTION_RIGHT 2
+#define DAVE_DIRECTION_FRONTR  0
+#define DAVE_DIRECTION_FRONTL  1
+#define DAVE_DIRECTION_LEFT    2
+#define DAVE_DIRECTION_RIGHT   3
 
 typedef struct dave_struct {
     int x;
