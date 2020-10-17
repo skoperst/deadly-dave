@@ -155,8 +155,8 @@ void dave_state_walking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
 }
 
 void dave_state_freefalling_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
-    int key_left, int key_right, int key_up)
-{
+    int key_left, int key_right, int key_up) {
+    printf("FREEFALLING ENTER \n");
     dave->state = DAVE_STATE_FREEFALLING;
     if (dave->face_direction == DAVE_DIRECTION_RIGHT) {
         dave->freefall_direction = DAVE_DIRECTION_FRONTR;
@@ -198,26 +198,53 @@ void dave_state_walking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
 
 void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up) {
-    int jump_velocity_table[90] = {
-             0,  0,  0, -3, -2,  0, -2, 0, -2, 0,
-            -2, -2,  0, -2,  0, -2, -2, 0, -2, 0,
-            -2, -1, -1,  0, -1,  0, -1, 0, -1, 0,
-            -1,  0, -1,  0, -1,  0, -1, 0,  0, 0,
-             0,  0,  0,  0,  0,  0,  0, 0,  0, 0,
-             0,  0,  1,  0,  1,  0,  1, 0,  1, 0,
-             1,  0,  1,  0,  1,  0,  2, 0,  2, 0,
-             2,  0,  2,  0,  2,  0,  2, 0,  2, 0,
-             2,  0,  2,  0,  2,  0,  3, 1,  1, 0};
+    printf("JUMP ROUTINE  jumpstate: %d\n", dave->jump_state);
+    int jump_velocity_table[94] = {
+            -1,  0, -3,  0, -3,  0, -2,  0, -2,  0,
+            -2,  0, -2,  0, -2,  0, -2,  0, -2,  0,
+            -2,  0, -1,  0, -2,  0, -1,  0, -1,  0,
+            -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, //40 total up
+
+             0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+             0,  0,  0,  0,// 14 total hang
+
+             0,  0,  1,  0,  1,  0,  1,  0,  1,  0, //40 total down
+             1,  0,  1,  0,  1,  0,  2,  0,  2,  0,
+             2,  0,  2,  0,  2,  0,  2,  0,  2,  0,
+             2,  0,  2,  0,  2,  0,  3,  1,  1,  0};
 
     if (dave->jump_state >= 35 && dave_on_ground(dave, map)) {
         dave_state_standing_enter(dave, map, key_left, key_right, key_up);
         return;
     }
 
-    if (dave->jump_state >= 90) {
+    if (dave->jump_state >= 94) {
+     /*   printf("XI \n");
+        if (key_left) {
+            printf("XI key left \n");
+                if (dave_collision_left(dave,map)) {
+                printf("WTF LEFT \n");
+                dave->x-=2;
+                } else {
+            printf("XI LEFT\n");
+                    dave->x-=2;
+//                    dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
+                }
+        } else if (key_right) {
+            printf("XI key right \n");
+            if (dave_collision_right(dave, map)) {
+                printf("WTF RIGHT \n");
+                dave->x+=2;
+            } else {
+            printf("XI RIGHT\n");
+                dave->x+=2;
+  //              dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_RIGHT;
+            }
+        }*/
         dave_state_freefalling_enter(dave, map, key_left, key_right, key_up);
         return;
     }
+
     int deltay = jump_velocity_table[dave->jump_state];
     if (deltay > 0) {
         while(deltay > 0) {
@@ -249,7 +276,7 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
                     dave->face_direction = DAVE_DIRECTION_FRONTL;
                 }*/
                 deltay = 0;
-                dave->jump_state = 88;
+                dave->jump_state = 94;
             } else {
                 deltay++;
             }
