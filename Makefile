@@ -1,6 +1,7 @@
 CC = gcc
 INCS = -I /usr/local/Cellar/sdl2/2.0.12_1/include/SDL2
 INCS += -I /usr/include/SDL2
+INCS += -I include/
 LIBS = -L /usr/local/Cellar/sdl2/2.0.12_1/lib
 
 CFLAGS = -g -std=gnu89 -Wall

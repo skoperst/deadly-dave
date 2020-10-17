@@ -5,37 +5,36 @@
 #include "tile.h"
 
 
-// This called every game 'clock' beat (tick).
-// In case of tiles, they just change their sprite from time to time.
-void tile_tick(tile_t* tile)
-{
+/*
+ * This should be called every tick (game minimal 'clock' beat) to let the tile do
+ * their animation.
+ */
+void tile_tick(tile_t* tile) {
     tile->sprite_idx++;
     if (tile->sprites[tile->sprite_idx] == 0) {
         tile->sprite_idx = 0;
     }
 }
 
-// Returns the sprite idx to draw
-int tile_get_sprite(tile_t* tile)
-{
+/*
+ * Returns the sprite idx to draw
+ */
+int tile_get_sprite(tile_t* tile) {
     return tile->sprites[tile->sprite_idx];
 }
 
-int tile_is_inside(tile_t* tile, int x, int y)
-{
-    if (x >= tile->x && y >= tile->y && 
+int tile_is_inside(tile_t* tile, int x, int y) {
+    if (x >= tile->x && y >= tile->y &&
             x < (tile->x + tile->width) && y < (tile->y + tile->height)) {
         return 1;
     }
-
     return 0;
 }
 
 /*
  * Create a simple block tile (one sprite, doesn't animate)
  */
-void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height)
-{
+void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height) {
     t->x = x;
     t->y = y;
     t->width = width;
@@ -50,8 +49,7 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
     t->is_inside = &tile_is_inside;
 }
 
-void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height)
-{
+void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height) {
     t->x = x;
     t->y = y;
     t->width = width;
@@ -65,11 +63,11 @@ void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
 }
+
 /*
  * Create the flaming banner tile for into screen title
  */
-void tile_create_intro_banner(tile_t* t, int x, int y)
-{
+void tile_create_intro_banner(tile_t* t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 112;
@@ -109,8 +107,7 @@ void tile_create_intro_banner(tile_t* t, int x, int y)
     t->is_inside = &tile_is_inside;
 }
 
-void tile_create_intro_fire(tile_t* t, int x, int y)
-{
+void tile_create_intro_fire(tile_t* t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 16;
@@ -127,24 +124,22 @@ void tile_create_intro_fire(tile_t* t, int x, int y)
     t->is_inside = &tile_is_inside;
 }
 
-void tile_create_flashing_cursor(tile_t* t, int x, int y)
-{
-        t->x = x;
-        t->y = y;
-        t->width = 8;
-        t->height = 8;
-        t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = t->sprites[4] = SPRITE_IDX_CURSOR1;
-        t->sprites[5] = t->sprites[6] = t->sprites[7] = t->sprites[8] = t->sprites[9] = SPRITE_IDX_CURSOR2;
-        t->sprites[10] = t->sprites[11] = t->sprites[12] = t->sprites[13] = t->sprites[14] = SPRITE_IDX_CURSOR3;
-        t->sprites[15] = t->sprites[16] = t->sprites[17] = t->sprites[18] = t->sprites[19] = SPRITE_IDX_CURSOR4;
-        t->sprites[20] = 0;
-        t->sprite_idx = 0;
-        t->get_sprite = &tile_get_sprite;
-        t->tick = &tile_tick;
+void tile_create_flashing_cursor(tile_t* t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 8;
+    t->height = 8;
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = t->sprites[4] = SPRITE_IDX_CURSOR1;
+    t->sprites[5] = t->sprites[6] = t->sprites[7] = t->sprites[8] = t->sprites[9] = SPRITE_IDX_CURSOR2;
+    t->sprites[10] = t->sprites[11] = t->sprites[12] = t->sprites[13] = t->sprites[14] = SPRITE_IDX_CURSOR3;
+    t->sprites[15] = t->sprites[16] = t->sprites[17] = t->sprites[18] = t->sprites[19] = SPRITE_IDX_CURSOR4;
+    t->sprites[20] = 0;
+    t->sprite_idx = 0;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
 }
 
-void tile_create_top_separator(tile_t* t, int x, int y)
-{
+void tile_create_top_separator(tile_t* t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 320;
@@ -156,8 +151,7 @@ void tile_create_top_separator(tile_t* t, int x, int y)
     t->tick = &tile_tick;
 }
 
-void tile_create_bottom_separator(tile_t* t, int x, int y)
-{
+void tile_create_bottom_separator(tile_t* t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 320;
@@ -169,8 +163,7 @@ void tile_create_bottom_separator(tile_t* t, int x, int y)
     t->tick = &tile_tick;
 }
 
-void tile_create_grail_banner(tile_t* t, int x, int y)
-{
+void tile_create_grail_banner(tile_t* t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 176;
@@ -182,8 +175,7 @@ void tile_create_grail_banner(tile_t* t, int x, int y)
     t->tick = &tile_tick;
 }
 
-int tile_dave_get_sprite(tile_dave_t* dave)
-{
+int tile_dave_get_sprite(tile_dave_t* dave) {
     if (dave->mod == TILE_DAVE_MOD_FRONT) {
         return dave->sprite_front;
     } else if (dave->mod == TILE_DAVE_MOD_RIGHT) {
@@ -199,8 +191,7 @@ int tile_dave_get_sprite(tile_dave_t* dave)
     return -1;
 }
 
-void tile_create_purple_gem(tile_t *t, int x, int y)
-{
+void tile_create_purple_gem(tile_t *t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 16;
@@ -215,8 +206,7 @@ void tile_create_purple_gem(tile_t *t, int x, int y)
     t->is_inside = &tile_is_inside;
 }
 
-void tile_create_teal_gem(tile_t *t, int x, int y)
-{
+void tile_create_teal_gem(tile_t *t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 16;
@@ -231,15 +221,14 @@ void tile_create_teal_gem(tile_t *t, int x, int y)
     t->is_inside = &tile_is_inside;
 }
 
-void tile_create_grail(tile_t *t, int x, int y)
-{
+void tile_create_grail(tile_t *t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 16;
     t->height = 16;
 
     t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
-    t->sprites[4] = t->sprites[5] = t->sprites[6] = t->sprites[7] = 
+    t->sprites[4] = t->sprites[5] = t->sprites[6] = t->sprites[7] =
     t->sprites[8] = t->sprites[9] = t->sprites[10] = t->sprites[11] = SPRITE_IDX_GRAIL0;
 
     t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] =
@@ -266,8 +255,7 @@ void tile_create_grail(tile_t *t, int x, int y)
     t->is_inside = &tile_is_inside;
 }
 
-void tile_create(tile_t* t, char tag[4], int x, int y)
-{
+void tile_create(tile_t* t, char tag[4], int x, int y) {
     printf("CREATE TILE AT %d, %d \n", x, y);
     if (strcmp(tag, "RBK") == 0) {
         tile_create_block(t, SPRITE_IDX_RED_BRICK, x, y, 16, 16);
@@ -288,8 +276,7 @@ void tile_create(tile_t* t, char tag[4], int x, int y)
     }
 }
 
-int tile_file_parse(tile_t* map, const char* path)
-{
+int tile_file_parse(tile_t* map, const char* path) {
     long fsize;
     char *buf;
     FILE* f = fopen(path, "rb");
@@ -306,8 +293,7 @@ int tile_file_parse(tile_t* map, const char* path)
     return tile_map_parse(map, buf);
 }
 
-int tile_map_parse(tile_t* map, char* map_str)
-{
+int tile_map_parse(tile_t* map, char* map_str) {
     int cur_row = 0;
     int pos = 0;
 
@@ -359,5 +345,4 @@ int tile_map_parse(tile_t* map, char* map_str)
 
     return 0;
 }
-
 
