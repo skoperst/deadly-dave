@@ -510,6 +510,22 @@ int is_dave_collision_tile(dave_t *dave, tile_t *tile)
     return 0;
 }
 
+int is_dave_in_door(game_context_t *game, tile_t *map)
+{
+    int idx = 0;
+    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
+        if (is_dave_collision_tile(game->dave, &map[idx])) {
+            if (map[idx].mod == DOOR) {
+                //map[idx].mod = 0;
+                //map[idx].sprites[0] = 0;
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
 void check_dave_pick_item(game_context_t *game, tile_t *map)
 {
     int idx = 0;
@@ -687,6 +703,13 @@ int start_game()
                 map[i].tick(&map[i]);
         }
         check_dave_pick_item(game, map);
+        if (is_dave_in_door(game, map)) {
+            printf("IN DOOR \n");
+            printf("IN DOOR \n");
+            printf("IN DOOR \n");
+            printf("IN DOOR \n");
+            return 1;
+        }
         SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
@@ -774,7 +797,7 @@ int main(int argc, char* argv[])
     ret = start_intro();
     if (ret == 0) {
         ret = start_game();
-        if (ret == 0) {
+        if (ret == 1) {
             ret = start_warp_right();
         }
     }

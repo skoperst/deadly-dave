@@ -50,6 +50,21 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
     t->is_inside = &tile_is_inside;
 }
 
+void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height)
+{
+    t->x = x;
+    t->y = y;
+    t->width = width;
+    t->height = height;
+    t->sprites[0] = sprite;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = DOOR;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
 /*
  * Create the flaming banner tile for into screen title
  */
@@ -263,7 +278,7 @@ void tile_create(tile_t* t, char tag[4], int x, int y)
     } else if (strcmp(tag, "PIR") == 0) {
         tile_create_block(t, SPRITE_IDX_PIPE_RIGHT, x, y, 16, 16);
     } else if (strcmp(tag, " X ") == 0) {
-        tile_create_block(t, SPRITE_IDX_DOOR, x, y, 16, 16);
+        tile_create_door(t, SPRITE_IDX_DOOR, x, y, 16, 16);
     } else if (strcmp(tag, " * ") == 0) {
         tile_create_purple_gem(t, x, y);
     } else if (strcmp(tag, " v ") == 0) {

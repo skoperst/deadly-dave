@@ -78,6 +78,7 @@ static const int BRICK     = 2;
 static const int ITEM      = 3;
 static const int GRAIL     = 4;
 static const int FIRE      = 5;
+static const int DOOR      = 6;
 
 
 // SPRITE INDEXES
