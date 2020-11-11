@@ -45,12 +45,20 @@ typedef struct tile_struct {
     int width;
     int height;
     int mod;
-    int sprites[100];
-    int sprite_idx;
+    void *context;
 
     int (*get_sprite)(struct tile_struct* tile);
     void (*tick)(struct tile_struct* tile);
+
     int (*is_inside)(struct tile_struct* tile, int x, int y);
+
+
+
+
+    //TODO: delete those:
+    int sprites[100];
+    int sprite_idx;
+
 } tile_t;
 
 // Create simple non-interacting block
@@ -79,6 +87,7 @@ static const int ITEM      = 3;
 static const int GRAIL     = 4;
 static const int FIRE      = 5;
 static const int DOOR      = 6;
+static const int DAVE      = 7;
 
 
 // SPRITE INDEXES
@@ -96,6 +105,7 @@ static const int SPRITE_IDX_GRAIL1                 = 14;
 static const int SPRITE_IDX_PIPE_RIGHT             = 15;
 static const int SPRITE_IDX_RED_BRICK              = 17;
 static const int SPRITE_IDX_DIRT                   = 18;
+static const int SPRITE_IDX_PURPLE_PLATFORM        = 30;
 static const int SPRITE_IDX_CROWN                  = 50;
 static const int SPRITE_IDX_CURSOR1                = 167;
 static const int SPRITE_IDX_CURSOR2                = 168;

@@ -174,11 +174,11 @@ void init_game(game_context_t *game)
     game->check_pickup_y = 0;
     game->check_door = 0;
 
-    game->dave = dave_create();
-    game->dave->x = 20;
-    game->dave->y = 40;
-    game->dave->width = 20;
-    game->dave->height = 16;
+    game->dave = dave_create2();
+    game->dave->tile->x = 20;
+    game->dave->tile->y = 40;
+    game->dave->tile->width = 20;
+    game->dave->tile->height = 16;
     game->dave->state = DAVE_STATE_STANDING;
     game->dave->jump_state = 0;
     game->dave->step_count = 0;
@@ -224,31 +224,8 @@ void check_input2(keys_state_t* state)
     state->quit    = (event.type == SDL_QUIT) ? 1 : 0;
 }
 
-/* Checks input and sets flags. First step of the game loop */
-void check_input(game_context_t* game)
-{
-    SDL_Event event;
-    SDL_PollEvent(&event);
-    const uint8_t *keystate = SDL_GetKeyboardState(NULL);
-    if ( keystate[SDL_SCANCODE_RIGHT] )
-        game->try_right = 1;
-    if ( keystate[SDL_SCANCODE_LEFT] )
-        game->try_left = 1;
-    if ( keystate[SDL_SCANCODE_UP] )
-        game->try_jump = 1;
-    if ( keystate[SDL_SCANCODE_DOWN] )
-        game->try_down = 1;
-    if ( keystate[SDL_SCANCODE_LCTRL] )
-        game->try_fire = 1;
-    if ( keystate[SDL_SCANCODE_LALT] )
-        game->try_jetpack = 1;
-    if (event.type == SDL_QUIT)
-        game->quit = 1;
-}
-
 /* Clear flags set by keyboard input */
-void clear_input(game_context_t *game)
-{
+void clear_input(game_context_t *game) {
     game->try_jump = 0;
     game->try_right = 0;
     game->try_left = 0;
@@ -258,8 +235,7 @@ void clear_input(game_context_t *game)
     game->try_up = 0;
 }
 
-void show_quit_popup()
-{
+void show_quit_popup() {
     uint32_t timer_begin;
     uint32_t timer_end;
     uint32_t delay;
@@ -442,7 +418,6 @@ int start_intro() {
         draw_text_line("PRESS THE F1 KEY FOR HELP", 72, 168, g_font, g_renderer);
         draw_text_line("                         ",72, 174, g_font, g_renderer);
 
-
         // Set the screen as the target of renderer
         SDL_SetRenderTarget(g_renderer, NULL);
 
@@ -459,7 +434,6 @@ int start_intro() {
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
 
-        printf("DELAY=%d \n", delay);
         SDL_Delay(delay);
     }
 
@@ -482,16 +456,16 @@ int is_dave_collision_tile(dave_t *dave, tile_t *tile) {
         return 0;
     }
 
-    if (tile->is_inside(tile, dave->x-2, dave->y+2)) {
+    if (tile->is_inside(tile, dave->tile->x-2, dave->tile->y+2)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->x-2, dave->y+12)) {
+    if (tile->is_inside(tile, dave->tile->x-2, dave->tile->y+12)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->x+14, dave->y+2)) {
+    if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+2)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->x+14, dave->y+12)) {
+    if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+12)) {
         return 1;
     }
 
@@ -499,6 +473,10 @@ int is_dave_collision_tile(dave_t *dave, tile_t *tile) {
 }
 
 int is_dave_in_door(game_context_t *game, tile_t *map) {
+    if (game->dave->is_dead) {
+        return 0;
+    }
+
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
         if (is_dave_collision_tile(game->dave, &map[idx])) {
@@ -512,6 +490,9 @@ int is_dave_in_door(game_context_t *game, tile_t *map) {
 }
 
 void check_dave_pick_item(game_context_t *game, tile_t *map) {
+    if (game->dave->is_dead) {
+        return;
+    }
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
         if (is_dave_collision_tile(game->dave, &map[idx])) {
@@ -526,6 +507,23 @@ void check_dave_pick_item(game_context_t *game, tile_t *map) {
             }
         }
     }
+}
+
+int check_dave_touch_fire(game_context_t *game, tile_t *map) {
+    if (game->dave->is_dead) {
+        return 0;
+    }
+
+    int idx = 0;
+    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
+        if (is_dave_collision_tile(game->dave, &map[idx])) {
+            if (map[idx].mod == FIRE) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 int start_warp_right() {
@@ -559,8 +557,8 @@ int start_warp_right() {
     tile_file_parse(map, "res/levels/warp_right.ndt");
     printf("map0 x,y: %d, %d \n", map[0].x, map[0].y);
 
-    game->dave->x = 40;
-    game->dave->y = 80;
+    game->dave->tile->x = 40;
+    game->dave->tile->y = 80;
 
     while (!should_quit) {
         timer_begin = SDL_GetTicks();
@@ -572,8 +570,8 @@ int start_warp_right() {
         if (key_state.quit) {
             should_quit = 1;
         }
-        printf("dave: [%d,%d] \n", game->dave->x, game->dave->y);
-        if (game->dave->x > 300) {
+        printf("dave: [%d,%d] \n", game->dave->tile->x, game->dave->tile->y);
+        if (game->dave->tile->x > 300) {
             return 1;
         }
 
@@ -597,6 +595,10 @@ int start_warp_right() {
         }
         // ===============================================
 
+        // ================ draw dave ===================
+        draw_dave(game->dave, g_assets);
+        // ==============================================
+
         // ============== draw misc items ================
         draw_tile(&bottom_separator, g_assets);
         draw_tile(&top_separator, g_assets);
@@ -606,9 +608,6 @@ int start_warp_right() {
         draw_score(500);
         // ===============================================
 
-        // ================ draw dave ===================
-        draw_dave(game->dave, g_assets);
-        // ==============================================
 
         draw_text_line("GOOD WORK! ONLY 9 MORE TO GO!", 50, 58, g_font, g_renderer);
 
@@ -666,17 +665,18 @@ int start_level(int level) {
         map[i].y = 0;
     }
 
-    tile_file_parse(map, "res/levels/level0.ndt");
+    tile_file_parse(map, "res/levels/level1.ndt");
     printf("map0 x,y: %d, %d \n", map[0].x, map[0].y);
 
-    game->dave->x = 40;
-    game->dave->y = 144;
+    game->dave->tile->x = 40;
+    game->dave->tile->y = 144;
 
     while (!should_quit) {
         timer_begin = SDL_GetTicks();
 
         check_input2(&key_state);
         if (key_state.quit) {
+            printf("should quit! \n");
             should_quit = 1;
         }
 
@@ -693,6 +693,18 @@ int start_level(int level) {
             printf("IN DOOR \n");
             return 1;
         }
+        if (check_dave_touch_fire(game, map)) {
+            printf("Dave is dead \n");
+            game->dave->is_dead = 1;
+        }
+
+        if (game->dave->is_dead) {
+            printf("dave died %d ticks before\n", game->dave->ticks_since_dead);
+            if (game->dave->ticks_since_dead > 200) {
+                return 2;
+            }
+        }
+
         SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
@@ -707,6 +719,10 @@ int start_level(int level) {
         }
         // ===============================================
 
+        // ================ draw dave ===================
+        draw_dave(game->dave, g_assets);
+        // ==============================================
+        //
         // ============== draw misc items ================
         draw_tile(&bottom_separator, g_assets);
         draw_tile(&top_separator, g_assets);
@@ -716,9 +732,6 @@ int start_level(int level) {
         draw_score(500);
         // ===============================================
 
-        // ================ draw dave ===================
-        draw_dave(game->dave, g_assets);
-        // ==============================================
 
         // Set the screen as the target of renderer
         SDL_SetRenderTarget(g_renderer, NULL);
@@ -748,11 +761,12 @@ int start_level(int level) {
 int main(int argc, char* argv[])
 {
     int ret = 0;
+    int level = 0;
     const uint8_t DISPLAY_SCALE = 2;
     SDL_Window* g_window;
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO)) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
         printf("Failed to initialize SDL video. Error: (%s) \n", SDL_GetError());
         return -1;
     }
@@ -786,10 +800,19 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    ret = start_level(0);
-    if (ret == 1) {
-        ret = start_warp_right();
-    }
+    start_level(0);
+/*    while (level <= 5) {
+        ret = start_level(level);
+
+        if (ret == 1) {
+            ret = start_warp_right();
+            level++;
+        } else if (ret == 2) {
+            //reduce 1 life`
+        } else if (ret == 3) {
+            //exit
+        }
+    }*/
     SDL_Quit();
 
     return 0;
@@ -851,61 +874,13 @@ void draw_score(int score) {
 void draw_dave(dave_t *dave, struct game_assets* assets) {
     SDL_Rect dest;
     int sprite;
-    dest.x = dave->x;
-    dest.y = dave->y;
-    dest.w = dave->width;
-    dest.h = dave->height;
+    dest.x = dave->tile->x;
+    dest.y = dave->tile->y;
+    dest.w = dave->tile->width;
+    dest.h = dave->tile->height;
 
-    int walk_mod = dave->step_count%8;
-
-    if (dave->state == DAVE_STATE_FREEFALLING) {
-        if (dave->freefall_direction == DAVE_DIRECTION_LEFT) {
-            sprite = SPRITE_IDX_DAVE_LEFT_HANDSFREE;
-        } else if (dave->freefall_direction == DAVE_DIRECTION_RIGHT) {
-            sprite = SPRITE_IDX_DAVE_RIGHT_HANDSFREE;
-        } else if (dave->freefall_direction == DAVE_DIRECTION_FRONTR) {
-            sprite = SPRITE_IDX_DAVE_JUMP_RIGHT;
-        } else if (dave->freefall_direction == DAVE_DIRECTION_FRONTL) {
-            sprite = SPRITE_IDX_DAVE_JUMP_LEFT;
-        } else {
-            sprite = SPRITE_IDX_DAVE_FRONT;
-        }
-    } else if (dave->state == DAVE_STATE_JUMPING) {
-        if (dave->face_direction == DAVE_DIRECTION_LEFT ||
-                dave->face_direction == DAVE_DIRECTION_FRONTL) {
-            sprite = SPRITE_IDX_DAVE_JUMP_LEFT;
-        } else {
-            sprite = SPRITE_IDX_DAVE_JUMP_RIGHT;
-        }
-    } else if (dave->state == DAVE_STATE_WALKING || dave->state == DAVE_STATE_STANDING) {
-        if (dave->face_direction == DAVE_DIRECTION_RIGHT) {
-            if (walk_mod == 0 || walk_mod == 1 || walk_mod == 4 || walk_mod == 5) {
-                sprite = SPRITE_IDX_DAVE_RIGHT_STAND;
-            } else if (walk_mod == 2 || walk_mod == 3) {
-                sprite = SPRITE_IDX_DAVE_RIGHT_HANDSFREE;
-            } else if (walk_mod == 6 || walk_mod == 7) {
-                sprite = SPRITE_IDX_DAVE_RIGHT_SERIOUS;
-            } else {
-                sprite = 0;
-            }
-        } else if (dave->face_direction == DAVE_DIRECTION_LEFT) {
-            if (walk_mod == 0 || walk_mod == 1 || walk_mod == 4 || walk_mod == 5) {
-                sprite = SPRITE_IDX_DAVE_LEFT_STAND;
-            } else if (walk_mod == 2 || walk_mod == 3) {
-                sprite = SPRITE_IDX_DAVE_LEFT_HANDSFREE;
-            } else if (walk_mod == 6 || walk_mod == 7) {
-                sprite = SPRITE_IDX_DAVE_LEFT_SERIOUS;
-            } else {
-                sprite = 0;
-            }
-        } else {
-            sprite = SPRITE_IDX_DAVE_FRONT;
-        }
-    } else {
-        sprite = SPRITE_IDX_DAVE_FRONT;
-    }
-
-    SDL_RenderCopy(g_renderer, assets->graphics_tiles[sprite], NULL, &dest); 
+    sprite = dave->tile->get_sprite(dave->tile);
+    SDL_RenderCopy(g_renderer, assets->graphics_tiles[sprite], NULL, &dest);
 }
 
 void draw_tile(tile_t* tile, struct game_assets* assets)

@@ -15,7 +15,9 @@
 #define DAVE_STATE_WALKING     1
 #define DAVE_STATE_JUMPING     2
 #define DAVE_STATE_FREEFALLING 3
-#define DAVE_STATE_DEAD        4
+#define DAVE_STATE_BURNING     4
+#define DAVE_STATE_DEAD        5
+#define DAVE_STATE_BLINKING    6
 
 #define DAVE_DIRECTION_FRONTR  0
 #define DAVE_DIRECTION_FRONTL  1
@@ -23,22 +25,24 @@
 #define DAVE_DIRECTION_RIGHT   3
 
 typedef struct dave_struct {
-    int x;
-    int y;
-    int width;
-    int height;
+    tile_t *tile;
+
     int state;
     int walk_state;
     int step_count;
     int face_direction;
     int jump_state;
+    int jump_cooldown_count;
     int freefall_direction;
     int has_grail;
+    int is_dead;
+    int ticks_since_dead;
 
     void (*tick)(struct dave_struct *dave,
             tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], int left, int right, int up);
 } dave_t;
 
 dave_t* dave_create();
+dave_t* dave_create2();
 
 #endif

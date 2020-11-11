@@ -107,6 +107,32 @@ void tile_create_intro_banner(tile_t* t, int x, int y) {
     t->is_inside = &tile_is_inside;
 }
 
+void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    idx_offset = idx_offset * 8;
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = t->sprites[4] =
+    t->sprites[5] = t->sprites[6] = t->sprites[7] = SPRITE_IDX_FIRE1;
+
+    t->sprites[8] = t->sprites[9] = t->sprites[10] = t->sprites[11] =
+    t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] = SPRITE_IDX_FIRE2;
+
+    t->sprites[16] = t->sprites[17] = t->sprites[18] = t->sprites[19] =
+    t->sprites[20] = t->sprites[21] = t->sprites[22] = t->sprites[23] = SPRITE_IDX_FIRE3;
+
+    t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] =
+    t->sprites[28] = t->sprites[29] = t->sprites[30] = t->sprites[31] = SPRITE_IDX_FIRE4;
+
+    t->sprites[32] = 0;
+    t->sprite_idx = idx_offset;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+    t->mod = FIRE;
+}
+
 void tile_create_intro_fire(tile_t* t, int x, int y) {
     t->x = x;
     t->y = y;
@@ -129,11 +155,19 @@ void tile_create_flashing_cursor(tile_t* t, int x, int y) {
     t->y = y;
     t->width = 8;
     t->height = 8;
-    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = t->sprites[4] = SPRITE_IDX_CURSOR1;
-    t->sprites[5] = t->sprites[6] = t->sprites[7] = t->sprites[8] = t->sprites[9] = SPRITE_IDX_CURSOR2;
-    t->sprites[10] = t->sprites[11] = t->sprites[12] = t->sprites[13] = t->sprites[14] = SPRITE_IDX_CURSOR3;
-    t->sprites[15] = t->sprites[16] = t->sprites[17] = t->sprites[18] = t->sprites[19] = SPRITE_IDX_CURSOR4;
-    t->sprites[20] = 0;
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = 
+    t->sprites[4] = SPRITE_IDX_CURSOR1;
+
+    t->sprites[5] = t->sprites[6] = t->sprites[7] = t->sprites[8] = 
+    t->sprites[9] = SPRITE_IDX_CURSOR2;
+
+    t->sprites[10] = t->sprites[11] = t->sprites[12] = t->sprites[13] = 
+    t->sprites[14] = SPRITE_IDX_CURSOR3;
+
+    t->sprites[15] = t->sprites[16] = t->sprites[17] = t->sprites[18] = 
+    t->sprites[19] = SPRITE_IDX_CURSOR4;
+
+    t->sprites[16] = 0;
     t->sprite_idx = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -173,22 +207,6 @@ void tile_create_grail_banner(tile_t* t, int x, int y) {
     t->sprite_idx = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
-}
-
-int tile_dave_get_sprite(tile_dave_t* dave) {
-    if (dave->mod == TILE_DAVE_MOD_FRONT) {
-        return dave->sprite_front;
-    } else if (dave->mod == TILE_DAVE_MOD_RIGHT) {
-        return dave->sprites_right[dave->walk_cycle_offset];
-    } else if (dave->mod == TILE_DAVE_MOD_LEFT) {
-        return dave->sprites_left[dave->walk_cycle_offset];
-    } else if (dave->mod == TILE_DAVE_MOD_JUMPING_RIGHT) {
-        return dave->sprite_jump_right;
-    } else if (dave->mod == TILE_DAVE_MOD_JUMPING_LEFT) {
-        return dave->sprite_jump_left;
-    }
-
-    return -1;
 }
 
 void tile_create_purple_gem(tile_t *t, int x, int y) {
@@ -261,6 +279,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_block(t, SPRITE_IDX_RED_BRICK, x, y, 16, 16);
     } else if (strcmp(tag, "BBK") == 0) {
         tile_create_block(t, SPRITE_IDX_BLUE_BRICK, x, y, 16, 16);
+    } else if (strcmp(tag, "PPK") == 0) {
+        tile_create_block(t, SPRITE_IDX_PURPLE_PLATFORM, x, y, 16, 16);
     } else if (strcmp(tag, "DRT") == 0) {
         tile_create_block(t, SPRITE_IDX_DIRT, x, y, 16, 16);
     } else if (strcmp(tag, "PIR") == 0) {
@@ -273,6 +293,10 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_teal_gem(t, x, y);
     } else if (strcmp(tag, " Y ") == 0) {
         tile_create_grail(t, x, y);
+    } else if (strcmp(tag, "FR1") == 0) {
+        tile_create_fire(t, x, y, 0);
+    } else if (strcmp(tag, "FR2") == 0) {
+        tile_create_fire(t, x, y, 1);
     }
 }
 
