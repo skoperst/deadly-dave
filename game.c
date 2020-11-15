@@ -459,13 +459,13 @@ int is_dave_collision_tile(dave_t *dave, tile_t *tile) {
     if (tile->is_inside(tile, dave->tile->x-2, dave->tile->y+2)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->tile->x-2, dave->tile->y+12)) {
+    if (tile->is_inside(tile, dave->tile->x-2, dave->tile->y+15)) {
         return 1;
     }
     if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+2)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+12)) {
+    if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+15)) {
         return 1;
     }
 
@@ -557,7 +557,7 @@ int start_warp_right() {
     tile_file_parse(map, "res/levels/warp_right.ndt");
     printf("map0 x,y: %d, %d \n", map[0].x, map[0].y);
 
-    game->dave->tile->x = 40;
+    game->dave->tile->x = 30;
     game->dave->tile->y = 80;
 
     while (!should_quit) {
@@ -668,7 +668,7 @@ int start_level(int level) {
     tile_file_parse(map, "res/levels/level1.ndt");
     printf("map0 x,y: %d, %d \n", map[0].x, map[0].y);
 
-    game->dave->tile->x = 40;
+    game->dave->tile->x = 30;
     game->dave->tile->y = 144;
 
     while (!should_quit) {

@@ -91,6 +91,7 @@ int delayer = 0;
 
 void dave_state_burning_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up) {
+    printf("BURNING-ENTER\n");
     dave->state = DAVE_STATE_BURNING;
     dave->ticks_since_dead = 0;
 }
@@ -179,6 +180,7 @@ void dave_state_standing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_
 
 void dave_state_burning_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up) {
+    printf("BURNING ROUTINE \n");
     dave->ticks_since_dead++;
 }
 
@@ -466,6 +468,16 @@ int dave_get_sprite(tile_t *tile) {
             }
         } else {
             sprite = SPRITE_IDX_DAVE_FRONT;
+        }
+    } else if (dave->state == DAVE_STATE_BURNING) {
+        if ((dave->ticks_since_dead / 30) % 4 == 0) {
+            sprite = SPRITE_IDX_EXPLOSION1;
+        } else if ((dave->ticks_since_dead / 30) % 4 == 1) {
+            sprite = SPRITE_IDX_EXPLOSION2;
+        } else if ((dave->ticks_since_dead / 30) % 4 == 2) {
+            sprite = SPRITE_IDX_EXPLOSION3;
+        } else {
+            sprite = SPRITE_IDX_EXPLOSION4;
         }
     } else {
         sprite = SPRITE_IDX_DAVE_FRONT;
