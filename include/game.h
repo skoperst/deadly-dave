@@ -62,6 +62,9 @@ typedef struct keys_state_struct {
 	int32_t fire;
 	int32_t jetpack;
 	int32_t quit;
+	int32_t bracer;
+	int32_t bracel;
+    int32_t escape;
 } keys_state_t;
 
 typedef struct game_context_struct {
@@ -71,8 +74,6 @@ typedef struct game_context_struct {
 	uint8_t current_level;
 	uint8_t lives;
 	uint32_t score;
-	uint8_t view_x;
-	uint8_t view_y;
 	uint8_t dave_dead_timer;
 	uint16_t dbullet_px;
 	uint16_t dbullet_py;
@@ -113,9 +114,10 @@ typedef struct game_context_struct {
 	uint8_t jetpack;
 
     dave_t *dave;
-	struct monster_state monster[5];
+    struct monster_state monster[5];
 
-	struct dave_level level[10];
+    struct dave_level level[10];
+    uint64_t view_offset;
 } game_context_t;
 
 
