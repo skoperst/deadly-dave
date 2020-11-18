@@ -31,6 +31,14 @@ int tile_is_inside(tile_t* tile, int x, int y) {
     return 0;
 }
 
+int tile_is_empty(tile_t *tile) {
+    if (tile->mod == 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
 /*
  * Create a simple block tile (one sprite, doesn't animate)
  */
@@ -72,12 +80,8 @@ void tile_create_intro_banner(tile_t* t, int x, int y) {
     t->y = y;
     t->width = 112;
     t->height = 47;
-    t->sprites[0] = SPRITE_IDX_TITLE_FLAMES1;
-    t->sprites[1] = SPRITE_IDX_TITLE_FLAMES1;
-    t->sprites[2] = SPRITE_IDX_TITLE_FLAMES1;
-    t->sprites[3] = SPRITE_IDX_TITLE_FLAMES1;
-    t->sprites[4] = SPRITE_IDX_TITLE_FLAMES1;
-    t->sprites[5] = SPRITE_IDX_TITLE_FLAMES1;
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = 
+    t->sprites[4] = t->sprites[5] = SPRITE_IDX_TITLE_FLAMES1;
 
     t->sprites[6] = SPRITE_IDX_TITLE_FLAMES2;
     t->sprites[7] = SPRITE_IDX_TITLE_FLAMES2;
@@ -107,14 +111,41 @@ void tile_create_intro_banner(tile_t* t, int x, int y) {
     t->is_inside = &tile_is_inside;
 }
 
+/*
+ * Create animated fire tile for intro. Its slightly different than in-game animated fire
+ */
+void tile_create_intro_fire(tile_t* t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
+    t->sprites[4] = t->sprites[5] = SPRITE_IDX_FIRE1;
+
+    t->sprites[6] = t->sprites[7] = t->sprites[8] = t->sprites[9] =
+    t->sprites[10] = t->sprites[11] = SPRITE_IDX_FIRE2;
+
+    t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] =
+    t->sprites[16] = t->sprites[17] = SPRITE_IDX_FIRE3;
+
+    t->sprites[18] = t->sprites[19] = t->sprites[20] = t->sprites[21] =
+    t->sprites[22] = t->sprites[23] = SPRITE_IDX_FIRE4;
+
+    t->sprites[24] = 0;
+    t->sprite_idx = 0;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
 void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
     t->x = x;
     t->y = y;
     t->width = 16;
     t->height = 16;
     idx_offset = idx_offset * 8;
-    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = t->sprites[4] =
-    t->sprites[5] = t->sprites[6] = t->sprites[7] = SPRITE_IDX_FIRE1;
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
+    t->sprites[4] = t->sprites[5] = t->sprites[6] = t->sprites[7] = SPRITE_IDX_FIRE1;
 
     t->sprites[8] = t->sprites[9] = t->sprites[10] = t->sprites[11] =
     t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] = SPRITE_IDX_FIRE2;
@@ -133,21 +164,58 @@ void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
     t->mod = FIRE;
 }
 
-void tile_create_intro_fire(tile_t* t, int x, int y) {
+void tile_create_vines(tile_t* t, int x, int y, int idx_offset) {
     t->x = x;
     t->y = y;
     t->width = 16;
     t->height = 16;
-    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = t->sprites[4] = t->sprites[5] = SPRITE_IDX_FIRE1;
-    t->sprites[6] = t->sprites[7] = t->sprites[8] = t->sprites[9] = t->sprites[10] = t->sprites[11] = SPRITE_IDX_FIRE2;
-    t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] = t->sprites[16] = t->sprites[17] = SPRITE_IDX_FIRE3;
-    t->sprites[18] = t->sprites[19] = t->sprites[20] = t->sprites[21] = t->sprites[22] = t->sprites[23] = SPRITE_IDX_FIRE4;
+    idx_offset = idx_offset * 8;
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
+    t->sprites[4] = t->sprites[5] = t->sprites[6] = t->sprites[7] = SPRITE_IDX_VINES1;
 
-    t->sprites[24] = 0;
-    t->sprite_idx = 0;
+    t->sprites[8] = t->sprites[9] = t->sprites[10] = t->sprites[11] =
+    t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] = SPRITE_IDX_VINES2;
+
+    t->sprites[16] = t->sprites[17] = t->sprites[18] = t->sprites[19] =
+    t->sprites[20] = t->sprites[21] = t->sprites[22] = t->sprites[23] = SPRITE_IDX_VINES3;
+
+    t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] =
+    t->sprites[28] = t->sprites[29] = t->sprites[30] = t->sprites[31] = SPRITE_IDX_VINES4;
+
+    t->sprites[32] = 0;
+    t->sprite_idx = idx_offset;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
+    t->mod = FIRE;
+}
+void tile_create_water(tile_t* t, int x, int y, int idx_offset) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    idx_offset = idx_offset * 8;
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
+    t->sprites[4] = t->sprites[5] = t->sprites[6] = t->sprites[7] = SPRITE_IDX_WATER1;
+
+    t->sprites[8] = t->sprites[9] = t->sprites[10] = t->sprites[11] =
+    t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] = SPRITE_IDX_WATER2;
+
+    t->sprites[16] = t->sprites[17] = t->sprites[18] = t->sprites[19] =
+    t->sprites[20] = t->sprites[21] = t->sprites[22] = t->sprites[23] = SPRITE_IDX_WATER3;
+
+    t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] =
+    t->sprites[28] = t->sprites[29] = t->sprites[30] = t->sprites[31] = SPRITE_IDX_WATER4;
+
+    t->sprites[32] = t->sprites[33] = t->sprites[34] = t->sprites[35] =
+    t->sprites[36] = t->sprites[37] = t->sprites[38] = t->sprites[39] = SPRITE_IDX_WATER5;
+
+    t->sprites[40] = 0;
+    t->sprite_idx = idx_offset;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+    t->mod = FIRE;
 }
 
 void tile_create_flashing_cursor(tile_t* t, int x, int y) {
@@ -155,19 +223,19 @@ void tile_create_flashing_cursor(tile_t* t, int x, int y) {
     t->y = y;
     t->width = 8;
     t->height = 8;
-    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = 
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
     t->sprites[4] = SPRITE_IDX_CURSOR1;
 
-    t->sprites[5] = t->sprites[6] = t->sprites[7] = t->sprites[8] = 
+    t->sprites[5] = t->sprites[6] = t->sprites[7] = t->sprites[8] =
     t->sprites[9] = SPRITE_IDX_CURSOR2;
 
-    t->sprites[10] = t->sprites[11] = t->sprites[12] = t->sprites[13] = 
+    t->sprites[10] = t->sprites[11] = t->sprites[12] = t->sprites[13] =
     t->sprites[14] = SPRITE_IDX_CURSOR3;
 
-    t->sprites[15] = t->sprites[16] = t->sprites[17] = t->sprites[18] = 
+    t->sprites[15] = t->sprites[16] = t->sprites[17] = t->sprites[18] =
     t->sprites[19] = SPRITE_IDX_CURSOR4;
 
-    t->sprites[16] = 0;
+    t->sprites[20] = 0;
     t->sprite_idx = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -239,6 +307,21 @@ void tile_create_teal_gem(tile_t *t, int x, int y) {
     t->is_inside = &tile_is_inside;
 }
 
+void tile_create_red_gem(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_RED_GEM;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = ITEM;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
 void tile_create_grail(tile_t *t, int x, int y) {
     t->x = x;
     t->y = y;
@@ -291,12 +374,32 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_purple_gem(t, x, y);
     } else if (strcmp(tag, " v ") == 0) {
         tile_create_teal_gem(t, x, y);
+    } else if (strcmp(tag, " V ") == 0) {
+        tile_create_red_gem(t, x, y);
     } else if (strcmp(tag, " Y ") == 0) {
         tile_create_grail(t, x, y);
     } else if (strcmp(tag, "FR1") == 0) {
         tile_create_fire(t, x, y, 0);
     } else if (strcmp(tag, "FR2") == 0) {
         tile_create_fire(t, x, y, 1);
+    } else if (strcmp(tag, "WT1") == 0) {
+        tile_create_water(t, x, y, 0);
+    } else if (strcmp(tag, "WT2") == 0) {
+        tile_create_water(t, x, y, 1);
+    } else if (strcmp(tag, "WT3") == 0) {
+        tile_create_water(t, x, y, 2);
+    } else if (strcmp(tag, "WT4") == 0) {
+        tile_create_water(t, x, y, 3);
+    } else if (strcmp(tag, "WT5") == 0) {
+        tile_create_water(t, x, y, 4);
+    } else if (strcmp(tag, "VI1") == 0) {
+        tile_create_vines(t, x, y, 0);
+    } else if (strcmp(tag, "VI2") == 0) {
+        tile_create_vines(t, x, y, 1);
+    } else if (strcmp(tag, "VI3") == 0) {
+        tile_create_vines(t, x, y, 2);
+    } else if (strcmp(tag, "VI4") == 0) {
+        tile_create_vines(t, x, y, 3);
     }
 }
 
@@ -318,7 +421,7 @@ int tile_file_parse(tile_t* map, const char* path) {
 }
 
 int tile_map_parse(tile_t* map, char* map_str) {
-    int cur_row = 0;
+    int cur_col = 0;
     int pos = 0;
 
     int i = 0;
@@ -339,7 +442,7 @@ int tile_map_parse(tile_t* map, char* map_str) {
                 if (collected_count == 3) {
                     printf("%s,", tag);
                     collected_count = 0;
-                    tile_create(&map[cur_row*20 + pos], tag, pos*16, cur_row*16);
+                    tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
                     pos++;
                 } else {
                     return -1;
@@ -348,8 +451,8 @@ int tile_map_parse(tile_t* map, char* map_str) {
                 if (collected_count == 3) {
                     printf("%s;\n", tag);
                     collected_count = 0;
-                    tile_create(&map[cur_row*20 + pos], tag, pos*16, cur_row*16);
-                    cur_row++;
+                    tile_create(&map[cur_col*12 + pos], tag, cur_col*16, pos*16);
+                    cur_col++;
                     pos = 0;
                 } else {
                     return -2;
