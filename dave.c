@@ -150,9 +150,12 @@ void dave_state_walking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
         }
     }
 
-    if (key_up) {
         if (delayer > 0) {
             delayer--;
+        }
+    if (key_up) {
+        if (delayer > 0) {
+         //   delayer--;
         } else {
             dave_state_jumping_enter(dave, map, key_left, key_right, key_up);
         }
@@ -349,7 +352,7 @@ void dave_state_freefalling_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TIL
 
     if (dave_on_ground(dave, map)) {
         dave_state_standing_enter(dave, map, key_left, key_right, key_up);
-        delayer = 2;
+        delayer = 4;
 
     } else {
 
@@ -387,9 +390,12 @@ void dave_state_standing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMA
         return;
     }
 
+    if (delayer > 0) {
+        delayer = delayer -1;
+    }
     if (key_up) {
         if (delayer > 0) {
-            delayer = delayer -1;
+     //       delayer = delayer -1;
         } else {
             dave_state_jumping_enter(dave, map, key_left, key_right, key_up);
         }
@@ -483,20 +489,9 @@ int dave_get_sprite(tile_t *tile) {
     }
 
     return sprite;
-//    SDL_RenderCopy(g_renderer, assets->graphics_tiles[sprite], NULL, &dest); 
 }
 
-/*dave_t* dave_create() {
-    dave_t *dave = malloc(sizeof(dave_t));
-    dave->step_count = 0;
-    dave->walk_state = DAVE_STATE_STANDING;
-    dave->freefall_direction = DAVE_DIRECTION_FRONTR;
-    dave->has_grail = 0;
-    dave->tick = &dave_tick;
-    return dave;
-}*/
-
-dave_t* dave_create2() {
+dave_t* dave_create() {
     dave_t *dave = malloc(sizeof(dave_t));
     dave->step_count = 0;
     dave->walk_state = DAVE_STATE_STANDING;
@@ -505,7 +500,6 @@ dave_t* dave_create2() {
     dave->is_dead = 0;
     dave->ticks_since_dead = 0;
     dave->tick = &dave_tick;
-//    dave->get_sprite = &dave_get_sprite;
 
     dave->tile = malloc(sizeof(tile_t));
     dave->tile->x = 0;
@@ -513,11 +507,10 @@ dave_t* dave_create2() {
     dave->tile->width = 0;
     dave->tile->height = 0;
     dave->tile->mod = DAVE;
-
-    dave->tile->get_sprite = &dave_get_sprite;
     dave->tile->tick = NULL;
     dave->tile->is_inside = NULL;
     dave->tile->context = dave;
+    dave->tile->get_sprite = &dave_get_sprite;
 
     return dave;
 }

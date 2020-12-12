@@ -43,6 +43,5 @@ typedef struct dave_struct {
 } dave_t;
 
 dave_t* dave_create();
-dave_t* dave_create2();
 
 #endif
