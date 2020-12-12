@@ -189,6 +189,7 @@ void tile_create_vines(tile_t* t, int x, int y, int idx_offset) {
     t->is_inside = &tile_is_inside;
     t->mod = FIRE;
 }
+
 void tile_create_water(tile_t* t, int x, int y, int idx_offset) {
     t->x = x;
     t->y = y;
@@ -403,7 +404,7 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
     }
 }
 
-int tile_file_parse(tile_t* map, const char* path) {
+int tile_file_parse(tile_t *map, int *dave_x, int *dave_y, const char *path) {
     long fsize;
     char *buf;
     FILE* f = fopen(path, "rb");
@@ -417,10 +418,10 @@ int tile_file_parse(tile_t* map, const char* path) {
 
     buf[fsize] = 0;
 
-    return tile_map_parse(map, buf);
+    return tile_map_parse(map, dave_x, dave_y, buf);
 }
 
-int tile_map_parse(tile_t* map, char* map_str) {
+int tile_map_parse(tile_t *map, int *dave_x, int *dave_y, char *map_str) {
     int cur_col = 0;
     int pos = 0;
 
@@ -440,16 +441,19 @@ int tile_map_parse(tile_t* map, char* map_str) {
                 in_comment = 1;
             } else if (map_str[i] == ',') {
                 if (collected_count == 3) {
-                    printf("%s,", tag);
                     collected_count = 0;
-                    tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
+                    if (strcmp(tag, " D ") == 0) {
+                        *dave_x = cur_col * 16;
+                        *dave_y = pos * 16;
+                    } else {
+                        tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
+                    }
                     pos++;
                 } else {
                     return -1;
                 }
             } else if (map_str[i] == ';') {
                 if (collected_count == 3) {
-                    printf("%s;\n", tag);
                     collected_count = 0;
                     tile_create(&map[cur_col*12 + pos], tag, cur_col*16, pos*16);
                     cur_col++;

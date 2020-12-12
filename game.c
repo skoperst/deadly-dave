@@ -9,7 +9,6 @@
 #define DEBUG_INPUT 1
 
 
-
 SDL_Renderer* g_renderer;
 SDL_Texture* g_render_texture;
 font_t* g_font;
@@ -19,12 +18,7 @@ void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_off);
 void draw_tile(tile_t* tile, struct game_assets* assets);
 void draw_char(char c, int x, int y, font_t* font, SDL_Renderer* renderer);
 void draw_text_line(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer);
-
 void draw_text_line_black(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer);
-void draw_dave(dave_t *dave, struct game_assets* assets);
-void draw_dave_offset(dave_t *dave, struct game_assets* assets, int x_off);
-
-void draw_score(int score);
 
 void draw_popup_box(int x, int y, int rows, int columns)
 {
@@ -70,9 +64,48 @@ void draw_popup_box(int x, int y, int rows, int columns)
     }
 }
 
+void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_off) {
+    int sprite;
+
+    SDL_Rect dest;
+    dest.x = dave->tile->x;
+    dest.y = dave->tile->y;
+    dest.w = dave->tile->width;
+    dest.h = dave->tile->height;
+    dest.x -= (x_off * 16);
+
+    sprite = dave->tile->get_sprite(dave->tile);
+
+    SDL_RenderCopy(g_renderer, assets->graphics_tiles[sprite], NULL, &dest);
+}
+
+void draw_dave(dave_t *dave, struct game_assets* assets) {
+    draw_dave_offset(dave, assets, 0);
+}
+
+void draw_score(int score) {
+    int i;
+    SDL_Rect dest;
+    dest.x = 0;
+    dest.y = 0;
+    dest.w = 62;
+    dest.h = 11;
+    SDL_RenderCopy(g_renderer, g_assets->graphics_tiles[137], NULL, &dest);
+
+    SDL_Rect digit_dest;
+    digit_dest.x = 64;
+    digit_dest.y = 1;
+    digit_dest.w = 8;
+    digit_dest.h = 11;
+
+    for (i = 0; i < 5; i++) {
+        SDL_RenderCopy(g_renderer, g_assets->graphics_tiles[148], NULL, &digit_dest);
+        digit_dest.x = digit_dest.x + 8;
+    }
+}
+
 /* Bring in tileset from tile<xxx>.bmp files from original binary (see TILES.C)*/
-void init_assets(struct game_assets *assets, SDL_Renderer *renderer)
-{
+void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
     int i,j;
     char fname[50];
     char file_num[4];
@@ -84,8 +117,7 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer)
     uint8_t *mask_p;
     uint8_t mask_offset;
 
-    for (i=0; i<173; i++)
-    {
+    for (i=0; i<173; i++) {
         fname[0]='\0';
         strcat(fname, "res/tiles/tile");
         sprintf(&file_num[0],"%u",i);
@@ -100,51 +132,49 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer)
                 mask_offset = 2;
             if (i >= 71 && i <= 73)
                 mask_offset = 3;
-			if (i >= 77 && i <= 82)
-				mask_offset = 6;
+            if (i >= 77 && i <= 82)
+                mask_offset = 6;
 
-			mname[0]='\0';
-			strcat(mname, "res/tiles/tile");
-			sprintf(&mask_num[0],"%u",i+mask_offset);
-			strcat(mname, mask_num);
-			strcat(mname, ".bmp");
+            mname[0]='\0';
+            strcat(mname, "res/tiles/tile");
+            sprintf(&mask_num[0],"%u",i+mask_offset);
+            strcat(mname, mask_num);
+            strcat(mname, ".bmp");
 
-			surface = SDL_LoadBMP(fname);
-			mask = SDL_LoadBMP(mname);
+            surface = SDL_LoadBMP(fname);
+            mask = SDL_LoadBMP(mname);
 
-			surf_p = (uint8_t*) surface->pixels;
-			mask_p = (uint8_t*) mask->pixels;
+            surf_p = (uint8_t*) surface->pixels;
+            mask_p = (uint8_t*) mask->pixels;
 
-			/* Write mask white background to dave tile */
-			for (j=0;j<(mask->pitch*mask->h);j++)
-				surf_p[j] = mask_p[j] ? 0xFF : surf_p[j];
+            /* Write mask white background to dave tile */
+            for (j=0;j<(mask->pitch*mask->h);j++)
+                surf_p[j] = mask_p[j] ? 0xFF : surf_p[j];
 
-			/* Make white mask transparent */
-			SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0xFF, 0xFF, 0xFF));
-			assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
-			SDL_FreeSurface(surface);
-			SDL_FreeSurface(mask);
-		}
-		else {
+            /* Make white mask transparent */
+            SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0xFF, 0xFF, 0xFF));
+            assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_FreeSurface(surface);
+            SDL_FreeSurface(mask);
+        } else {
             surface = SDL_LoadBMP(fname);
 
-			/* Monster tiles should use black transparency */
-			if ((i >= 89 && i <= 120 ) || (i >= 129 && i <= 132 ))
-				SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
-			assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
-		}
-	}
-
+            /* Monster tiles should use black transparency */
+            if ((i >= 89 && i <= 120 ) || (i >= 129 && i <= 132 )) {
+                SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
+            }
+            assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
+        }
+    }
 }
-
 
 /* Set game and monster properties to default values */
 void init_game(game_context_t *game)
 {
-    int i,j;
-    FILE *file_level;
-    char fname[100];
-    char file_num[4];
+    int j;
+//    FILE *file_level;
+    //char fname[100];
+    //char file_num[4];
 
     game->quit = 0;
     game->tick = 0;
@@ -174,7 +204,7 @@ void init_game(game_context_t *game)
     game->check_pickup_y = 0;
     game->check_door = 0;
 
-    game->dave = dave_create2();
+    game->dave = dave_create();
     game->dave->tile->x = 20;
     game->dave->tile->y = 40;
     game->dave->tile->width = 20;
@@ -187,7 +217,7 @@ void init_game(game_context_t *game)
         game->monster[j].type = 0;
 
     /* Load each level from level<xxx>.dat. (see LEVEL.c utility) */
-    for (j=0; j<10; j++)
+   /* for (j=0; j<10; j++)
     {
         fname[0]='\0';
         strcat(fname, "res/levels/level");
@@ -207,7 +237,14 @@ void init_game(game_context_t *game)
             game->level[j].padding[i] = fgetc(file_level);
 
         fclose(file_level);
-    }
+    }*/
+}
+
+/* Load map file from .ddt */
+void init_map(const char *file_path, game_map_t *map)
+{
+
+  //  tile_file_parse(map->map, &(map->dave_start_x), &(map->dave_start_y), path);
 }
 
 void check_input2(keys_state_t* state)
@@ -229,7 +266,6 @@ void check_input2(keys_state_t* state)
     state->quit    = (event.type == SDL_QUIT) ? 1 : 0;
     state->bracer  = (keystate[SDL_SCANCODE_RIGHTBRACKET] != 0) ? 1 : 0;
     state->bracel  = (keystate[SDL_SCANCODE_LEFTBRACKET] != 0) ? 1 : 0;
-    
 
     if (keystate[SDL_SCANCODE_Q] != 0) {
         printf("Q \n");
@@ -279,7 +315,7 @@ int show_quit_popup() {
                 return 1;
             }
 
-            if ( keystate[SDL_SCANCODE_RIGHT] ||
+            if (keystate[SDL_SCANCODE_RIGHT] ||
                 keystate[SDL_SCANCODE_LEFT] ||
                 keystate[SDL_SCANCODE_UP] ||
                 keystate[SDL_SCANCODE_DOWN] ||
@@ -289,7 +325,7 @@ int show_quit_popup() {
                 return 0;
             }
 
-            if ( keystate[SDL_SCANCODE_N]) {
+            if (keystate[SDL_SCANCODE_N]) {
                 popup_should_finish = 1;
                 return 0;
             }
@@ -569,11 +605,7 @@ int start_warp_right() {
         map[i].x = 0;
         map[i].y = 0;
     }
-    tile_file_parse(map, "res/levels/warp_right.ddt");
-    printf("map0 x,y: %d, %d \n", map[0].x, map[0].y);
-
-    game->dave->tile->x = 30;
-    game->dave->tile->y = 80;
+    tile_file_parse(map, &game->dave->tile->x, &game->dave->tile->y, "res/levels/warp_right.ddt");
 
     while (!should_quit) {
         timer_begin = SDL_GetTicks();
@@ -660,22 +692,22 @@ int start_level(int level) {
 
     int k;
     game_context_t* game;
+//    game_map_t *map;
     keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0};
     int should_quit = 0;
-    int i, j;
+    int i;
     tile_t bottom_separator;
     tile_t top_separator;
     tile_t grail_banner;
     int x_off = 0;
+    int scroll_remaining = 0;
+    char level_path[4096];
 
     // Initialize game state
     game = malloc(sizeof(game_context_t));
     init_game(game);
-    tile_create_bottom_separator(&bottom_separator, 0, 166);
-    tile_create_top_separator(&top_separator, 0, 11);
-    tile_create_grail_banner(&grail_banner, 70, 180);
 
-    // Start level 1
+
     tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
     for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++){
         map[i].sprites[0] = 0;
@@ -684,14 +716,13 @@ int start_level(int level) {
         map[i].y = 0;
     }
 
-    char level_path[4096];
-    snprintf(level_path, 4096, "res/levels/level%d.ddt", level);
     printf("Loading level %d from path: %s \n", level, level_path);
-    tile_file_parse(map, level_path);
-    printf("map0 x,y: %d, %d \n", map[0].x, map[0].y);
+    snprintf(level_path, 4096, "res/levels/level%d.ddt", level);
+    tile_file_parse(map, &game->dave->tile->x, &game->dave->tile->y, level_path);
 
-    game->dave->tile->x = 30;
-    game->dave->tile->y = 144;
+    tile_create_bottom_separator(&bottom_separator, 0, 166);
+    tile_create_top_separator(&top_separator, 0, 11);
+    tile_create_grail_banner(&grail_banner, 70, 180);
 
     while (!should_quit) {
         timer_begin = SDL_GetTicks();
@@ -709,77 +740,86 @@ int start_level(int level) {
             should_quit = 1;
         }
 
+        int delta = (game->dave->tile->x - (x_off * 16));
+        if (delta > 320 - (16 + 16 + 8)) {
+            scroll_remaining = 15;
+        } else if (delta < (16 + 16) && x_off > 0) {
+            scroll_remaining = -15;
+        }
+
+        printf("dave x,y = %d,%d xoff=%d delta=%d\n", game->dave->tile->x, game->dave->tile->y, (x_off * 16), (game->dave->tile->x - (x_off * 16)));
+
         if (key_state.bracer || key_state.bracel) {
             xxxx++;
             if (xxxx > 20) {
                 if (key_state.bracer) {
-                    x_off++;
+                    scroll_remaining = 15;
+  //                  x_off++;
                 } else if (key_state.bracel) {
-                    x_off--;
+                    scroll_remaining = -15;
+//                    x_off--;
                 }
 
                 xxxx = 0;
             }
         }
 
-        game->dave->tick(game->dave, map, key_state.left, key_state.right, key_state.jump);
-        for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-            if (map[i].sprites[0] != 0)
-                map[i].tick(&map[i]);
-        }
-        check_dave_pick_item(game, map);
-        if (is_dave_in_door(game, map)) {
-            printf("IN DOOR \n");
-            printf("IN DOOR \n");
-            printf("IN DOOR \n");
-            printf("IN DOOR \n");
-            return 1;
-        }
-        if (check_dave_touch_fire(game, map)) {
-            printf("Dave is dead \n");
-            game->dave->is_dead = 1;
-        }
+        if (scroll_remaining != 0)
+        {
+            if (scroll_remaining > 0) {
+                scroll_remaining--;
+                if ((scroll_remaining % 1) == 0)
+                    x_off++;
 
-        if (game->dave->is_dead) {
-            printf("dave died %d ticks before\n", game->dave->ticks_since_dead);
-            if (game->dave->ticks_since_dead > 200) {
-                return 2;
+            }
+            else if (scroll_remaining < 0) {
+                scroll_remaining++;
+                if ((scroll_remaining % 1) == 0)
+                    x_off--;
+            }
+        } else {
+            game->dave->tick(game->dave, map, key_state.left, key_state.right, key_state.jump);
+            for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+                if (map[i].sprites[0] != 0)
+                    map[i].tick(&map[i]);
+            }
+            check_dave_pick_item(game, map);
+            if (is_dave_in_door(game, map)) {
+                printf("IN DOOR \n");
+                printf("IN DOOR \n");
+                return 1;
+            }
+            if (check_dave_touch_fire(game, map)) {
+                printf("Dave is dead \n");
+                game->dave->is_dead = 1;
+            }
+
+            if (game->dave->is_dead) {
+                printf("dave died %d ticks before\n", game->dave->ticks_since_dead);
+                if (game->dave->ticks_since_dead > 200) {
+                    return 2;
+                }
             }
         }
 
         SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
-
         // ================ draw map =====================
         for (k = 0; k < (TILEMAP_SCENE_WIDTH * TILEMAP_SCENE_HEIGHT); k++) {
             if (map[k + (x_off * 12)].sprites[0] != 0) {
                 draw_tile_offset(&map[k + (x_off*12)], g_assets, x_off);
             }
         }
-
-        /*for (i=TILEMAP_SCENE_X; i<TILEMAP_SCENE_WIDTH; i++) {
-            for (j=TILEMAP_SCENE_Y; j < TILEMAP_SCENE_HEIGHT; j++) {
-                if (map[(i + x_off)*12 + j].sprites[0] != 0) {
-                    draw_tile_offset(&map[(i + x_off)*12 + j], g_assets, x_off*12);
-                }
-            }
-        }*/
         // ===============================================
 
-        // ================ draw dave ===================
         draw_dave_offset(game->dave, g_assets, x_off);
-        // ==============================================
-        //
-        // ============== draw misc items ================
         draw_tile(&bottom_separator, g_assets);
         draw_tile(&top_separator, g_assets);
         if (game->dave->has_grail) {
             draw_tile(&grail_banner, g_assets);
         }
         draw_score(500);
-        // ===============================================
-
 
         // Set the screen as the target of renderer
         SDL_SetRenderTarget(g_renderer, NULL);
@@ -788,7 +828,7 @@ int start_level(int level) {
         SDL_RenderClear(g_renderer);
 
         // Render texture into screen
-        SDL_RenderCopy(g_renderer, g_render_texture, NULL,NULL);
+        SDL_RenderCopy(g_renderer, g_render_texture, NULL, NULL);
 
         // Swaps display buffers (puts above drawing on the screen)
         SDL_RenderPresent(g_renderer);
@@ -806,8 +846,7 @@ int start_level(int level) {
     return 0;
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     int ret = 0;
     int level = 0;
     const uint8_t DISPLAY_SCALE = 2;
@@ -825,8 +864,9 @@ int main(int argc, char* argv[])
     //g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_TARGETTEXTURE);
     //g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
     g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
-    printf("creating textures \n");
-    g_render_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 320, 200);
+
+    g_render_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET, 320, 200);
 
     // Easy onversion between original world (320x200) and current screen size
     SDL_RenderSetScale(g_renderer, DISPLAY_SCALE, DISPLAY_SCALE);
@@ -848,7 +888,6 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    level = 1;
     while (level <= 3) {
         ret = start_level(level);
         printf("level finished: %d \n", ret);
@@ -864,21 +903,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    printf("level ended! ret: %d\n", ret);
-/*    while (level <= 5) {
-        ret = start_level(level);
-
-        if (ret == 1) {
-            ret = start_warp_right();
-            level++;
-        } else if (ret == 2) {
-            //reduce 1 life`
-        } else if (ret == 3) {
-            //exit
-        }
-    }*/
     SDL_Quit();
-
     return 0;
 }
 
@@ -891,10 +916,12 @@ void draw_text_line(const char* line, int x, int y, font_t* font, SDL_Renderer* 
 
 void draw_char_black(char c, int x, int y, font_t* font, SDL_Renderer* renderer) {
     SDL_Rect dest;
+
     dest.x = x;
     dest.y = y;
     dest.w = 8;
     dest.h = 6;
+
     SDL_RenderCopy(renderer, font->black[(int)c], NULL, &dest);
 }
 
@@ -907,61 +934,16 @@ void draw_text_line_black(const char* line, int x, int y, font_t* font, SDL_Rend
 
 void draw_char(char c, int x, int y, font_t* font, SDL_Renderer* renderer) {
     SDL_Rect dest;
+
     dest.x = x;
     dest.y = y;
     dest.w = 8;
     dest.h = 6;
+
     SDL_RenderCopy(renderer, font->white[(int)c], NULL, &dest);
 }
 
-void draw_score(int score) {
-    int i;
-    SDL_Rect dest;
-    dest.x = 0;
-    dest.y = 0;
-    dest.w = 62;
-    dest.h = 11;
-    SDL_RenderCopy(g_renderer, g_assets->graphics_tiles[137], NULL, &dest);
-
-    SDL_Rect digit_dest;
-    digit_dest.x = 64;
-    digit_dest.y = 1;
-    digit_dest.w = 8;
-    digit_dest.h = 11;
-
-    for (i = 0; i < 5; i++) {
-        SDL_RenderCopy(g_renderer, g_assets->graphics_tiles[148], NULL, &digit_dest);
-        digit_dest.x = digit_dest.x + 8;
-    }
-}
-
-void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_off) {
-    SDL_Rect dest;
-    int sprite;
-    dest.x = dave->tile->x;
-    dest.y = dave->tile->y;
-    dest.w = dave->tile->width;
-    dest.h = dave->tile->height;
-
-    dest.x -= (x_off * 16);
-    sprite = dave->tile->get_sprite(dave->tile);
-    SDL_RenderCopy(g_renderer, assets->graphics_tiles[sprite], NULL, &dest);
-}
-
-void draw_dave(dave_t *dave, struct game_assets* assets) {
-    SDL_Rect dest;
-    int sprite;
-    dest.x = dave->tile->x;
-    dest.y = dave->tile->y;
-    dest.w = dave->tile->width;
-    dest.h = dave->tile->height;
-
-    sprite = dave->tile->get_sprite(dave->tile);
-    SDL_RenderCopy(g_renderer, assets->graphics_tiles[sprite], NULL, &dest);
-}
-
-void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_off)
-{
+void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_off) {
     SDL_Rect dest;
 
     dest.x = tile->x;
@@ -969,19 +951,11 @@ void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_off)
     dest.w = tile->width;
     dest.h = tile->height;
     dest.x -= (x_off * 16);
-//	printf("drawing tile of size W:%d, H:%d, into (%d,%d)\n", dest.w, dest.h, dest.x,dest.y);
+
     SDL_RenderCopy(g_renderer, assets->graphics_tiles[tile->get_sprite(tile)], NULL, &dest); 
 }
 
-void draw_tile(tile_t* tile, struct game_assets* assets)
-{
-    SDL_Rect dest;
-
-    dest.x = tile->x;
-    dest.y = tile->y;
-    dest.w = tile->width;
-    dest.h = tile->height;
-//	printf("drawing tile of size W:%d, H:%d, into (%d,%d)\n", dest.w, dest.h, dest.x,dest.y);
-    SDL_RenderCopy(g_renderer, assets->graphics_tiles[tile->get_sprite(tile)], NULL, &dest); 
+void draw_tile(tile_t* tile, struct game_assets* assets) {
+    draw_tile_offset(tile, assets, 0);
 }
 

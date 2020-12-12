@@ -1,5 +1,5 @@
-#ifndef BADDAVE_TILE_H
-#define BADDAVE_TILE_H
+#ifndef _TILE_H_
+#define _TILE_H_
 
 #include <stdio.h>
 #include <stdint.h>
@@ -18,66 +18,6 @@ static const int TILE_DAVE_MOD_RIGHT     = 2;
 static const int TILE_DAVE_MOD_LEFT      = 3;
 static const int TILE_DAVE_MOD_JUMPING_RIGHT = 4;
 static const int TILE_DAVE_MOD_JUMPING_LEFT  = 5;
-
-typedef struct tile_dave_struct {
-    int x;
-    int y;
-    int width;
-    int height;
-    int mod;
-    int walk_cycle_offset;
-    int cooldown_remaining; //should be out
-
-    int sprites_right[9];
-    int sprites_left[9];
-    int sprite_jump_right;
-    int sprite_jump_left;
-    int sprite_front;
-    int sprite_idx;
-
-    int (*get_sprite)(struct tile_dave_struct* dave);
-    void (*tick)(struct tile_dave_struct* dave, int new_mod);
-} tile_dave_t;
-
-typedef struct tile_struct {
-    int x;
-    int y;
-    int width;
-    int height;
-    int mod;
-    void *context;
-
-    int (*get_sprite)(struct tile_struct* tile);
-    void (*tick)(struct tile_struct* tile);
-
-    int (*is_inside)(struct tile_struct* tile, int x, int y);
-
-
-    //TODO: delete those:
-    int sprites[100];
-    int sprite_idx;
-
-} tile_t;
-
-// Create simple non-interacting block
-void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height);
-
-// Intro related
-void tile_create_intro_fire(tile_t* t, int x, int y);
-void tile_create_intro_banner(tile_t* t, int x, int y);
-void tile_create_grail_banner(tile_t *t, int x, int y);
-// Popup box
-void tile_create_popup_part(tile_t* t, int x, int y);
-void tile_create_flashing_cursor(tile_t* t, int x, int y);
-
-// Game screen top & bottom bars
-void tile_create_bottom_separator(tile_t* t, int x, int y);
-void tile_create_top_separator(tile_t* t, int x, int y);
-
-int tile_file_parse(tile_t* map, const char* path);
-int tile_map_parse(tile_t* map, char* map_str);
-
-int tile_is_empty(tile_t *tile);
 
 // TILE MODIFIER
 static const int EMPTY     = 0;
@@ -153,5 +93,43 @@ static const int SPRITE_IDX_POPUP_BOX_B3           = 166;
 static const int SPRITE_IDX_BOTTOM_BAR             = 171;
 static const int SPRITE_IDX_TOP_BAR                = 172;
 static const int SPRITES_MAX                       = 172;
+
+
+typedef struct tile_struct {
+    int x;
+    int y;
+    int width;
+    int height;
+    int mod;
+    void *context;
+    int sprites[100];
+    int sprite_idx;
+
+    int (*get_sprite)(struct tile_struct* tile);
+    void (*tick)(struct tile_struct* tile);
+    int (*is_inside)(struct tile_struct* tile, int x, int y);
+
+} tile_t;
+
+// Create simple non-interacting block
+void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height);
+
+// Intro related
+void tile_create_intro_fire(tile_t* t, int x, int y);
+void tile_create_intro_banner(tile_t* t, int x, int y);
+void tile_create_grail_banner(tile_t *t, int x, int y);
+// Popup box
+void tile_create_popup_part(tile_t* t, int x, int y);
+void tile_create_flashing_cursor(tile_t* t, int x, int y);
+
+// Game screen top & bottom bars
+void tile_create_bottom_separator(tile_t* t, int x, int y);
+void tile_create_top_separator(tile_t* t, int x, int y);
+
+int tile_file_parse(tile_t* map, int *x, int *y, const char* path);
+int tile_map_parse(tile_t* map, int *x, int *y, char* map_str);
+
+int tile_is_empty(tile_t *tile);
+
 
 #endif

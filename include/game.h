@@ -1,5 +1,5 @@
-#ifndef BADDAVE_GAME_H
-#define BADDAVE_GAME_H
+#ifndef _GAME_H_
+#define _GAME_H_
 
 #include <SDL.h>
 
@@ -12,11 +12,11 @@
  * -tiles contain tileset indices
  * -padding unused but included for capatibility
  */
-struct dave_level {
-    int8_t path[256];
-    uint8_t tiles[1000];
-    uint8_t padding[24];
-};
+typedef struct game_map {
+    tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
+    int dave_start_x;
+    int dave_start_y;
+} game_map_t;
 
 /* Monster state information for a single monster
  * -type is the tileset number (0 is unused)
@@ -116,7 +116,6 @@ typedef struct game_context_struct {
     dave_t *dave;
     struct monster_state monster[5];
 
-    struct dave_level level[10];
     uint64_t view_offset;
 } game_context_t;
 
