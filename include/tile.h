@@ -45,6 +45,7 @@ static const int SPRITE_IDX_GRAIL1                 = 14;
 static const int SPRITE_IDX_PIPE_RIGHT             = 15;
 static const int SPRITE_IDX_RED_BRICK              = 17;
 static const int SPRITE_IDX_DIRT                   = 18;
+static const int SPRITE_IDX_BLUE_COLUMN            = 19;
 static const int SPRITE_IDX_VINES1                 = 25;
 static const int SPRITE_IDX_VINES2                 = 26;
 static const int SPRITE_IDX_VINES3                 = 27;

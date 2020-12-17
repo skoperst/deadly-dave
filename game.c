@@ -749,6 +749,9 @@ int start_level(int level) {
 
         printf("dave x,y = %d,%d xoff=%d delta=%d\n", game->dave->tile->x, game->dave->tile->y, (x_off * 16), (game->dave->tile->x - (x_off * 16)));
 
+        if (key_state.bracer){
+            return 1;
+        }
         if (key_state.bracer || key_state.bracel) {
             xxxx++;
             if (xxxx > 20) {
