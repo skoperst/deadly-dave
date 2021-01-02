@@ -242,6 +242,7 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
 
     if (dave->jump_state >= 35 && dave_on_ground(dave, map)) {
         dave_state_standing_enter(dave, map, key_left, key_right, key_up);
+        delayer = 4;
         return;
     }
 
