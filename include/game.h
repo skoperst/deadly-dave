@@ -65,6 +65,8 @@ typedef struct keys_state_struct {
 	int32_t bracer;
 	int32_t bracel;
     int32_t escape;
+    int32_t key_y;
+    int32_t key_n;
 } keys_state_t;
 
 typedef struct game_context_struct {
@@ -117,15 +119,21 @@ typedef struct game_context_struct {
     struct monster_state monster[5];
 
     uint64_t view_offset;
+    uint64_t level;
 } game_context_t;
 
-
+typedef struct raw_rgba8888_tile_struct {
+    uint32_t *pixels;
+    int64_t width;
+    int64_t height;
+} raw_rgba8888_tile_t;
 /* Game asset structure
  * Only tileset data for now
  * Could include music/sounds, etc
  */
 typedef struct game_assets {
 	SDL_Texture *graphics_tiles[200];
+    SDL_Surface *tiles[1000];
 } assets_t;
 
 #endif

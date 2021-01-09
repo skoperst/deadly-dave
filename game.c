@@ -2,23 +2,113 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h>
+
 #include <SDL.h>
 
 #include "game.h"
 
 #define DEBUG_INPUT 1
 
+const int G_STATE_NONE             = 0;
+const int G_STATE_INTRO            = 1;
+const int G_STATE_INTRO_POPUP      = 2;
+const int G_STATE_LEVEL            = 3;
+const int G_STATE_LEVEL_POPUP      = 4;
+const int G_STATE_WARP_RIGHT       = 5;
+const int G_STATE_POPUP            = 6;
+const int G_STATE_QUIT_NOW         = 7;
 
 SDL_Renderer* g_renderer;
+SDL_Texture *g_texture;
+uint32_t        *g_pixels;
 SDL_Texture* g_render_texture;
 font_t* g_font;
 assets_t* g_assets;
+int g_state = G_STATE_NONE;
+int g_prev_state = G_STATE_NONE;
 
-void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_off);
-void draw_tile(tile_t* tile, struct game_assets* assets);
-void draw_char(char c, int x, int y, font_t* font, SDL_Renderer* renderer);
-void draw_text_line(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer);
-void draw_text_line_black(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer);
+
+void render_tile_idx(int tile_idx, int x, int y) {
+    SDL_Surface *surface = g_assets->tiles[tile_idx];
+
+    int www,hhh;
+    for (hhh = 0; hhh < surface->h; hhh++) {
+        for (www = 0; www < surface->w; www++) {
+            uint32_t pixel = ((uint32_t*)surface->pixels)[hhh * surface->w + www];
+
+            g_pixels[(hhh + y) * 320 + (www + x)] = pixel;
+        }
+    }
+}
+
+void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_offset) {
+    SDL_Rect dest;
+
+    dest.x = tile->x;
+    dest.y = tile->y;
+    dest.w = tile->width;
+    dest.h = tile->height;
+    dest.x -= (x_offset * 16);
+
+    render_tile_idx(tile->get_sprite(tile), dest.x, dest.y);
+}
+
+void draw_tile(tile_t* tile, struct game_assets* assets) {
+    draw_tile_offset(tile, assets, 0);
+}
+
+void draw_char(char c, int x, int y, font_t* font, SDL_Renderer* renderer) {
+    int tile_idx;
+    int white_letters_idx = 500;
+    //int black_letters_idx = 600;
+    int letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 
+        'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', \
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', ',', '.', '(', \
+        ')', '!', '?'};
+
+    int idx;
+    for (idx = 0; idx < sizeof(letters) / sizeof(int); idx++) {
+        if ((int)c == letters[idx]) {
+            tile_idx = white_letters_idx + idx;
+            printf("Loading white index: %d \n", tile_idx);
+            render_tile_idx(tile_idx, x, y);
+            return;
+        }
+    }
+}
+void draw_text_line(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer) {
+    int i = 0;
+    for (i = 0; i < strlen(line); i++) {
+        draw_char(line[i], x + (i*8), y, font, renderer);
+    }
+}
+
+void draw_char_black(char c, int x, int y, font_t* font, SDL_Renderer* renderer) {
+    int tile_idx;
+    int black_letters_idx = 600;
+    int letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 
+        'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', \
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', ',', '.', '(', \
+        ')', '!', '?'};
+
+    int idx;
+    for (idx = 0; idx < sizeof(letters) / sizeof(int); idx++) {
+        if ((int)c == letters[idx]) {
+            tile_idx = black_letters_idx + idx;
+            printf("Loading white index: '%c' to %d \n", c, tile_idx);
+            render_tile_idx(tile_idx, x, y);
+            return;
+        }
+    }
+}
+
+void draw_text_line_black(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer) {
+    int i = 0;
+    for (i = 0; i < strlen(line); i++) {
+        draw_char_black(line[i], x + (i*8), y, font, renderer);
+    }
+}
 
 void draw_popup_box(int x, int y, int rows, int columns)
 {
@@ -64,7 +154,7 @@ void draw_popup_box(int x, int y, int rows, int columns)
     }
 }
 
-void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_off) {
+void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
     int sprite;
 
     SDL_Rect dest;
@@ -72,11 +162,26 @@ void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_off) {
     dest.y = dave->tile->y;
     dest.w = dave->tile->width;
     dest.h = dave->tile->height;
-    dest.x -= (x_off * 16);
+    dest.x -= (x_offset * 16);
 
     sprite = dave->tile->get_sprite(dave->tile);
 
-    SDL_RenderCopy(g_renderer, assets->graphics_tiles[sprite], NULL, &dest);
+    printf("draw dave offset tile: %d\n", sprite);
+    SDL_Surface *sss = g_assets->tiles[sprite];
+    if (sss == NULL)
+    {
+        printf("NULLL OMG \n");
+    }
+    int www,hhh;
+    for (hhh = 0; hhh < sss->h; hhh++)
+        for (www = 0; www < sss->w; www++){
+            uint32_t pix_value =  ((uint32_t*)sss->pixels)[hhh * sss->w + www];
+            if ( ((pix_value & 0x000000FF) | 0x00000000) == 0){
+            }else{
+
+                g_pixels[(hhh + dest.y)*320 + (www + dest.x)] = ((uint32_t*)sss->pixels)[hhh * sss->w + www];
+            }
+        }
 }
 
 void draw_dave(dave_t *dave, struct game_assets* assets) {
@@ -106,60 +211,28 @@ void draw_score(int score) {
 
 /* Bring in tileset from tile<xxx>.bmp files from original binary (see TILES.C)*/
 void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
-    int i,j;
+    int i;
     char fname[50];
     char file_num[4];
-    char mname[50];
-    char mask_num[4];
     SDL_Surface *surface;
-    SDL_Surface *mask;
-    uint8_t *surf_p;
-    uint8_t *mask_p;
-    uint8_t mask_offset;
 
-    for (i=0; i<173; i++) {
+    for (i = 0; i < 1000; i++) {
+        assets->tiles[i] = NULL;
+    }
+
+    for (i=0; i<1000; i++) {
         fname[0]='\0';
         strcat(fname, "res/tiles/tile");
         sprintf(&file_num[0],"%u",i);
         strcat(fname, file_num);
         strcat(fname, ".bmp");
 
-        /* Handle Dave tile masks */
-        if ((i >= 53 && i <= 59) || i == 67 || i == 68 || (i >= 71 && i <= 73) || (i >= 77 && i <= 82)) {
-            if (i >= 53 && i <= 59)
-                mask_offset = 7;
-            if (i >= 67 && i <= 68)
-                mask_offset = 2;
-            if (i >= 71 && i <= 73)
-                mask_offset = 3;
-            if (i >= 77 && i <= 82)
-                mask_offset = 6;
-
-            mname[0]='\0';
-            strcat(mname, "res/tiles/tile");
-            sprintf(&mask_num[0],"%u",i+mask_offset);
-            strcat(mname, mask_num);
-            strcat(mname, ".bmp");
-
+        if (access(fname, F_OK) == 0)
+        {
             surface = SDL_LoadBMP(fname);
-            mask = SDL_LoadBMP(mname);
+            assets->tiles[i] = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
 
-            surf_p = (uint8_t*) surface->pixels;
-            mask_p = (uint8_t*) mask->pixels;
-
-            /* Write mask white background to dave tile */
-            for (j=0;j<(mask->pitch*mask->h);j++)
-                surf_p[j] = mask_p[j] ? 0xFF : surf_p[j];
-
-            /* Make white mask transparent */
-            SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0xFF, 0xFF, 0xFF));
-            assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
-            SDL_FreeSurface(surface);
-            SDL_FreeSurface(mask);
-        } else {
-            surface = SDL_LoadBMP(fname);
-
-            /* Monster tiles should use black transparency */
+            // Monster tiles should use black transparency
             if ((i >= 89 && i <= 120 ) || (i >= 129 && i <= 132 )) {
                 SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
             }
@@ -172,9 +245,6 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
 void init_game(game_context_t *game)
 {
     int j;
-//    FILE *file_level;
-    //char fname[100];
-    //char file_num[4];
 
     game->quit = 0;
     game->tick = 0;
@@ -182,12 +252,6 @@ void init_game(game_context_t *game)
     game->lives = 3;
     game->score = 0;
     game->scroll_x = 0;
-    game->try_right = 0;
-    game->try_left = 0;
-    game->try_jump = 0;
-    game->try_fire = 0;
-    game->try_jetpack = 0;
-    game->try_down = 0;
     game->dave_right = 0;
     game->dave_left = 0;
     game->dave_jump = 0;
@@ -213,38 +277,9 @@ void init_game(game_context_t *game)
     game->dave->jump_state = 0;
     game->dave->step_count = 0;
 
+    game->level = 0;
     for (j=0;j<5;j++)
         game->monster[j].type = 0;
-
-    /* Load each level from level<xxx>.dat. (see LEVEL.c utility) */
-   /* for (j=0; j<10; j++)
-    {
-        fname[0]='\0';
-        strcat(fname, "res/levels/level");
-        sprintf(&file_num[0],"%u",j);
-        strcat(fname, file_num);
-        strcat(fname, ".dat");
-
-        file_level = fopen(fname, "rb");
-
-        for (i=0; i<sizeof(game->level[j].path); i++)
-            game->level[j].path[i] = fgetc(file_level);
-
-        for (i=0; i<sizeof(game->level[j].tiles); i++)
-            game->level[j].tiles[i] = fgetc(file_level);
-
-        for (i=0; i<sizeof(game->level[j].padding); i++)
-            game->level[j].padding[i] = fgetc(file_level);
-
-        fclose(file_level);
-    }*/
-}
-
-/* Load map file from .ddt */
-void init_map(const char *file_path, game_map_t *map)
-{
-
-  //  tile_file_parse(map->map, &(map->dave_start_x), &(map->dave_start_y), path);
 }
 
 void check_input2(keys_state_t* state)
@@ -266,6 +301,8 @@ void check_input2(keys_state_t* state)
     state->quit    = (event.type == SDL_QUIT) ? 1 : 0;
     state->bracer  = (keystate[SDL_SCANCODE_RIGHTBRACKET] != 0) ? 1 : 0;
     state->bracel  = (keystate[SDL_SCANCODE_LEFTBRACKET] != 0) ? 1 : 0;
+    state->key_y  = (keystate[SDL_SCANCODE_Y] != 0) ? 1 : 0;
+    state->key_n  = (keystate[SDL_SCANCODE_N] != 0) ? 1 : 0;
 
     if (keystate[SDL_SCANCODE_Q] != 0) {
         printf("Q \n");
@@ -274,93 +311,6 @@ void check_input2(keys_state_t* state)
     if (keystate[SDL_SCANCODE_LCTRL] != 0) {
         printf("LCTRL \n");
     }
-
-}
-
-/* Clear flags set by keyboard input */
-void clear_input(game_context_t *game) {
-    game->try_jump = 0;
-    game->try_right = 0;
-    game->try_left = 0;
-    game->try_fire = 0;
-    game->try_jetpack = 0;
-    game->try_down = 0;
-    game->try_up = 0;
-}
-
-int show_quit_popup() {
-    uint32_t timer_begin;
-    uint32_t timer_end;
-    uint32_t delay;
-    SDL_Event event;
-    int popup_should_finish = 0;
-    tile_t flashing_cursor;
-    tile_create_flashing_cursor(&flashing_cursor, 224, 96);
-
-    printf("Starting Quit Popup \n");
-    while (!popup_should_finish) {
-        timer_begin = SDL_GetTicks();
-
-        while(SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                printf("SDL_QUIT \n");
-                popup_should_finish = 1;
-                return 1;
-            }
-
-            const uint8_t *keystate = SDL_GetKeyboardState(NULL);
-            if (keystate[SDL_SCANCODE_Y]) {
-                printf("YES \n");
-                popup_should_finish = 1;
-                return 1;
-            }
-
-            if (keystate[SDL_SCANCODE_RIGHT] ||
-                keystate[SDL_SCANCODE_LEFT] ||
-                keystate[SDL_SCANCODE_UP] ||
-                keystate[SDL_SCANCODE_DOWN] ||
-                keystate[SDL_SCANCODE_RETURN] ||
-                keystate[SDL_SCANCODE_SPACE]) {
-                popup_should_finish = 1;
-                return 0;
-            }
-
-            if (keystate[SDL_SCANCODE_N]) {
-                popup_should_finish = 1;
-                return 0;
-            }
-        }
-
-        SDL_SetRenderTarget(g_renderer, g_render_texture);
-        // Draw all tiles
-        draw_popup_box(88, 80, 5, 21);
-        draw_text_line_black("QUIT? (Y OR N):", 104, 98, g_font, g_renderer);
-        draw_tile(&flashing_cursor, g_assets);
-        flashing_cursor.tick(&flashing_cursor);
-
-        // Set the screen as the target of renderer
-        SDL_SetRenderTarget(g_renderer, NULL);
-
-        // Clear the render (clear screen)
-        SDL_RenderClear(g_renderer);
-
-        // Render texture into screen
-        SDL_RenderCopy(g_renderer, g_render_texture, NULL,NULL);
-
-        // Swaps display buffers (puts above drawing on the screen)
-        SDL_RenderPresent(g_renderer);
-
-        // Swaps display buffers (puts above drawing on the screen)
-        //SDL_RenderPresent(g_renderer);
-
-        timer_end = SDL_GetTicks();
-        delay = 14 - (timer_end-timer_begin);
-        delay = delay > 14 ? 0 : delay;
-        printf("delay: %d \n", delay);
-        SDL_Delay(delay);
-    }
-
-    return 0;
 }
 
 // returns 0 if key pressed, 1 if timeout
@@ -373,7 +323,8 @@ int start_intro() {
     game_context_t *game;
     int32_t result = 0;
     SDL_Event event;
-
+    int stride;
+    //uint32_t *pixels;
 
     /* Clear screen */
     SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
@@ -440,7 +391,6 @@ int start_intro() {
 
         // All next drawings will be done into the texture (as oppose to screen)
         while(SDL_PollEvent(&event)) {
-
             if (event.type == SDL_QUIT) {
                 printf("SDL_QUIT \n");
                 exit(0);
@@ -448,7 +398,7 @@ int start_intro() {
             const uint8_t *keystate = SDL_GetKeyboardState(NULL);
             if (keystate[SDL_SCANCODE_ESCAPE]) {
                 printf("ESC \n");
-                show_quit_popup();
+                //show_quit_popup();
             }
             if ( keystate[SDL_SCANCODE_RIGHT] ||
                 keystate[SDL_SCANCODE_LEFT] ||
@@ -461,9 +411,9 @@ int start_intro() {
             }
         }
 
-        SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
+        SDL_LockTexture(g_texture, NULL, (void*)&g_pixels, &stride);
 
         // Draw all tiles
         for (k = 0; k < 41; k++) {
@@ -477,26 +427,17 @@ int start_intro() {
         draw_text_line("PRESS THE F1 KEY FOR HELP", 72, 168, g_font, g_renderer);
         draw_text_line("                         ",72, 174, g_font, g_renderer);
 
-        // Set the screen as the target of renderer
-        SDL_SetRenderTarget(g_renderer, NULL);
-
-        // Clear the render (clear screen)
-        SDL_RenderClear(g_renderer);
-
-        // Render texture into screen
-        SDL_RenderCopy(g_renderer, g_render_texture, NULL,NULL);
-
-        // Swaps display buffers (puts above drawing on the screen)
+        SDL_RenderCopy(g_renderer, g_texture, NULL,NULL);
         SDL_RenderPresent(g_renderer);
 
         timer_end = SDL_GetTicks();
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
-
+        printf("delaying %d \n", delay);
         SDL_Delay(delay);
     }
 
-    /* Clean up and quit */
+    // Clean up and quit
     free(game);
 
     return result;
@@ -577,13 +518,13 @@ int check_dave_touch_fire(game_context_t *game, tile_t *map) {
     return 0;
 }
 
-int start_warp_right() {
+/*int start_warp_right() {
     uint32_t timer_begin;
     uint32_t timer_end;
     uint32_t delay;
 
     game_context_t* game;
-    keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0};
+    keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0, 0};
     int should_quit = 0;
     int i, j;
     tile_t bottom_separator;
@@ -681,165 +622,305 @@ int start_warp_right() {
     }
 
     return 0;
-}
+}*/
 
 int xxxx = 0;
+int scroll_remaining = 0;
+int x_off = 0;
+tile_t flashing_cursor;
 
-int start_level(int level) {
-    uint32_t timer_begin;
-    uint32_t timer_end;
-    uint32_t delay;
+void clear_map(tile_t *map) {
+    int i = 0;
 
-    int k;
-    game_context_t* game;
-//    game_map_t *map;
-    keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0};
-    int should_quit = 0;
-    int i;
-    tile_t bottom_separator;
-    tile_t top_separator;
-    tile_t grail_banner;
-    int x_off = 0;
-    int scroll_remaining = 0;
-    char level_path[4096];
-
-    // Initialize game state
-    game = malloc(sizeof(game_context_t));
-    init_game(game);
-
-
-    tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
     for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++){
         map[i].sprites[0] = 0;
         map[i].mod = 0;
         map[i].x = 0;
         map[i].y = 0;
     }
+}
 
-    printf("Loading level %d from path: %s \n", level, level_path);
-    snprintf(level_path, 4096, "res/levels/level%d.ddt", level);
-    tile_file_parse(map, &game->dave->tile->x, &game->dave->tile->y, level_path);
+int game_popup_quit_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
+{
+
+    if (keys->quit) {
+        printf("should quit! \n");
+        return G_STATE_QUIT_NOW;
+    }
+
+    if (keys->key_y) {
+        printf("YES \n");
+        //popup_should_finish = 1;
+        return G_STATE_QUIT_NOW;
+    }
+    if (keys->key_n) {
+        return G_STATE_LEVEL;
+    }
+//    if (keys->escape) {
+  //      return G_STATE_LEVEL;
+   // }
+
+    // SDL_SetRenderTarget(g_renderer, g_render_texture);
+    // Draw all tiles
+    draw_popup_box(88, 80, 5, 21);
+    draw_text_line_black("QUIT? (Y OR N):", 104, 98, g_font, g_renderer);
+    draw_tile(&flashing_cursor, g_assets);
+    flashing_cursor.tick(&flashing_cursor);
+
+    return G_STATE_LEVEL_POPUP;
+}
+
+int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
+{
+    int i = 0;
+    int k = 0;
+
+    tile_t bottom_separator;
+    tile_t top_separator;
+    tile_t grail_banner;
+
+    tile_create_bottom_separator(&bottom_separator, 0, 166);
+    tile_create_top_separator(&top_separator, 0, 11);
+    tile_create_grail_banner(&grail_banner, 70, 180);
+    if (keys->quit) {
+        printf("should quit! \n");
+        return G_STATE_QUIT_NOW;
+    }
+
+    if (keys->escape) {
+        return G_STATE_LEVEL_POPUP;
+    }
+
+    int delta = (game->dave->tile->x - (x_off * 16));
+    if (delta > 320 - (16 + 16 + 8)) {
+        scroll_remaining = 15;
+    } else if (delta < (16 + 16) && x_off > 0) {
+        scroll_remaining = -15;
+    }
+
+    if (scroll_remaining != 0) {
+        if (scroll_remaining > 0) {
+            scroll_remaining--;
+            if ((scroll_remaining % 1) == 0)
+                x_off++;
+        } else if (scroll_remaining < 0) {
+            scroll_remaining++;
+            if ((scroll_remaining % 1) == 0) {
+                x_off--;
+            }
+        }
+    } else {
+        game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump);
+        for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+            if (map[i].sprites[0] != 0) {
+                map[i].tick(&map[i]);
+            }
+        }
+        check_dave_pick_item(game, map);
+        if (is_dave_in_door(game, map)) {
+            printf("IN DOOR \n");
+            printf("IN DOOR \n");
+            game->level++;
+            return G_STATE_WARP_RIGHT;
+        }
+        if (check_dave_touch_fire(game, map)) {
+            printf("Dave is dead \n");
+            game->dave->is_dead = 1;
+        }
+
+        if (game->dave->is_dead) {
+            printf("dave died %d ticks before\n", game->dave->ticks_since_dead);
+            if (game->dave->ticks_since_dead > 200) {
+                return 2;
+            }
+        }
+    }
+
+    for (k = 0; k < 320 * 200; k++) {
+        g_pixels[k] = 0x000000FF;
+    }
+    // ================ draw map =====================
+    for (k = 0; k < (TILEMAP_SCENE_WIDTH * TILEMAP_SCENE_HEIGHT); k++) {
+        if (map[k + (x_off * 12)].sprites[0] != 0) {
+            draw_tile_offset(&map[k + (x_off*12)], g_assets, x_off);
+        }
+    }
+    // ===============================================
+
+    draw_dave_offset(game->dave, g_assets, x_off);
+    draw_tile(&bottom_separator, g_assets);
+    draw_tile(&top_separator, g_assets);
+    if (game->dave->has_grail) {
+        draw_tile(&grail_banner, g_assets);
+    }
+    draw_score(500);
+
+    return G_STATE_LEVEL;
+}
+
+int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
+{
+    int i = 0;
+    int k = 0;
+
+    tile_t bottom_separator;
+    tile_t top_separator;
+    tile_t grail_banner;
 
     tile_create_bottom_separator(&bottom_separator, 0, 166);
     tile_create_top_separator(&top_separator, 0, 11);
     tile_create_grail_banner(&grail_banner, 70, 180);
 
+    if (g_prev_state != G_STATE_WARP_RIGHT) {
+        printf("game_warp_right clearing map! \n");
+        x_off = 0;
+        clear_map(map);
+        tile_file_parse(map, &game->dave->tile->x, &game->dave->tile->y, "res/levels/warp_right.ddt");
+    }
+
+    if (keys->quit) {
+        printf("should quit! \n");
+        return G_STATE_QUIT_NOW;
+    }
+
+    if (keys->escape) {
+        return G_STATE_LEVEL_POPUP;
+    }
+
+    if  (game->dave->tile->x > 300) {
+        return G_STATE_NONE;
+    }
+
+    game->dave->tick(game->dave, map, 0, 1, 0);
+    for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+        if (map[i].sprites[0] != 0) {
+            map[i].tick(&map[i]);
+        }
+    }
+    check_dave_pick_item(game, map);
+
+    for (k = 0; k < 320 * 200; k++) {
+        g_pixels[k] = 0x000000FF;
+    }
+    // ================ draw map =====================
+    for (k = 0; k < (TILEMAP_SCENE_WIDTH * TILEMAP_SCENE_HEIGHT); k++) {
+        if (map[k + (x_off * 12)].sprites[0] != 0) {
+            draw_tile_offset(&map[k + (x_off*12)], g_assets, x_off);
+        }
+    }
+    // ===============================================
+
+    draw_text_line("GOOD WORK! ONLY 9 MORE TO GO!", 50, 58, g_font, g_renderer);
+    draw_dave_offset(game->dave, g_assets, x_off);
+    draw_tile(&bottom_separator, g_assets);
+    draw_tile(&top_separator, g_assets);
+    if (game->dave->has_grail) {
+        draw_tile(&grail_banner, g_assets);
+    }
+    draw_score(500);
+
+    return G_STATE_WARP_RIGHT;
+}
+
+
+int start_gameloop() {
+    uint32_t timer_begin;
+    uint32_t timer_end;
+    uint32_t delay;
+
+    //int k;
+    game_context_t* game;
+    tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
+    keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0, 0};
+    int should_quit = 0;
+    tile_t bottom_separator;
+    tile_t top_separator;
+    tile_t grail_banner;
+    char level_path[4096];
+    int stride;
+    // Initialize game state
+    game = malloc(sizeof(game_context_t));
+    init_game(game);
+    int next_state;
+
+
+
+    tile_create_bottom_separator(&bottom_separator, 0, 166);
+    tile_create_top_separator(&top_separator, 0, 11);
+    tile_create_grail_banner(&grail_banner, 70, 180);
+    tile_create_flashing_cursor(&flashing_cursor, 224, 96);
+
     while (!should_quit) {
         timer_begin = SDL_GetTicks();
+        // SDL_SetRenderTarget(g_renderer, g_render_texture);
+        SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
+        SDL_RenderClear(g_renderer);
+        SDL_LockTexture(g_texture, NULL, (void*)&g_pixels, &stride);
 
         check_input2(&key_state);
 
-        if (key_state.escape) {
-            if (show_quit_popup()) {
+        if (g_state == G_STATE_NONE) {
+            clear_map(map);
+            snprintf(level_path, 4096, "res/levels/level%ld.ddt", game->level);
+            tile_file_parse(map, &game->dave->tile->x, &game->dave->tile->y, level_path);
+            next_state = G_STATE_LEVEL;
+
+        } else if (g_state == G_STATE_LEVEL) {
+            printf("STATE [G_STATE_LEVEL] \n");
+            next_state = game_level_routine(game, map, &key_state);
+
+        } else if (g_state == G_STATE_LEVEL_POPUP) {
+            printf("STATE [G_STATE_QUIT_POPUP] \n");
+            next_state = game_popup_quit_routine(game, map, &key_state);
+
+        } else if (g_state == G_STATE_WARP_RIGHT) {
+            printf("STATE [G_STATE_WARP_RIGHT] \n");
+            next_state = game_warp_right(game, map, &key_state);
+
+        } else if (g_state == G_STATE_QUIT_NOW) {
+            should_quit = 1;
+
+        } else {
+
+        }
+        
+        g_prev_state = g_state;
+        g_state = next_state;
+
+      /*  if (key_state.escape) {
+            if (g_state == G_STATE_LEVEL ||
+                g_state == G_STATE_WARP_RIGHT) {
+                g_state = G_STATE_QUIT_POPUP;//show_quit_popup();
+            }
+        }*/
+
+        /*    if (show_quit_popup()) {
                 should_quit = 1;
             }
-        }
+        }*/
 
-        if (key_state.quit) {
+//        switch (g_state) {
+  //          case G_STATE_LEVEL:
+    //            next_state = handle_level_state(game, map, key_state);
+      //          break;
+           // case G_STATE_WARP_RIGHT:
+             //   next_state = handle_warp_right_state(game, map, key_state);
+       // }
+
+
+        /*if (key_state.quit) {
             printf("should quit! \n");
             should_quit = 1;
-        }
+        }*/
 
-        int delta = (game->dave->tile->x - (x_off * 16));
-        if (delta > 320 - (16 + 16 + 8)) {
-            scroll_remaining = 15;
-        } else if (delta < (16 + 16) && x_off > 0) {
-            scroll_remaining = -15;
-        }
 
-        printf("dave x,y = %d,%d xoff=%d delta=%d\n", game->dave->tile->x, game->dave->tile->y, (x_off * 16), (game->dave->tile->x - (x_off * 16)));
-
-        if (key_state.bracer){
-            return 1;
-        }
-        if (key_state.bracer || key_state.bracel) {
-            xxxx++;
-            if (xxxx > 20) {
-                if (key_state.bracer) {
-                    scroll_remaining = 15;
-  //                  x_off++;
-                } else if (key_state.bracel) {
-                    scroll_remaining = -15;
-//                    x_off--;
-                }
-
-                xxxx = 0;
-            }
-        }
-
-        if (scroll_remaining != 0)
-        {
-            if (scroll_remaining > 0) {
-                scroll_remaining--;
-                if ((scroll_remaining % 1) == 0)
-                    x_off++;
-
-            }
-            else if (scroll_remaining < 0) {
-                scroll_remaining++;
-                if ((scroll_remaining % 1) == 0)
-                    x_off--;
-            }
-        } else {
-            game->dave->tick(game->dave, map, key_state.left, key_state.right, key_state.jump);
-            for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-                if (map[i].sprites[0] != 0)
-                    map[i].tick(&map[i]);
-            }
-            check_dave_pick_item(game, map);
-            if (is_dave_in_door(game, map)) {
-                printf("IN DOOR \n");
-                printf("IN DOOR \n");
-                return 1;
-            }
-            if (check_dave_touch_fire(game, map)) {
-                printf("Dave is dead \n");
-                game->dave->is_dead = 1;
-            }
-
-            if (game->dave->is_dead) {
-                printf("dave died %d ticks before\n", game->dave->ticks_since_dead);
-                if (game->dave->ticks_since_dead > 200) {
-                    return 2;
-                }
-            }
-        }
-
-        SDL_SetRenderTarget(g_renderer, g_render_texture);
-        SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
-        SDL_RenderClear(g_renderer);
-        // ================ draw map =====================
-        for (k = 0; k < (TILEMAP_SCENE_WIDTH * TILEMAP_SCENE_HEIGHT); k++) {
-            if (map[k + (x_off * 12)].sprites[0] != 0) {
-                draw_tile_offset(&map[k + (x_off*12)], g_assets, x_off);
-            }
-        }
-        // ===============================================
-
-        draw_dave_offset(game->dave, g_assets, x_off);
-        draw_tile(&bottom_separator, g_assets);
-        draw_tile(&top_separator, g_assets);
-        if (game->dave->has_grail) {
-            draw_tile(&grail_banner, g_assets);
-        }
-        draw_score(500);
-
-        // Set the screen as the target of renderer
-        SDL_SetRenderTarget(g_renderer, NULL);
-
-        // Clear the render (clear screen)
-        SDL_RenderClear(g_renderer);
-
-        // Render texture into screen
-        SDL_RenderCopy(g_renderer, g_render_texture, NULL, NULL);
-
-        // Swaps display buffers (puts above drawing on the screen)
+        SDL_RenderCopy(g_renderer, g_texture, NULL, NULL);
         SDL_RenderPresent(g_renderer);
         timer_end = SDL_GetTicks();
 
         delay = 15 - (timer_end-timer_begin);
         delay = delay > 15 ? 0 : delay;
-        //printf("DELAY=%d \n", delay);
+        printf("DELAY=%d \n", delay);
         SDL_Delay(delay);
         if (game->quit) {
             should_quit = 1;
@@ -864,12 +945,8 @@ int main(int argc, char* argv[]) {
     g_window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 400, 0);
 
     printf("creating renderer \n");
-    //g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_TARGETTEXTURE);
-    //g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
-    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
-
-    g_render_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888,
-        SDL_TEXTUREACCESS_TARGET, 320, 200);
+    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
+    g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 320, 200);
 
     // Easy onversion between original world (320x200) and current screen size
     SDL_RenderSetScale(g_renderer, DISPLAY_SCALE, DISPLAY_SCALE);
@@ -892,14 +969,14 @@ int main(int argc, char* argv[]) {
     }
 
     while (level <= 3) {
-        ret = start_level(level);
+        ret = start_gameloop(level);
         printf("level finished: %d \n", ret);
         if (ret == 0) {
             SDL_Quit();
             return 0;
         } else if (ret == 1) { // next level
-            start_warp_right();
-            level++;
+//            start_warp_right();
+  //          level++;
         } else if (ret == 2) { // death & no more lives
             SDL_Quit();
             return 0;
@@ -910,55 +987,5 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-void draw_text_line(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer) {
-    int i = 0;
-    for (i = 0; i < strlen(line); i++) {
-        draw_char(line[i], x + (i*8), y, font, renderer);
-    }
-}
 
-void draw_char_black(char c, int x, int y, font_t* font, SDL_Renderer* renderer) {
-    SDL_Rect dest;
-
-    dest.x = x;
-    dest.y = y;
-    dest.w = 8;
-    dest.h = 6;
-
-    SDL_RenderCopy(renderer, font->black[(int)c], NULL, &dest);
-}
-
-void draw_text_line_black(const char* line, int x, int y, font_t* font, SDL_Renderer* renderer) {
-    int i = 0;
-    for (i = 0; i < strlen(line); i++) {
-        draw_char_black(line[i], x + (i*8), y, font, renderer);
-    }
-}
-
-void draw_char(char c, int x, int y, font_t* font, SDL_Renderer* renderer) {
-    SDL_Rect dest;
-
-    dest.x = x;
-    dest.y = y;
-    dest.w = 8;
-    dest.h = 6;
-
-    SDL_RenderCopy(renderer, font->white[(int)c], NULL, &dest);
-}
-
-void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_off) {
-    SDL_Rect dest;
-
-    dest.x = tile->x;
-    dest.y = tile->y;
-    dest.w = tile->width;
-    dest.h = tile->height;
-    dest.x -= (x_off * 16);
-
-    SDL_RenderCopy(g_renderer, assets->graphics_tiles[tile->get_sprite(tile)], NULL, &dest); 
-}
-
-void draw_tile(tile_t* tile, struct game_assets* assets) {
-    draw_tile_offset(tile, assets, 0);
-}
 
