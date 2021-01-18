@@ -497,7 +497,7 @@ dave_t* dave_create() {
     dave->step_count = 0;
     dave->walk_state = DAVE_STATE_STANDING;
     dave->freefall_direction = DAVE_DIRECTION_FRONTR;
-    dave->has_grail = 0;
+    dave->has_trophy = 0;
     dave->is_dead = 0;
     dave->ticks_since_dead = 0;
     dave->tick = &dave_tick;
