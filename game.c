@@ -19,6 +19,7 @@ const int G_STATE_WARP_RIGHT       = 5;
 const int G_STATE_POPUP            = 6;
 const int G_STATE_QUIT_NOW         = 7;
 
+SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_Texture *g_texture;
 uint32_t        *g_pixels;
@@ -235,7 +236,7 @@ void init_game(game_context_t *game)
     game->scroll_remaining = 0;
 
     game->bullet = NULL;
-    game->level = 1;
+    game->level = 2;
 }
 
 void check_input2(keys_state_t* state)
@@ -396,21 +397,46 @@ int start_intro() {
     return result;
 }
 
-int is_dave_collision_tile(dave_t *dave, tile_t *tile) {
+/*
+ * In original game pickup collision is slightly bigger then other collisions
+ */
+
+int is_dave_collision_tile_pick(dave_t *dave, tile_t *tile) {
     if (tile_is_empty(tile)) {
         return 0;
     }
 
-    if (tile->is_inside(tile, dave->tile->x-2, dave->tile->y+2)) {
+    if (tile->is_inside(tile, dave->tile->x, dave->tile->y+2)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->tile->x-2, dave->tile->y+15)) {
+    if (tile->is_inside(tile, dave->tile->x, dave->tile->y+15)) {
         return 1;
     }
     if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+2)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+15)) {
+    if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+16)) {
+        return 1;
+    }
+
+    return 0;
+}
+
+int is_dave_collision_tile(dave_t *dave, tile_t *tile) {
+    if (tile_is_empty(tile)) {
+        return 0;
+    }
+
+    if (tile->is_inside(tile, dave->tile->x+2, dave->tile->y+2)) {
+        return 1;
+    }
+    if (tile->is_inside(tile, dave->tile->x+2, dave->tile->y+15)) {
+        return 1;
+    }
+    if (tile->is_inside(tile, dave->tile->x+13, dave->tile->y+2)) {
+        return 1;
+    }
+    if (tile->is_inside(tile, dave->tile->x+13, dave->tile->y+15)) {
         return 1;
     }
 
@@ -440,7 +466,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map) {
     }
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
-        if (is_dave_collision_tile(game->dave, &map[idx])) {
+        if (is_dave_collision_tile_pick(game->dave, &map[idx])) {
             if (map[idx].mod == LOOT) {
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
@@ -675,7 +701,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     if (game->dave->has_trophy) {
         draw_tile(&grail_banner, g_assets);
     }
-    draw_score(500);
+    draw_score(game->score);
 
     return G_STATE_WARP_RIGHT;
 }
