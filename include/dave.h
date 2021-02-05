@@ -15,9 +15,10 @@
 #define DAVE_STATE_WALKING     1
 #define DAVE_STATE_JUMPING     2
 #define DAVE_STATE_FREEFALLING 3
-#define DAVE_STATE_BURNING     4
-#define DAVE_STATE_DEAD        5
-#define DAVE_STATE_BLINKING    6
+#define DAVE_STATE_JETPACKING  4
+#define DAVE_STATE_BURNING     5
+#define DAVE_STATE_DEAD        6
+#define DAVE_STATE_BLINKING    7
 
 #define DAVE_DIRECTION_FRONTR  0
 #define DAVE_DIRECTION_FRONTL  1
@@ -39,9 +40,10 @@ typedef struct dave_struct {
 	int has_jetpack;
     int is_dead;
     int ticks_since_dead;
+    int ticks_in_state;
 
-    void (*tick)(struct dave_struct *dave,
-            tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], int left, int right, int up);
+    void (*tick)(struct dave_struct *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], 
+        int left, int right, int up, int down, int jetpack);
 } dave_t;
 
 dave_t* dave_create();

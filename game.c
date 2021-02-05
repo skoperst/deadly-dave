@@ -236,22 +236,61 @@ void init_game(game_context_t *game)
     game->scroll_remaining = 0;
 
     game->bullet = NULL;
-    game->level = 2;
+    game->level = 0;
 }
 
 void check_input2(keys_state_t* state)
 {
     SDL_Event event;
-    int ret = SDL_PollEvent(&event);
-    if (ret == 0) {
-        printf("no new events! \n");
-        return;
-    }
+
     const uint8_t *keystate = SDL_GetKeyboardState(NULL);
     state->right      = (keystate[SDL_SCANCODE_RIGHT]  != 0) ? 1 : 0;
     state->left       = (keystate[SDL_SCANCODE_LEFT]   != 0) ? 1 : 0;
     state->jump       = (keystate[SDL_SCANCODE_UP]     != 0) ? 1 : 0;
     state->down       = (keystate[SDL_SCANCODE_DOWN]   != 0) ? 1 : 0;
+    state->escape     = (keystate[SDL_SCANCODE_ESCAPE] != 0) ? 1 : 0;
+    state->key_y      = (keystate[SDL_SCANCODE_Y] != 0) ? 1 : 0;
+    state->key_n      = (keystate[SDL_SCANCODE_N] != 0) ? 1 : 0;
+
+    state->jetpack = 0;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_USEREVENT) {
+            printf("user event \n");
+        } else if (event.type == SDL_KEYDOWN) {
+            int is_repeat = event.key.repeat;
+            int modifier = event.key.keysym.mod;
+            int scancode = event.key.keysym.scancode;
+
+            printf("mod: %d, scan: %d, repeat: %d \n", modifier, scancode, is_repeat);
+            if (event.key.keysym.scancode == SDL_SCANCODE_LALT) {
+                state->jetpack = 1;
+            } 
+        } else if (event.type == SDL_QUIT) {
+            state->quit = 1;
+        }
+    }
+
+    /*const uint8_t *keystate = SDL_GetKeyboardState(NULL);
+    state->right      = (keystate[SDL_SCANCODE_RIGHT]  != 0) ? 1 : 0;
+    state->left       = (keystate[SDL_SCANCODE_LEFT]   != 0) ? 1 : 0;
+    state->jump       = (keystate[SDL_SCANCODE_UP]     != 0) ? 1 : 0;
+    state->down       = (keystate[SDL_SCANCODE_DOWN]   != 0) ? 1 : 0;*/
+
+   /* int ret = SDL_PollEvent(&event);
+    if (ret == 0) {
+        //do stuff here!!!
+
+        printf("no new events! \n");
+        return;
+    }
+
+    const uint8_t *keystate = SDL_GetKeyboardState(NULL);
+    state->right      = (keystate[SDL_SCANCODE_RIGHT]  != 0) ? 1 : 0;
+    state->left       = (keystate[SDL_SCANCODE_LEFT]   != 0) ? 1 : 0;
+    state->jump       = (keystate[SDL_SCANCODE_UP]     != 0) ? 1 : 0;
+    state->down       = (keystate[SDL_SCANCODE_DOWN]   != 0) ? 1 : 0;
+
+    // These are non repeating
     state->fire       = (keystate[SDL_SCANCODE_LCTRL]  != 0) ? 1 : 0;
     state->jetpack    = (keystate[SDL_SCANCODE_LALT]   != 0) ? 1 : 0;
     state->escape     = (keystate[SDL_SCANCODE_ESCAPE] != 0) ? 1 : 0;
@@ -263,7 +302,7 @@ void check_input2(keys_state_t* state)
 
     if (keystate[SDL_SCANCODE_Q] != 0) {
         printf("Q \n");
-    }
+    }*/
 }
 
 // returns 0 if key pressed, 1 if timeout
@@ -571,7 +610,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
 
 
     int delta = (game->dave->tile->x - (game->scroll_offset * 16));
-    printf("DELTA: %d scroll remaining: %ld \n", delta, game->scroll_remaining);
+//    printf("DELTA: %d scroll remaining: %ld \n", delta, game->scroll_remaining);
 
     if (game->scroll_remaining != 0) {
         if (game->scroll_remaining > 0) {
@@ -591,7 +630,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
             game->scroll_remaining = -15;
         }
 
-        game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump);
+        game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
         for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
             if (map[i].sprites[0] != 0) {
                 map[i].tick(&map[i]);
@@ -675,7 +714,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
         return G_STATE_NONE;
     }
 
-    game->dave->tick(game->dave, map, 0, 1, 0);
+    game->dave->tick(game->dave, map, 0, 1, 0,0, 0);
     for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
         if (map[i].sprites[0] != 0) {
             map[i].tick(&map[i]);
