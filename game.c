@@ -46,15 +46,7 @@ void render_tile_idx(int tile_idx, int x, int y) {
 }
 
 void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_offset) {
-    SDL_Rect dest;
-
-    dest.x = tile->x;
-    dest.y = tile->y;
-    dest.w = tile->width;
-    dest.h = tile->height;
-    dest.x -= (x_offset * 16);
-
-    render_tile_idx(tile->get_sprite(tile), dest.x, dest.y);
+    render_tile_idx(tile->get_sprite(tile), tile->x - (x_offset * 16), tile->y);
 }
 
 void draw_tile(tile_t* tile, struct game_assets* assets) {
@@ -123,12 +115,12 @@ void draw_popup_box(int x, int y, int rows, int columns)
             if (row == 0) {
                 if (col == 0) {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_T1;
-                } else if (col == (columns-1)) {
+                } else if (col == (columns - 1)) {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_T3;
                 } else {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_T2;
                 }
-            } else if (row == (rows -1)) {
+            } else if (row == (rows - 1)) {
                 if (col == 0) {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_B1;
                 } else if (col == (columns-1)) {
@@ -139,7 +131,7 @@ void draw_popup_box(int x, int y, int rows, int columns)
             } else {
                 if (col == 0) {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_M1;
-                } else if (col == (columns-1)) {
+                } else if (col == (columns - 1)) {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_M3;
                 } else { 
                     cur_sprite = SPRITE_IDX_POPUP_BOX_M2;
@@ -161,24 +153,16 @@ void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
     draw_tile_offset(dave->tile, assets, x_offset);
 }
 
+/**
+ * Score is limited to 5 digits
+ */
 void draw_score(int score) {
     int i;
-    SDL_Rect dest;
-    dest.x = 0;
-    dest.y = 0;
-    dest.w = 62;
-    dest.h = 11;
-    SDL_RenderCopy(g_renderer, g_assets->graphics_tiles[137], NULL, &dest);
-
-    SDL_Rect digit_dest;
-    digit_dest.x = 64;
-    digit_dest.y = 1;
-    digit_dest.w = 8;
-    digit_dest.h = 11;
-
+    render_tile_idx(137, 0, 0);
     for (i = 0; i < 5; i++) {
-        SDL_RenderCopy(g_renderer, g_assets->graphics_tiles[148], NULL, &digit_dest);
-        digit_dest.x = digit_dest.x + 8;
+        int mod = score % 10;
+        score = score / 10;
+        render_tile_idx(148 + mod, 96 - (8 * i), 1);
     }
 }
 
@@ -458,14 +442,16 @@ void check_dave_pick_item(game_context_t *game, tile_t *map) {
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
         if (is_dave_collision_tile(game->dave, &map[idx])) {
-            if (map[idx].mod == ITEM) {
+            if (map[idx].mod == LOOT) {
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
+                game->score = game->score + map[idx].score_value;
                 return;
-            } else if (map[idx].mod == GRAIL) {
+            } else if (map[idx].mod == TROPHY) {
                 game->dave->has_trophy = 1;
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
+                game->score = game->score + map[idx].score_value;
             }
         }
     }
@@ -625,7 +611,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
     if (game->dave->has_trophy) {
         draw_tile(&grail_banner, g_assets);
     }
-    draw_score(500);
+    draw_score(game->score);
 
     return G_STATE_LEVEL;
 }

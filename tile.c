@@ -80,15 +80,11 @@ void tile_create_intro_banner(tile_t* t, int x, int y) {
     t->y = y;
     t->width = 112;
     t->height = 47;
-    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] = 
+    t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
     t->sprites[4] = t->sprites[5] = SPRITE_IDX_TITLE_FLAMES1;
 
-    t->sprites[6] = SPRITE_IDX_TITLE_FLAMES2;
-    t->sprites[7] = SPRITE_IDX_TITLE_FLAMES2;
-    t->sprites[8] = SPRITE_IDX_TITLE_FLAMES2;
-    t->sprites[9] = SPRITE_IDX_TITLE_FLAMES2;
-    t->sprites[10] = SPRITE_IDX_TITLE_FLAMES2;
-    t->sprites[11] = SPRITE_IDX_TITLE_FLAMES2;
+    t->sprites[6] = t->sprites[7] = t->sprites[8] = t->sprites[9] =
+    t->sprites[10] = t->sprites[11] = SPRITE_IDX_TITLE_FLAMES2;
 
     t->sprites[12] = SPRITE_IDX_TITLE_FLAMES3;
     t->sprites[13] = SPRITE_IDX_TITLE_FLAMES3;
@@ -301,7 +297,8 @@ void tile_create_purple_gem(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_PURPLE_GEM;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
-    t->mod = ITEM;
+    t->mod = LOOT;
+    t->score_value = 50;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -316,7 +313,8 @@ void tile_create_teal_gem(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_TEAL_GEM;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
-    t->mod = ITEM;
+    t->mod = LOOT;
+    t->score_value = 100;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -331,7 +329,8 @@ void tile_create_red_gem(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_RED_GEM;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
-    t->mod = ITEM;
+    t->mod = LOOT;
+    t->score_value = 200;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -365,7 +364,8 @@ void tile_create_grail(tile_t *t, int x, int y) {
     t->sprites[48] = t->sprites[49] = SPRITE_IDX_GRAIL4;
 
     t->sprites[50] = 0;
-    t->mod = GRAIL;
+    t->mod = TROPHY;
+    t->score_value = 1000;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;

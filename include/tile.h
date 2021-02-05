@@ -20,14 +20,16 @@ static const int TILE_DAVE_MOD_JUMPING_RIGHT = 4;
 static const int TILE_DAVE_MOD_JUMPING_LEFT  = 5;
 
 // TILE MODIFIER
-static const int EMPTY     = 0;
-static const int CLEAR     = 1;
-static const int BRICK     = 2;
-static const int ITEM      = 3;
-static const int GRAIL     = 4;
-static const int FIRE      = 5;
-static const int DOOR      = 6;
-static const int DAVE      = 7;
+static const int EMPTY      = 0;
+static const int CLEAR      = 1;
+static const int BRICK      = 2;
+static const int LOOT       = 3;
+static const int TROPHY     = 4;
+static const int FIRE       = 5;
+static const int DOOR       = 6;
+static const int DAVE       = 7;
+static const int GUN        = 8;
+static const int JETPACK    = 9;
 
 
 // SPRITE INDEXES
@@ -109,6 +111,7 @@ typedef struct tile_struct {
     void *context;
     int sprites[100];
     int sprite_idx;
+    int score_value;
 
     int (*get_sprite)(struct tile_struct* tile);
     void (*tick)(struct tile_struct* tile);
