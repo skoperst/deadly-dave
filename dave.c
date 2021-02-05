@@ -328,21 +328,22 @@ void dave_state_jetpacking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMA
 }
 void dave_state_freefalling_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
     int key_left, int key_right, int key_up) {
-    printf("FREEFALLING ENTER \n");
+
     dave->state = DAVE_STATE_FREEFALLING;
-    if (dave->face_direction == DAVE_DIRECTION_RIGHT) {
+
+    if (dave->face_direction == DAVE_DIRECTION_RIGHT ||
+        dave->face_direction == DAVE_DIRECTION_FRONTR) {
         dave->freefall_direction = DAVE_DIRECTION_FRONTR;
-    } else if (dave->face_direction == DAVE_DIRECTION_LEFT) {
+
+    } else if (dave->face_direction == DAVE_DIRECTION_LEFT ||
+        dave->face_direction == DAVE_DIRECTION_FRONTL) {
         dave->freefall_direction = DAVE_DIRECTION_FRONTL;
-    } else {
-        dave->freefall_direction = DAVE_DIRECTION_FRONTR;
     }
 }
 
 
 void dave_state_burning_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up, int key_jetpack) {
-    printf("BURNING ROUTINE \n");
     dave->ticks_since_dead++;
 }
 
@@ -359,8 +360,6 @@ void dave_state_walking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         return;
     }
 
-
-    printf("WALKING\n");
     if (!dave_on_ground(dave, map)) {
         dave_state_freefalling_enter(dave, map, key_left, key_right, key_up);
         return;
@@ -553,10 +552,8 @@ void dave_state_freefalling_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TIL
         } else if (dave->freefall_direction == DAVE_DIRECTION_RIGHT) {
             if ( !dave_collision_right(dave, 1, map)) {
                 dave->tile->x = dave->tile->x + 1;
-                printf("TIIIIIIIIIIIIIIIIIIIIIIIICKKKKKKKKKKKKKKKKK DAVEX = %d\n", dave->tile->x);
                 if (key_right) {
                     if (dave_barely_on_ground_right(dave, map)) {
-                    printf("TIIIIIIIIIIIIIIIIIIIIIIIICKKKVVVVVVVVVVVVVVVVVOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n");
                         dave->tile->x = dave->tile->x + 1;
                     }
                 }
