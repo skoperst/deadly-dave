@@ -98,6 +98,12 @@ void dave_state_burning_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
 void dave_state_jumping_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up) {
     printf("JUMPING-ENTER\n");
+    if (dave->face_direction == DAVE_DIRECTION_FRONTL ||
+        dave->face_direction == DAVE_DIRECTION_LEFT) {
+        dave->face_direction = DAVE_DIRECTION_FRONTL;
+    } else {
+        dave->face_direction = DAVE_DIRECTION_FRONTR;
+    }
     dave->state = DAVE_STATE_JUMPING;
     dave->walk_state = DAVE_STATE_STANDING;
     dave->jump_state = 1;
