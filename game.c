@@ -201,8 +201,6 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
 /* Set game and monster properties to default values */
 void init_game(game_context_t *game)
 {
-    int j;
-
     game->quit = 0;
     game->tick = 0;
     game->lives = 3;
@@ -381,6 +379,7 @@ int start_intro() {
         draw_text_line("PRESS THE F1 KEY FOR HELP", 72, 168, g_renderer);
         draw_text_line("                         ",72, 174, g_renderer);
 
+        SDL_UnlockTexture(g_texture);
         SDL_RenderCopy(g_renderer, g_texture, NULL,NULL);
         SDL_RenderPresent(g_renderer);
 
@@ -739,15 +738,15 @@ int start_gameloop() {
         } else {
 
         }
-        
+
         g_prev_state = g_state;
         g_state = next_state;
 
-
+        SDL_UnlockTexture(g_texture);
         SDL_RenderCopy(g_renderer, g_texture, NULL, NULL);
         SDL_RenderPresent(g_renderer);
-        timer_end = SDL_GetTicks();
 
+        timer_end = SDL_GetTicks();
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
         printf("DELAY=%d \n", delay);
@@ -763,8 +762,7 @@ int start_gameloop() {
 int main(int argc, char* argv[]) {
     int ret = 0;
     int level = 0;
-    const uint8_t DISPLAY_SCALE = 2;
-    SDL_Window* g_window;
+    const uint8_t DISPLAY_SCALE = 3;
 
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
@@ -772,7 +770,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
     printf("creating SDL window \n");
-    g_window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 400, 0);
+    g_window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 600, 0);
 
     printf("creating renderer \n");
     g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
