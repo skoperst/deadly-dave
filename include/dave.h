@@ -36,7 +36,7 @@ typedef struct dave_struct {
     int freefall_direction;
     int has_trophy;
     int has_gun;
-    int has_jetpack;
+	int has_jetpack;
     int is_dead;
     int ticks_since_dead;
 

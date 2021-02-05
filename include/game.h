@@ -4,7 +4,6 @@
 #include <SDL.h>
 
 #include "tile.h"
-#include "font.h"
 #include "dave.h"
 
 /* Format of the level information
@@ -73,9 +72,6 @@ typedef struct game_context_struct {
 	uint8_t quit;
 	uint8_t tick;
 	uint8_t dave_tick;
-	uint8_t current_level;
-	uint8_t lives;
-	uint32_t score;
 	uint8_t dave_dead_timer;
 	uint16_t dbullet_px;
 	uint16_t dbullet_py;
@@ -100,26 +96,24 @@ typedef struct game_context_struct {
 	uint8_t jetpack_delay;
 	uint8_t jump_timer;
 	uint8_t try_right;
-	uint8_t try_left;
-	uint8_t try_jump;
-	uint8_t try_fire;
-	uint8_t try_jetpack;
-	uint8_t try_down;
-	uint8_t try_up;
 	uint8_t check_pickup_x;
 	uint8_t check_pickup_y;
 	uint8_t check_door;
 	uint8_t can_climb;
 	uint8_t collision_point[9];
-	uint8_t trophy;
 	uint8_t gun;
 	uint8_t jetpack;
 
     dave_t *dave;
+    tile_t *bullet;
     struct monster_state monster[5];
 
-    uint64_t view_offset;
+    int64_t scroll_offset;
+    int64_t scroll_remaining;
+
     uint64_t level;
+    uint64_t lives;
+    uint64_t score;
 } game_context_t;
 
 typedef struct raw_rgba8888_tile_struct {
