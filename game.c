@@ -625,7 +625,12 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
         }
     } else {
         if (delta > 320 - (16 + 16 + 8)) {
-            game->scroll_remaining = 15;
+
+            if ( (80 -  game->scroll_offset) < 15) {
+                game->scroll_remaining = (80 - game->scroll_offset);
+            } else {
+                game->scroll_remaining = 15;
+            }
         } else if (delta < (16 + 16) && game->scroll_offset > 0) {
             game->scroll_remaining = -15;
         }
