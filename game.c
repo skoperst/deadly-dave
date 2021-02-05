@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 
 #include <SDL.h>
 
@@ -67,7 +68,6 @@ void draw_char(char c, int x, int y, SDL_Renderer* renderer) {
     for (idx = 0; idx < sizeof(letters) / sizeof(int); idx++) {
         if ((int)c == letters[idx]) {
             tile_idx = white_letters_idx + idx;
-            printf("Loading white index: %d \n", tile_idx);
             render_tile_idx(tile_idx, x, y);
             return;
         }
@@ -92,7 +92,6 @@ void draw_char_black(char c, int x, int y, SDL_Renderer* renderer) {
     for (idx = 0; idx < sizeof(letters) / sizeof(int); idx++) {
         if ((int)c == letters[idx]) {
             tile_idx = black_letters_idx + idx;
-            printf("Loading white index: '%c' to %d \n", c, tile_idx);
             render_tile_idx(tile_idx, x, y);
             return;
         }
@@ -700,6 +699,10 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
 
     if (g_prev_state != G_STATE_WARP_RIGHT) {
         game->dave->has_trophy = 0;
+        game->dave->step_count = 0;
+        game->dave->state = DAVE_STATE_STANDING;
+        game->dave->has_gun = 0;
+        game->dave->has_jetpack = 0;
         game->scroll_offset = 0;
         clear_map(map);
         tile_file_parse(map, &game->dave->tile->x,
@@ -791,15 +794,15 @@ int start_gameloop() {
             next_state = G_STATE_LEVEL;
 
         } else if (g_state == G_STATE_LEVEL) {
-            printf("STATE [G_STATE_LEVEL] \n");
+         //   printf("STATE [G_STATE_LEVEL] \n");
             next_state = game_level_routine(game, map, &key_state);
 
         } else if (g_state == G_STATE_LEVEL_POPUP) {
-            printf("STATE [G_STATE_QUIT_POPUP] \n");
+           // printf("STATE [G_STATE_QUIT_POPUP] \n");
             next_state = game_popup_quit_routine(game, map, &key_state);
 
         } else if (g_state == G_STATE_WARP_RIGHT) {
-            printf("STATE [G_STATE_WARP_RIGHT] \n");
+            //printf("STATE [G_STATE_WARP_RIGHT] \n");
             next_state = game_warp_right(game, map, &key_state);
 
         } else if (g_state == G_STATE_QUIT_NOW) {
@@ -819,7 +822,7 @@ int start_gameloop() {
         timer_end = SDL_GetTicks();
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
-        printf("DELAY=%d \n", delay);
+//        printf("DELAY=%d \n", delay);
         SDL_Delay(delay);
         if (game->quit) {
             should_quit = 1;
