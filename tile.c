@@ -337,6 +337,54 @@ void tile_create_red_gem(tile_t *t, int x, int y) {
     t->is_inside = &tile_is_inside;
 }
 
+void tile_create_ring(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_RING;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = LOOT;
+    t->score_value = 550;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
+void tile_create_crown(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_CROWN;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = LOOT;
+    t->score_value = 800;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
+void tile_create_scepter(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_SCEPTER;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = LOOT;
+    t->score_value = 400;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
 void tile_create_grail(tile_t *t, int x, int y) {
     t->x = x;
     t->y = y;
@@ -394,12 +442,22 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_teal_gem(t, x, y);
     } else if (strcmp(tag, " V ") == 0) {
         tile_create_red_gem(t, x, y);
+    } else if (strcmp(tag, " O ") == 0) {
+        tile_create_ring(t, x, y);
+    } else if (strcmp(tag, " W ") == 0) {
+        tile_create_crown(t, x, y);
+    } else if (strcmp(tag, " ! ") == 0) {
+        tile_create_scepter(t, x, y);
     } else if (strcmp(tag, " Y ") == 0) {
         tile_create_grail(t, x, y);
     } else if (strcmp(tag, "FR1") == 0) {
         tile_create_fire(t, x, y, 0);
     } else if (strcmp(tag, "FR2") == 0) {
         tile_create_fire(t, x, y, 1);
+    } else if (strcmp(tag, "FR3") == 0) {
+        tile_create_fire(t, x, y, 2);
+    } else if (strcmp(tag, "FR4") == 0) {
+        tile_create_fire(t, x, y, 3);
     } else if (strcmp(tag, "WT1") == 0) {
         tile_create_water(t, x, y, 0);
     } else if (strcmp(tag, "WT2") == 0) {
