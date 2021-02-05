@@ -34,7 +34,9 @@ typedef struct dave_struct {
     int jump_state;
     int jump_cooldown_count;
     int freefall_direction;
-    int has_grail;
+    int has_trophy;
+    int has_gun;
+    int has_jetpack;
     int is_dead;
     int ticks_since_dead;
 
