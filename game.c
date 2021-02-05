@@ -450,10 +450,10 @@ int is_dave_collision_tile_pick(dave_t *dave, tile_t *tile) {
     if (tile->is_inside(tile, dave->tile->x, dave->tile->y+15)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+2)) {
+    if (tile->is_inside(tile, dave->tile->x+15, dave->tile->y+2)) {
         return 1;
     }
-    if (tile->is_inside(tile, dave->tile->x+14, dave->tile->y+16)) {
+    if (tile->is_inside(tile, dave->tile->x+15, dave->tile->y+16)) {
         return 1;
     }
 
