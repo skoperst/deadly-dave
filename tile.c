@@ -330,7 +330,7 @@ void tile_create_red_gem(tile_t *t, int x, int y) {
     t->sprites[1] = 0;
     t->sprite_idx = 0;
     t->mod = LOOT;
-    t->score_value = 200;
+    t->score_value = 150;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
