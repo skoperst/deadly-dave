@@ -159,6 +159,19 @@ void draw_x_levels_to_go(int x) {
     draw_text_line(good_work, 50, 58, g_renderer);
 }
 
+void draw_level(int level) {
+   // int i;
+    render_tile_idx(136, 120, 0); // level:
+    render_tile_idx(148, 176, 1); //0
+    render_tile_idx(148 + level + 1, 184, 1); //0
+
+//    for (i = 0; i < 5; i++) {
+  //      int mod = score % 10;
+    //    score = score / 10;
+     //   render_tile_idx(148 + mod, 96 - (8 * i), 1);
+    //}
+}
+
 /**
  * Score is limited to 5 digits
  */
@@ -651,7 +664,6 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
             printf("IN DOOR \n");
             printf("IN DOOR \n");
             if (game->dave->has_trophy) {
-                game->level++;
                 return G_STATE_WARP_RIGHT;
             }
         }
@@ -686,6 +698,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
         draw_tile(&grail_banner, g_assets);
     }
     draw_score(game->score);
+    draw_level(game->level);
 
     return G_STATE_LEVEL;
 }
@@ -725,6 +738,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     }
 
     if  (game->dave->tile->x > 300) {
+        game->level++;
         return G_STATE_NONE;
     }
 
@@ -748,7 +762,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     // ===============================================
 
 
-    draw_x_levels_to_go(10 - game->level);
+    draw_x_levels_to_go(9 - game->level);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
     draw_tile(&bottom_separator, g_assets);
     draw_tile(&top_separator, g_assets);
@@ -756,6 +770,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
         draw_tile(&grail_banner, g_assets);
     }
     draw_score(game->score);
+    draw_level(game->level);
 
     return G_STATE_WARP_RIGHT;
 }
