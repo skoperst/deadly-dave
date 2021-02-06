@@ -153,6 +153,12 @@ void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
     draw_tile_offset(dave->tile, assets, x_offset);
 }
 
+void draw_x_levels_to_go(int x) {
+    char good_work[128];
+    snprintf(good_work, sizeof(good_work), "GOOD WORK! ONLY %d MORE TO GO!", x);
+    draw_text_line(good_work, 50, 58, g_renderer);
+}
+
 /**
  * Score is limited to 5 digits
  */
@@ -741,7 +747,8 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     }
     // ===============================================
 
-    draw_text_line("GOOD WORK! ONLY X MORE TO GO!", 50, 58, g_renderer);
+
+    draw_x_levels_to_go(10 - game->level);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
     draw_tile(&bottom_separator, g_assets);
     draw_tile(&top_separator, g_assets);
