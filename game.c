@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#define SDL_MAIN_HANDLED
 #include <SDL.h>
 
 #include "game.h"
@@ -860,6 +861,7 @@ int main(int argc, char* argv[]) {
     const uint8_t DISPLAY_SCALE = 3;
 
     // Initialize SDL
+    SDL_SetMainReady();
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
         printf("Failed to initialize SDL video. Error: (%s) \n", SDL_GetError());
         return -1;
