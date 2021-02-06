@@ -796,7 +796,7 @@ int start_gameloop() {
 
         if (g_state == G_STATE_NONE) {
             clear_map(map);
-            snprintf(level_path, 4096, "res/levels/level%ld.ddt", game->level);
+            snprintf(level_path, 4096, "res/levels/level%ld.ddt", (long)game->level);
             tile_file_parse(map, &game->dave->tile->x, &game->dave->tile->y, level_path);
             next_state = G_STATE_LEVEL;
 
