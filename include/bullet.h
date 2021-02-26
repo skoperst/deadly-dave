@@ -1,5 +1,5 @@
-#ifndef DAVE_BULLET_H
-#define DAVE_BULLET_H
+#ifndef BULLET_H
+#define BULLET_H
 
 #include "tile.h"
 
