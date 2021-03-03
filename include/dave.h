@@ -37,13 +37,12 @@ typedef struct dave_struct {
     int freefall_direction;
     int has_trophy;
     int has_gun;
-	int has_jetpack;
-    int is_dead;
-    int ticks_since_dead;
+    int has_jetpack;
     int ticks_in_state;
 
-    void (*tick)(struct dave_struct *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], 
+    void (*tick)(struct dave_struct *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int left, int right, int up, int down, int jetpack);
+    int (*is_dead)(struct dave_struct *dave);
 } dave_t;
 
 dave_t* dave_create();

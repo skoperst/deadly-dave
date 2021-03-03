@@ -15,11 +15,13 @@
 const int G_STATE_NONE             = 0;
 const int G_STATE_INTRO            = 1;
 const int G_STATE_INTRO_POPUP      = 2;
-const int G_STATE_LEVEL            = 3;
-const int G_STATE_LEVEL_POPUP      = 4;
-const int G_STATE_WARP_RIGHT       = 5;
-const int G_STATE_POPUP            = 6;
-const int G_STATE_QUIT_NOW         = 7;
+const int G_STATE_LEVEL_START      = 3;
+const int G_STATE_LEVEL            = 4;
+const int G_STATE_LEVEL_POPUP      = 5;
+const int G_STATE_WARP_RIGHT       = 6;
+const int G_STATE_POPUP            = 7;
+const int G_STATE_GAMEOVER         = 8;
+const int G_STATE_QUIT_NOW         = 9;
 
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
@@ -27,8 +29,6 @@ SDL_Texture *g_texture;
 uint32_t        *g_pixels;
 SDL_Texture* g_render_texture;
 assets_t* g_assets;
-int g_state = G_STATE_NONE;
-int g_prev_state = G_STATE_NONE;
 
 
 void render_tile_idx(int tile_idx, int x, int y) {
@@ -161,16 +161,20 @@ void draw_x_levels_to_go(int x) {
 }
 
 void draw_level(int level) {
-   // int i;
     render_tile_idx(136, 120, 0); // level:
     render_tile_idx(148, 176, 1); //0
     render_tile_idx(148 + level + 1, 184, 1); //0
+}
 
-//    for (i = 0; i < 5; i++) {
-  //      int mod = score % 10;
-    //    score = score / 10;
-     //   render_tile_idx(148 + mod, 96 - (8 * i), 1);
-    //}
+void draw_lives(int lives) {
+    int start_x = 256;
+    int idx = 0;
+
+    render_tile_idx(135, 200, 0);
+
+    for (idx = 0; (idx < (lives - 1)) && (idx < 4); idx++) {
+        render_tile_idx(143, start_x + (16 * idx), 0);
+    }
 }
 
 /**
@@ -223,7 +227,7 @@ void init_game(game_context_t *game)
 {
     game->quit = 0;
     game->tick = 0;
-    game->lives = 3;
+    game->lives = 4;
     game->score = 0;
     game->scroll_x = 0;
     game->dave_right = 0;
@@ -502,7 +506,7 @@ int is_dave_collision_tile(dave_t *dave, tile_t *tile) {
 }
 
 int is_dave_in_door(game_context_t *game, tile_t *map) {
-    if (game->dave->is_dead) {
+    if (game->dave->is_dead(game->dave)) {
         return 0;
     }
 
@@ -519,7 +523,7 @@ int is_dave_in_door(game_context_t *game, tile_t *map) {
 }
 
 void check_dave_pick_item(game_context_t *game, tile_t *map) {
-    if (game->dave->is_dead) {
+    if (game->dave->is_dead(game->dave)) {
         return;
     }
     int idx = 0;
@@ -539,7 +543,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map) {
         }
     }
 }
-
+/*
 int check_dave_touch_fire(game_context_t *game, tile_t *map) {
     if (game->dave->is_dead) {
         return 0;
@@ -556,7 +560,7 @@ int check_dave_touch_fire(game_context_t *game, tile_t *map) {
 
     return 0;
 }
-
+*/
 tile_t flashing_cursor;
 
 void clear_map(tile_t *map) {
@@ -564,6 +568,7 @@ void clear_map(tile_t *map) {
 
     for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
         map[i].sprites[0] = 0;
+        map[i].sprites[1] = 0;
         map[i].mod = 0;
         map[i].x = 0;
         map[i].y = 0;
@@ -629,7 +634,6 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
 
 
     int delta = (game->dave->tile->x - (game->scroll_offset * 16));
-//    printf("DELTA: %d scroll remaining: %ld \n", delta, game->scroll_remaining);
 
     if (game->scroll_remaining != 0) {
         if (game->scroll_remaining > 0) {
@@ -650,7 +654,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
             } else {
                 game->scroll_remaining = 15;
             }
-        } else if (delta < (16 + 16) && game->scroll_offset > 0) {
+        } else if (delta < (16 + 14) && game->scroll_offset > 0) {
             game->scroll_remaining = -15;
         }
 
@@ -668,16 +672,23 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
                 return G_STATE_WARP_RIGHT;
             }
         }
-        if (check_dave_touch_fire(game, map)) {
+       /* if (check_dave_touch_fire(game, map)) {
             printf("Dave is dead \n");
             game->dave->is_dead = 1;
-        }
+        }*/
 
-        if (game->dave->is_dead) {
-            printf("dave died %d ticks before\n", game->dave->ticks_since_dead);
-            if (game->dave->ticks_since_dead > 200) {
-                return 2;
+        if (game->dave->is_dead(game->dave)) {
+            game->lives--;
+            printf("Dave is dead! lives: %d\n", game->lives);
+            game->dave->state = DAVE_STATE_STANDING;
+            game->dave->jump_state = 0;
+            game->dave->step_count = 0;
+
+            if (game->lives == 0) {
+                return G_STATE_GAMEOVER;
             }
+
+            return G_STATE_LEVEL_START;
         }
     }
 
@@ -700,6 +711,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
     }
     draw_score(game->score);
     draw_level(game->level);
+    draw_lives(game->lives);
 
     return G_STATE_LEVEL;
 }
@@ -717,7 +729,8 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     tile_create_top_separator(&top_separator, 0, 11);
     tile_create_grail_banner(&grail_banner, 70, 180);
 
-    if (g_prev_state != G_STATE_WARP_RIGHT) {
+    // this should move to gameloop
+/*    if (g_prev_state != G_STATE_WARP_RIGHT) {
         game->dave->has_trophy = 0;
         game->dave->step_count = 0;
         game->dave->state = DAVE_STATE_STANDING;
@@ -727,7 +740,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
         clear_map(map);
         tile_file_parse(map, &game->dave->tile->x,
             &game->dave->tile->y, "res/levels/warp_right.ddt");
-    }
+    }*/
 
     if (keys->quit) {
         printf("should quit! \n");
@@ -776,32 +789,34 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     return G_STATE_WARP_RIGHT;
 }
 
-int start_gameloop() {
+int gameloop() {
     uint32_t timer_begin;
     uint32_t timer_end;
     uint32_t delay;
-
-    //int k;
     game_context_t* game;
     tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
     keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0, 0};
-    int should_quit = 0;
     tile_t bottom_separator;
     tile_t top_separator;
     tile_t grail_banner;
     char level_path[4096];
     int stride;
-    // Initialize game state
+    int next_state;
+    int current_level_begin_x = 0;
+    int current_level_begin_y = 0;
+    int g_state = G_STATE_NONE;
+    int g_prev_state = G_STATE_NONE;
+
+
     game = malloc(sizeof(game_context_t));
     init_game(game);
-    int next_state;
 
     tile_create_bottom_separator(&bottom_separator, 0, 166);
     tile_create_top_separator(&top_separator, 0, 11);
     tile_create_grail_banner(&grail_banner, 70, 180);
     tile_create_flashing_cursor(&flashing_cursor, 224, 96);
 
-    while (!should_quit) {
+    while (1) {
         timer_begin = SDL_GetTicks();
         // SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
@@ -813,23 +828,46 @@ int start_gameloop() {
         if (g_state == G_STATE_NONE) {
             clear_map(map);
             snprintf(level_path, 4096, "res/levels/level%ld.ddt", (long)game->level);
-            tile_file_parse(map, &game->dave->tile->x, &game->dave->tile->y, level_path);
+
+            tile_file_parse(map, &current_level_begin_x, &current_level_begin_y, level_path);
+            next_state = G_STATE_LEVEL_START;
+
+        } if (g_state == G_STATE_LEVEL_START) {
+            printf("Resetting dave location \n");
+            game->dave->tile->x = current_level_begin_x;
+            game->dave->tile->y = current_level_begin_y;
             next_state = G_STATE_LEVEL;
 
         } else if (g_state == G_STATE_LEVEL) {
-         //   printf("STATE [G_STATE_LEVEL] \n");
             next_state = game_level_routine(game, map, &key_state);
 
         } else if (g_state == G_STATE_LEVEL_POPUP) {
-           // printf("STATE [G_STATE_QUIT_POPUP] \n");
             next_state = game_popup_quit_routine(game, map, &key_state);
 
         } else if (g_state == G_STATE_WARP_RIGHT) {
-            //printf("STATE [G_STATE_WARP_RIGHT] \n");
+            if (g_prev_state != G_STATE_WARP_RIGHT) {
+                game->dave->has_trophy = 0;
+                game->dave->step_count = 0;
+                game->dave->state = DAVE_STATE_STANDING;
+                game->dave->has_gun = 0;
+                game->dave->has_jetpack = 0;
+                game->scroll_offset = 0;
+                clear_map(map);
+                tile_file_parse(map, &game->dave->tile->x,
+                    &game->dave->tile->y, "res/levels/warp_right.ddt");
+            }
+
             next_state = game_warp_right(game, map, &key_state);
 
+        } else if (g_state == G_STATE_GAMEOVER) {
+            printf("GAME OVER!!! \n");
+            SDL_UnlockTexture(g_texture);
+            return 2;
+
         } else if (g_state == G_STATE_QUIT_NOW) {
-            should_quit = 1;
+            SDL_UnlockTexture(g_texture);
+
+            return 1;
 
         } else {
 
@@ -845,11 +883,7 @@ int start_gameloop() {
         timer_end = SDL_GetTicks();
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
-//        printf("DELAY=%d \n", delay);
         SDL_Delay(delay);
-        if (game->quit) {
-            should_quit = 1;
-        }
     }
 
     return 0;
@@ -880,10 +914,7 @@ int main(int argc, char* argv[]) {
     g_assets = malloc(sizeof(struct game_assets));
     init_assets(g_assets, g_renderer);
 
-    printf("loading font \n");
-    //g_font = font_create(g_renderer);
-
-    printf("starting intro  \n");
+    /*printf("starting intro  \n");
     ret = start_intro();
     printf("intro ret: %d \n", ret);
 
@@ -891,20 +922,21 @@ int main(int argc, char* argv[]) {
         printf("game ended1 \n");
         SDL_Quit();
         return 0;
-    }
+    }*/
 
-    while (level <= 3) {
-        ret = start_gameloop(level);
-        printf("level finished: %d \n", ret);
+    while (1) {
+        ret = start_intro();
+        ret = gameloop(level);
+        printf("game-loop finished with ret: %d", ret);
+
         if (ret == 0) {
+            return 0;
+        } else if (ret == 1) {
+            printf("bye bye \n");
             SDL_Quit();
             return 0;
-        } else if (ret == 1) { // next level
-//            start_warp_right();
-  //          level++;
-        } else if (ret == 2) { // death & no more lives
-            SDL_Quit();
-            return 0;
+        } else if (ret == 2) {
+            printf("game-over \n");
         }
     }
 
