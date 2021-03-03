@@ -672,14 +672,9 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
                 return G_STATE_WARP_RIGHT;
             }
         }
-       /* if (check_dave_touch_fire(game, map)) {
-            printf("Dave is dead \n");
-            game->dave->is_dead = 1;
-        }*/
 
         if (game->dave->is_dead(game->dave)) {
             game->lives--;
-            printf("Dave is dead! lives: %d\n", game->lives);
             game->dave->state = DAVE_STATE_STANDING;
             game->dave->jump_state = 0;
             game->dave->step_count = 0;
@@ -729,19 +724,6 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     tile_create_top_separator(&top_separator, 0, 11);
     tile_create_grail_banner(&grail_banner, 70, 180);
 
-    // this should move to gameloop
-/*    if (g_prev_state != G_STATE_WARP_RIGHT) {
-        game->dave->has_trophy = 0;
-        game->dave->step_count = 0;
-        game->dave->state = DAVE_STATE_STANDING;
-        game->dave->has_gun = 0;
-        game->dave->has_jetpack = 0;
-        game->scroll_offset = 0;
-        clear_map(map);
-        tile_file_parse(map, &game->dave->tile->x,
-            &game->dave->tile->y, "res/levels/warp_right.ddt");
-    }*/
-
     if (keys->quit) {
         printf("should quit! \n");
         return G_STATE_QUIT_NOW;
@@ -785,6 +767,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     }
     draw_score(game->score);
     draw_level(game->level);
+    draw_lives(game->lives);
 
     return G_STATE_WARP_RIGHT;
 }
