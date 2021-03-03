@@ -412,6 +412,7 @@ void tile_create_grail(tile_t *t, int x, int y) {
     t->sprites[48] = t->sprites[49] = SPRITE_IDX_GRAIL4;
 
     t->sprites[50] = 0;
+    t->sprite_idx = 0;
     t->mod = TROPHY;
     t->score_value = 1000;
 
@@ -421,7 +422,6 @@ void tile_create_grail(tile_t *t, int x, int y) {
 }
 
 void tile_create(tile_t* t, char tag[4], int x, int y) {
-    printf("CREATE TILE AT %d, %d \n", x, y);
     if (strcmp(tag, "RBK") == 0) {
         tile_create_block(t, SPRITE_IDX_RED_BRICK, x, y, 16, 16);
     } else if (strcmp(tag, "BBK") == 0) {
