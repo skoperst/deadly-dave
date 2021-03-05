@@ -34,15 +34,15 @@ assets_t* g_assets;
 void render_tile_idx(int tile_idx, int x, int y) {
     SDL_Surface *surface = g_assets->tiles[tile_idx];
 
-    int www,hhh;
-    for (hhh = 0; hhh < surface->h; hhh++) {
-        for (www = 0; www < surface->w; www++) {
-            uint32_t pixel = ((uint32_t*)surface->pixels)[hhh * surface->w + www];
+    int column_idx, line_idx;
+    for (line_idx = 0; line_idx < surface->h; line_idx++) {
+        for (column_idx = 0; column_idx < surface->w; column_idx++) {
+            uint32_t pixel = ((uint32_t*)surface->pixels)[line_idx * surface->w + column_idx];
 
             // Poor man's alpha blending
             if ( (pixel & 0x000000FF) == 0) {
             } else {
-                g_pixels[(hhh + y) * 320 + (www + x)] = pixel;
+                g_pixels[(line_idx + y) * 320 + (column_idx + x)] = pixel;
             }
         }
     }
@@ -52,11 +52,11 @@ void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_offset) {
     render_tile_idx(tile->get_sprite(tile), tile->x - (x_offset * 16), tile->y);
 }
 
-void draw_tile(tile_t* tile, struct game_assets* assets) {
+void draw_tile(tile_t *tile, struct game_assets *assets) {
     draw_tile_offset(tile, assets, 0);
 }
 
-void draw_char(char c, int x, int y, SDL_Renderer* renderer) {
+void draw_char(char c, int x, int y, SDL_Renderer *renderer) {
     int tile_idx;
     int white_letters_idx = 500;
     //int black_letters_idx = 600;
@@ -74,14 +74,14 @@ void draw_char(char c, int x, int y, SDL_Renderer* renderer) {
         }
     }
 }
-void draw_text_line(const char* line, int x, int y, SDL_Renderer* renderer) {
+void draw_text_line(const char *line, int x, int y, SDL_Renderer *renderer) {
     int i = 0;
     for (i = 0; i < strlen(line); i++) {
         draw_char(line[i], x + (i*8), y, renderer);
     }
 }
 
-void draw_char_black(char c, int x, int y, SDL_Renderer* renderer) {
+void draw_char_black(char c, int x, int y, SDL_Renderer *renderer) {
     int tile_idx;
     int black_letters_idx = 600;
     int letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 
@@ -99,7 +99,7 @@ void draw_char_black(char c, int x, int y, SDL_Renderer* renderer) {
     }
 }
 
-void draw_text_line_black(const char* line, int x, int y, SDL_Renderer* renderer) {
+void draw_text_line_black(const char *line, int x, int y, SDL_Renderer *renderer) {
     int i = 0;
     for (i = 0; i < strlen(line); i++) {
         draw_char_black(line[i], x + (i*8), y, renderer);
@@ -178,7 +178,7 @@ void draw_lives(int lives) {
 }
 
 /**
- * Score is limited to 5 digits
+ * Draws score on top left corner. Score is limited to 5 digits.
  */
 void draw_score(int score) {
     int i;
@@ -190,7 +190,6 @@ void draw_score(int score) {
     }
 }
 
-/* Bring in tileset from tile<xxx>.bmp files from original binary (see TILES.C)*/
 void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
     int i;
     char fname[50];
@@ -292,45 +291,9 @@ void check_input2(keys_state_t* state)
             state->quit = 1;
         }
     }
-
-    /*const uint8_t *keystate = SDL_GetKeyboardState(NULL);
-    state->right      = (keystate[SDL_SCANCODE_RIGHT]  != 0) ? 1 : 0;
-    state->left       = (keystate[SDL_SCANCODE_LEFT]   != 0) ? 1 : 0;
-    state->jump       = (keystate[SDL_SCANCODE_UP]     != 0) ? 1 : 0;
-    state->down       = (keystate[SDL_SCANCODE_DOWN]   != 0) ? 1 : 0;*/
-
-   /* int ret = SDL_PollEvent(&event);
-    if (ret == 0) {
-        //do stuff here!!!
-
-        printf("no new events! \n");
-        return;
-    }
-
-    const uint8_t *keystate = SDL_GetKeyboardState(NULL);
-    state->right      = (keystate[SDL_SCANCODE_RIGHT]  != 0) ? 1 : 0;
-    state->left       = (keystate[SDL_SCANCODE_LEFT]   != 0) ? 1 : 0;
-    state->jump       = (keystate[SDL_SCANCODE_UP]     != 0) ? 1 : 0;
-    state->down       = (keystate[SDL_SCANCODE_DOWN]   != 0) ? 1 : 0;
-
-    // These are non repeating
-    state->fire       = (keystate[SDL_SCANCODE_LCTRL]  != 0) ? 1 : 0;
-    state->jetpack    = (keystate[SDL_SCANCODE_LALT]   != 0) ? 1 : 0;
-    state->escape     = (keystate[SDL_SCANCODE_ESCAPE] != 0) ? 1 : 0;
-    state->quit       = (event.type == SDL_QUIT) ? 1 : 0;
-    state->bracer     = (keystate[SDL_SCANCODE_RIGHTBRACKET] != 0) ? 1 : 0;
-    state->bracel     = (keystate[SDL_SCANCODE_LEFTBRACKET] != 0) ? 1 : 0;
-    state->key_y      = (keystate[SDL_SCANCODE_Y] != 0) ? 1 : 0;
-    state->key_n      = (keystate[SDL_SCANCODE_N] != 0) ? 1 : 0;
-
-    if (keystate[SDL_SCANCODE_Q] != 0) {
-        printf("Q \n");
-    }*/
 }
 
-// returns 0 if key pressed, 1 if timeout
 int start_intro() {
-    int k;
     int32_t intro_should_finish = 0;
     uint32_t timer_begin;
     uint32_t timer_end;
@@ -339,7 +302,7 @@ int start_intro() {
     int32_t result = 0;
     SDL_Event event;
     int stride;
-    //uint32_t *pixels;
+    int idx;
 
     /* Clear screen */
     SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
@@ -431,9 +394,9 @@ int start_intro() {
         SDL_LockTexture(g_texture, NULL, (void*)&g_pixels, &stride);
 
         // Draw all tiles
-        for (k = 0; k < 41; k++) {
-            draw_tile(&block[k], g_assets);
-            block[k].tick(&block[k]);
+        for (idx = 0; idx < 41; idx++) {
+            draw_tile(&block[idx], g_assets);
+            block[idx].tick(&block[idx]);
         }
 
         draw_text_line("BY JOHN ROMERO", 110, 50, g_renderer);
@@ -462,7 +425,6 @@ int start_intro() {
 /*
  * In original game pickup collision is slightly bigger then other collisions
  */
-
 int is_dave_collision_tile_pick(dave_t *dave, tile_t *tile) {
     if (tile_is_empty(tile)) {
         return 0;
@@ -543,25 +505,6 @@ void check_dave_pick_item(game_context_t *game, tile_t *map) {
         }
     }
 }
-/*
-int check_dave_touch_fire(game_context_t *game, tile_t *map) {
-    if (game->dave->is_dead) {
-        return 0;
-    }
-
-    int idx = 0;
-    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
-        if (is_dave_collision_tile(game->dave, &map[idx])) {
-            if (map[idx].mod == FIRE) {
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-*/
-tile_t flashing_cursor;
 
 void clear_map(tile_t *map) {
     int i = 0;
@@ -575,8 +518,8 @@ void clear_map(tile_t *map) {
     }
 }
 
-int game_popup_quit_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
-{
+int game_popup_quit_routine(game_context_t *game, tile_t *map,
+    tile_t *flashing_cursor, keys_state_t *keys) {
     if (keys->quit) {
         printf("should quit! \n");
         return G_STATE_QUIT_NOW;
@@ -584,28 +527,22 @@ int game_popup_quit_routine(game_context_t *game, tile_t *map, keys_state_t *key
 
     if (keys->key_y) {
         printf("YES \n");
-        //popup_should_finish = 1;
         return G_STATE_QUIT_NOW;
     }
+
     if (keys->key_n) {
         return G_STATE_LEVEL;
     }
-//    if (keys->escape) {
-  //      return G_STATE_LEVEL;
-   // }
 
-    // SDL_SetRenderTarget(g_renderer, g_render_texture);
-    // Draw all tiles
     draw_popup_box(88, 80, 5, 21);
     draw_text_line_black("QUIT? (Y OR N):", 104, 98, g_renderer);
-    draw_tile(&flashing_cursor, g_assets);
-    flashing_cursor.tick(&flashing_cursor);
+    draw_tile(flashing_cursor, g_assets);
+    flashing_cursor->tick(flashing_cursor);
 
     return G_STATE_LEVEL_POPUP;
 }
 
-int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
-{
+int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     int i = 0;
     int k = 0;
 
@@ -711,8 +648,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys)
     return G_STATE_LEVEL;
 }
 
-int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
-{
+int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     int i = 0;
     int k = 0;
 
@@ -757,7 +693,6 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys)
     }
     // ===============================================
 
-
     draw_x_levels_to_go(9 - game->level);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
     draw_tile(&bottom_separator, g_assets);
@@ -782,6 +717,7 @@ int gameloop() {
     tile_t bottom_separator;
     tile_t top_separator;
     tile_t grail_banner;
+    tile_t flashing_cursor;
     char level_path[4096];
     int stride;
     int next_state;
@@ -825,7 +761,7 @@ int gameloop() {
             next_state = game_level_routine(game, map, &key_state);
 
         } else if (g_state == G_STATE_LEVEL_POPUP) {
-            next_state = game_popup_quit_routine(game, map, &key_state);
+            next_state = game_popup_quit_routine(game, map, &flashing_cursor, &key_state);
 
         } else if (g_state == G_STATE_WARP_RIGHT) {
             if (g_prev_state != G_STATE_WARP_RIGHT) {
@@ -839,7 +775,6 @@ int gameloop() {
                 tile_file_parse(map, &game->dave->tile->x,
                     &game->dave->tile->y, "res/levels/warp_right.ddt");
             }
-
             next_state = game_warp_right(game, map, &key_state);
 
         } else if (g_state == G_STATE_GAMEOVER) {
@@ -849,7 +784,6 @@ int gameloop() {
 
         } else if (g_state == G_STATE_QUIT_NOW) {
             SDL_UnlockTexture(g_texture);
-
             return 1;
 
         } else {
@@ -897,20 +831,10 @@ int main(int argc, char* argv[]) {
     g_assets = malloc(sizeof(struct game_assets));
     init_assets(g_assets, g_renderer);
 
-    /*printf("starting intro  \n");
-    ret = start_intro();
-    printf("intro ret: %d \n", ret);
-
-    if (ret == -1) {
-        printf("game ended1 \n");
-        SDL_Quit();
-        return 0;
-    }*/
-
     while (1) {
         ret = start_intro();
         ret = gameloop(level);
-        printf("game-loop finished with ret: %d", ret);
+        printf("game-loop finished with ret-code: %d \n", ret);
 
         if (ret == 0) {
             return 0;

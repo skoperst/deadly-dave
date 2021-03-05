@@ -39,11 +39,11 @@ static const int SPRITE_IDX_FIRE1                  = 6;
 static const int SPRITE_IDX_FIRE2                  = 7;
 static const int SPRITE_IDX_FIRE3                  = 8;
 static const int SPRITE_IDX_FIRE4                  = 9;
-static const int SPRITE_IDX_GRAIL2                 = 10;
-static const int SPRITE_IDX_GRAIL3                 = 11;
-static const int SPRITE_IDX_GRAIL4                 = 12;
-static const int SPRITE_IDX_GRAIL0                 = 13;
-static const int SPRITE_IDX_GRAIL1                 = 14;
+static const int SPRITE_IDX_TROPHY2                = 10;
+static const int SPRITE_IDX_TROPHY3                = 11;
+static const int SPRITE_IDX_TROPHY4                = 12;
+static const int SPRITE_IDX_TROPHY0                = 13;
+static const int SPRITE_IDX_TROPHY1                = 14;
 static const int SPRITE_IDX_PIPE_RIGHT             = 15;
 static const int SPRITE_IDX_RED_BRICK              = 17;
 static const int SPRITE_IDX_DIRT                   = 18;
@@ -134,6 +134,7 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
 void tile_create_intro_fire(tile_t* t, int x, int y);
 void tile_create_intro_banner(tile_t* t, int x, int y);
 void tile_create_grail_banner(tile_t *t, int x, int y);
+
 // Popup box
 void tile_create_popup_part(tile_t* t, int x, int y);
 void tile_create_flashing_cursor(tile_t* t, int x, int y);

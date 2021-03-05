@@ -35,7 +35,6 @@ int tile_is_empty(tile_t *tile) {
     if (tile->mod == 0) {
         return 1;
     }
-
     return 0;
 }
 
@@ -393,23 +392,23 @@ void tile_create_grail(tile_t *t, int x, int y) {
 
     t->sprites[0] = t->sprites[1] = t->sprites[2] = t->sprites[3] =
     t->sprites[4] = t->sprites[5] = t->sprites[6] = t->sprites[7] =
-    t->sprites[8] = t->sprites[9] = SPRITE_IDX_GRAIL0;
+    t->sprites[8] = t->sprites[9] = SPRITE_IDX_TROPHY0;
 
     t->sprites[10] = t->sprites[11] = t->sprites[12] = t->sprites[13] =
     t->sprites[14] = t->sprites[15] = t->sprites[16] = t->sprites[17] =
-    t->sprites[18] = t->sprites[19] = SPRITE_IDX_GRAIL1;
+    t->sprites[18] = t->sprites[19] = SPRITE_IDX_TROPHY1;
 
     t->sprites[20] = t->sprites[21] = t->sprites[22] = t->sprites[23] =
     t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] =
-    t->sprites[28] = t->sprites[29] = SPRITE_IDX_GRAIL2;
+    t->sprites[28] = t->sprites[29] = SPRITE_IDX_TROPHY2;
 
     t->sprites[30] = t->sprites[31] = t->sprites[32] = t->sprites[33] =
     t->sprites[34] = t->sprites[35] = t->sprites[36] = t->sprites[37] =
-    t->sprites[38] = t->sprites[39] = SPRITE_IDX_GRAIL3;
+    t->sprites[38] = t->sprites[39] = SPRITE_IDX_TROPHY3;
 
     t->sprites[40] = t->sprites[41] = t->sprites[42] = t->sprites[43] =
     t->sprites[44] = t->sprites[45] = t->sprites[46] = t->sprites[47] =
-    t->sprites[48] = t->sprites[49] = SPRITE_IDX_GRAIL4;
+    t->sprites[48] = t->sprites[49] = SPRITE_IDX_TROPHY4;
 
     t->sprites[50] = 0;
     t->sprite_idx = 0;
