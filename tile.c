@@ -133,6 +133,94 @@ void tile_create_intro_fire(tile_t* t, int x, int y) {
     t->is_inside = &tile_is_inside;
 }
 
+void tile_create_stars(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_STARS;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = CLIMB;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
+void tile_create_stars_moon(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_STARS_MOON;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = CLIMB;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
+void tile_create_moss(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_MOSS;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = MOSS;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
+void tile_create_trunk(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = SPRITE_IDX_TRUNK;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = CLIMB;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
+void tile_create_tree(tile_t* t, int x, int y, int type) {
+    t->x = x;
+    t->y = y;
+    t->width = 16;
+    t->height = 16;
+    if (type == 0) {
+        t->sprites[0] = SPRITE_IDX_TREE1;
+    } else if (type == 1) {
+        t->sprites[0] = SPRITE_IDX_TREE2;
+    } else if (type == 2) {
+        t->sprites[0] = SPRITE_IDX_TREE_CORNER_TOP_RIGHT;
+    } else if (type == 3) {
+        t->sprites[0] = SPRITE_IDX_TREE_CORNER_TOP_LEFT;
+    } else if (type == 4) {
+        t->sprites[0] = SPRITE_IDX_TREE_CORNER_BOT_RIGHT;
+    } else if (type == 5) {
+        t->sprites[0] = SPRITE_IDX_TREE_CORNER_BOT_LEFT;
+    }
+
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->mod = CLIMB;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
 void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
     t->x = x;
     t->y = y;
@@ -429,6 +517,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_block(t, SPRITE_IDX_PURPLE_PLATFORM, x, y, 16, 16);
     } else if (strcmp(tag, "DRT") == 0) {
         tile_create_block(t, SPRITE_IDX_DIRT, x, y, 16, 16);
+    } else if (strcmp(tag, "DRB") == 0) {
+        tile_create_block(t, SPRITE_IDX_DIRT_BLOOD, x, y, 16, 16);
     } else if (strcmp(tag, "BCM") == 0) {
         tile_create_block(t, SPRITE_IDX_BLUE_COLUMN, x, y, 16, 16);
     } else if (strcmp(tag, "PIR") == 0) {
@@ -483,6 +573,26 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_block(t, SPRITE_IDX_DIRT_BOTTOM_LEFT, x, y, 16, 16);
     } else if (strcmp(tag, "DR4") == 0) {
         tile_create_block(t, SPRITE_IDX_DIRT_TOP_LEFT, x, y, 16, 16);
+    } else if ((strcmp(tag, "  M") == 0) || (strcmp(tag, "D+M") == 0)) {
+        tile_create_moss(t, x, y);
+    } else if (strcmp(tag, "TRK") == 0) {
+        tile_create_trunk(t, x, y);
+    } else if (strcmp(tag, "TR1") == 0) {
+        tile_create_tree(t, x, y, 0);
+    } else if (strcmp(tag, "TR2") == 0) {
+        tile_create_tree(t, x, y, 1);
+    } else if (strcmp(tag, "TR3") == 0) {
+        tile_create_tree(t, x, y, 2);
+    } else if (strcmp(tag, "TR4") == 0) {
+        tile_create_tree(t, x, y, 3);
+    } else if (strcmp(tag, "TR5") == 0) {
+        tile_create_tree(t, x, y, 4);
+    } else if (strcmp(tag, "TR6") == 0) {
+        tile_create_tree(t, x, y, 5);
+    } else if (strcmp(tag, "STR") == 0) {
+        tile_create_stars(t, x, y);
+    } else if (strcmp(tag, "MON") == 0) {
+        tile_create_stars_moon(t, x, y);
     }
 }
 
@@ -524,12 +634,12 @@ int tile_map_parse(tile_t *map, int *dave_x, int *dave_y, char *map_str) {
             } else if (map_str[i] == ',') {
                 if (collected_count == 3) {
                     collected_count = 0;
-                    if (strcmp(tag, " D ") == 0) {
+                    if ((strcmp(tag, " D ") == 0) || (strcmp(tag, "D+M") == 0)) {
                         *dave_x = cur_col * 16;
                         *dave_y = pos * 16;
-                    } else {
-                        tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
                     }
+
+                    tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
                     pos++;
                 } else {
                     return -1;
