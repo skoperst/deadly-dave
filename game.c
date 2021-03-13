@@ -42,7 +42,9 @@ void render_tile_idx(int tile_idx, int x, int y) {
             // Poor man's alpha blending
             if ( (pixel & 0x000000FF) == 0) {
             } else {
-                g_pixels[(line_idx + y) * 320 + (column_idx + x)] = pixel;
+                if ( (line_idx + y) >= 0) {
+                    g_pixels[(line_idx + y) * 320 + (column_idx + x)] = pixel;
+                }
             }
         }
     }
@@ -161,16 +163,16 @@ void draw_x_levels_to_go(int x) {
 }
 
 void draw_level(int level) {
-    render_tile_idx(136, 120, 0); // level:
-    render_tile_idx(148, 176, 1); //0
-    render_tile_idx(148 + level + 1, 184, 1); //0
+    render_tile_idx(136, 108, 0); // level:
+    render_tile_idx(148, 176, 0); //0
+    render_tile_idx(148 + level + 1, 184, 0); //0
 }
 
 void draw_lives(int lives) {
     int start_x = 256;
     int idx = 0;
 
-    render_tile_idx(135, 200, 0);
+    render_tile_idx(135, 192, 0);
 
     for (idx = 0; (idx < (lives - 1)) && (idx < 4); idx++) {
         render_tile_idx(143, start_x + (16 * idx), 0);
@@ -186,7 +188,7 @@ void draw_score(int score) {
     for (i = 0; i < 5; i++) {
         int mod = score % 10;
         score = score / 10;
-        render_tile_idx(148 + mod, 96 - (8 * i), 1);
+        render_tile_idx(148 + mod, 96 - (8 * i), 0);
     }
 }
 

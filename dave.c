@@ -64,6 +64,32 @@ static int dave_collision_left(dave_t *dave, int delta, tile_t map[TILEMAP_WIDTH
 /**
  * Returns 1 if dave currently touching any deadly tile, such as vines or file, etc..
  */
+static int is_dave_on_tree(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
+    int idx = 0;
+
+    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
+        if (map[idx].sprites[0] != 0 && map[idx].mod == CLIMB) {
+            if (map[idx].is_inside(&map[idx], dave->tile->x+5, dave->tile->y - 1)) {
+                return 1;
+            }
+            if (map[idx].is_inside(&map[idx], dave->tile->x+5, dave->tile->y+4)) {
+                return 1;
+            }
+            if (map[idx].is_inside(&map[idx], dave->tile->x+10, dave->tile->y - 1)) {
+                return 1;
+            }
+            if (map[idx].is_inside(&map[idx], dave->tile->x+10, dave->tile->y+4)) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Returns 1 if dave currently touching any deadly tile, such as vines or file, etc..
+ */
 static int is_dave_collision_fire(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
     int idx = 0;
 
@@ -334,6 +360,14 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         return;
     }
 
+    if (is_dave_on_tree(dave, map)) {
+        if (key_up && dave->jump_state >= 3 && dave->jump_state <= 64) {
+            dave->jump_state= 0;
+            return;
+        }
+    }
+
+
     if (dave->jump_state == 94) {
         dave->tile->y = dave->tile->y + 2;
 
@@ -455,6 +489,41 @@ static void dave_state_freefalling_routine(dave_t *dave,
     }
 }
 
+static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
+        int key_left, int key_right, int key_up, int key_down, int key_jetpack) {
+
+    if  (!is_dave_on_tree(dave, map)) {
+        if (key_up) {
+            dave_state_jumping_enter(dave, map, key_left, key_right, key_up);
+            return;
+        }
+        dave_state_freefalling_enter(dave, map, key_left, key_right, key_up);
+        return;
+    }
+
+    if (key_up && (key_left == 0) && (key_right == 0)) {
+        dave->tile->y = dave->tile->y - 1;
+    } else if (key_down && (key_left == 0) && (key_right == 0)) {
+        dave->tile->y = dave->tile->y + 1;
+
+        if (dave_on_ground(dave, map)) {
+            dave_state_standing_enter(dave, map, key_left, key_right, key_up);
+            return;
+        }
+    } else if (key_left && (key_up == 0) && (key_down == 0)) {
+        dave->tile->x = dave->tile->x - 1;
+    } else if (key_right && (key_up == 0) && (key_down == 0)) {
+        dave->tile->x = dave->tile->x + 1;
+    }
+}
+
+static void dave_state_climbing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
+        int key_left, int key_right, int key_up, int key_jetpack) {
+    printf("CLIMBING \n");
+    dave->state = DAVE_STATE_CLIMBING;
+    dave->ticks_in_state = 0;
+}
+
 static void dave_state_standing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up, int key_jetpack) {
 
@@ -478,10 +547,16 @@ static void dave_state_standing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
     }
 
     if (key_up) {
+        if (is_dave_on_tree(dave, map)) {
+            dave_state_climbing_enter(dave, map, key_left, key_right, key_up, key_jetpack);
+            return;
+        }
+
         if (dave->jump_cooldown_count <= 0) {
             dave_state_jumping_enter(dave, map, key_left, key_right, key_up);
             return;
         }
+
     }
     if (key_left || key_right) {
         dave_state_walking_enter(dave, map, key_left, key_right, key_up);
@@ -497,6 +572,8 @@ static void dave_tick(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         dave_state_walking_routine(dave, map, key_left, key_right, key_up, key_jetpack);
     } else if (dave->state == DAVE_STATE_JUMPING) {
         dave_state_jumping_routine(dave, map, key_left, key_right, key_up, key_jetpack);
+    } else if (dave->state == DAVE_STATE_CLIMBING) {
+        dave_state_climbing_routine(dave, map, key_left, key_right, key_up, key_down, key_jetpack);
     } else if (dave->state == DAVE_STATE_FREEFALLING) {
         dave_state_freefalling_routine(dave, map, key_left, key_right, key_up, key_jetpack);
     } else if (dave->state == DAVE_STATE_BURNING) {
