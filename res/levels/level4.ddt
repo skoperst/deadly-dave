@@ -28,7 +28,7 @@
 #
    ,DR3,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
    ,   ,   ,   ,   ,STR,   ,   ,   ,PIR,DRT;
-   ,STR,TR4,TR1,TR6,   ,   ,   ,   ,   ,DRT;
+   ,STR,TR4,TR1,TR6,   ,   ,   ,   ,D+M,DRT;
    ,TR4,TR1,TR1,TR1, * ,   ,   ,   ,  M,DRT;
    ,TR1,TR1,TR1,TR1,TRK,TRK,TRK,TRK,TRK,DRT;
    ,TR3,TR1,TR1,TR1, * ,   ,   ,   ,  M,DRT;
@@ -110,7 +110,7 @@
    ,DRT,   ,TR1,TR1,TR1,TRK,TRK,TRK,TRK,DRT;
    ,DRT,   ,TR3,TR1,TR5, * ,   ,   ,  M,DRT;
    ,DRT, * ,   ,   ,   ,   ,   ,   ,  M,DRT;
-   ,DRT,PIR,   ,   ,   ,   ,   ,   ,D+M,DRT;
+   ,DRT,PIR,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,DRT, * ,   ,   ,   ,   ,   ,DRB,  M,DRT;
    ,DRT,   ,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,DRT,   ,DRB,   ,   ,   ,DRB,   ,  M,DRT;

@@ -152,6 +152,17 @@ void draw_popup_box(int x, int y, int rows, int columns)
     }
 }
 
+void draw_map_offset(tile_t *map, int offset) {
+    int i;
+
+    for (i = 0; i < (TILEMAP_SCENE_WIDTH * TILEMAP_SCENE_HEIGHT); i++) {
+        if (map[i + (offset * 12)].sprites[0] != 0) {
+            draw_tile_offset(&map[i + (offset*12)], g_assets, offset);
+        }
+    }
+
+}
+
 void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
     draw_tile_offset(dave->tile, assets, x_offset);
 }
@@ -544,6 +555,55 @@ int game_popup_quit_routine(game_context_t *game, tile_t *map,
     return G_STATE_LEVEL_POPUP;
 }
 
+int game_adjust_scroll_to_dave(game_context_t *game, dave_t *dave) {
+    if (game->scroll_remaining != 0) {
+        if (game->scroll_remaining > 0) {
+            game->scroll_remaining--;
+            if ((game->scroll_remaining % 1) == 0) {
+                game->scroll_offset++;
+            }
+        } else if (game->scroll_remaining < 0) {
+            game->scroll_remaining++;
+            if ((game->scroll_remaining % 1) == 0) {
+                game->scroll_offset--;
+            }
+        }
+        return 1;
+    } else {
+        int delta = (game->dave->tile->x - (game->scroll_offset * 16));
+        if (delta > 320 - (16 + 16 + 8)) {
+            if ((80 -  game->scroll_offset) < 15) {
+                game->scroll_remaining = (80 - game->scroll_offset);
+            } else {
+                game->scroll_remaining = 15;
+            }
+            return 1;
+
+        } else if (delta < (16 + 14) && game->scroll_offset > 0) {
+            if (game->scroll_offset < 15) {
+                game->scroll_remaining = game->scroll_offset - 15;
+            } else {
+                game->scroll_remaining = -15;
+            }
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}
+
+void game_set_scroll_to_dave(game_context_t *game, dave_t *dave) {
+    while (game_adjust_scroll_to_dave(game, dave) != 0) {};
+}
+
+int game_is_scrolling(game_context_t *game) {
+    if (game->scroll_remaining != 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
 int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     int i = 0;
     int k = 0;
@@ -571,32 +631,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
         }
     }
 
-
-    int delta = (game->dave->tile->x - (game->scroll_offset * 16));
-
-    if (game->scroll_remaining != 0) {
-        if (game->scroll_remaining > 0) {
-            game->scroll_remaining--;
-            if ((game->scroll_remaining % 1) == 0)
-                game->scroll_offset++;
-        } else if (game->scroll_remaining < 0) {
-            game->scroll_remaining++;
-            if ((game->scroll_remaining % 1) == 0) {
-                game->scroll_offset--;
-            }
-        }
-    } else {
-        if (delta > 320 - (16 + 16 + 8)) {
-
-            if ( (80 -  game->scroll_offset) < 15) {
-                game->scroll_remaining = (80 - game->scroll_offset);
-            } else {
-                game->scroll_remaining = 15;
-            }
-        } else if (delta < (16 + 14) && game->scroll_offset > 0) {
-            game->scroll_remaining = -15;
-        }
-
+    if (!game_adjust_scroll_to_dave(game, game->dave)) {
         game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
         for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
             if (map[i].sprites[0] != 0) {
@@ -629,14 +664,8 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     for (k = 0; k < 320 * 200; k++) {
         g_pixels[k] = 0x000000FF;
     }
-    // ================ draw map =====================
-    for (k = 0; k < (TILEMAP_SCENE_WIDTH * TILEMAP_SCENE_HEIGHT); k++) {
-        if (map[k + (game->scroll_offset * 12)].sprites[0] != 0) {
-            draw_tile_offset(&map[k + (game->scroll_offset*12)], g_assets, game->scroll_offset);
-        }
-    }
-    // ===============================================
 
+    draw_map_offset(map, game->scroll_offset);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
     draw_tile(&bottom_separator, g_assets);
     draw_tile(&top_separator, g_assets);
@@ -709,7 +738,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     return G_STATE_WARP_RIGHT;
 }
 
-int gameloop() {
+int gameloop(void) {
     uint32_t timer_begin;
     uint32_t timer_end;
     uint32_t delay;
@@ -757,6 +786,8 @@ int gameloop() {
             printf("Resetting dave location \n");
             game->dave->tile->x = current_level_begin_x;
             game->dave->tile->y = current_level_begin_y;
+            game->scroll_offset = 0;
+            game_set_scroll_to_dave(game, game->dave);
             next_state = G_STATE_LEVEL;
 
         } else if (g_state == G_STATE_LEVEL) {
@@ -810,7 +841,6 @@ int gameloop() {
 
 int main(int argc, char* argv[]) {
     int ret = 0;
-    int level = 0;
     const uint8_t DISPLAY_SCALE = 3;
 
     // Initialize SDL
@@ -835,7 +865,7 @@ int main(int argc, char* argv[]) {
 
     while (1) {
         ret = start_intro();
-        ret = gameloop(level);
+        ret = gameloop();
         printf("game-loop finished with ret-code: %d \n", ret);
 
         if (ret == 0) {
