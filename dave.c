@@ -250,6 +250,20 @@ void dave_state_jetpacking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMA
     dave->ticks_in_state = 0;
 }
 
+static void dave_state_climbing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
+        int key_left, int key_right, int key_up, int key_jetpack) {
+    printf("CLIMBING enter\n");
+    dave->state = DAVE_STATE_CLIMBING;
+    if (key_up && key_right) {
+        dave->climb_state = DAVE_CLIMBING_STATE_JUMP_RIGHT;
+    } else if (key_up && key_left) {
+        dave->climb_state = DAVE_CLIMBING_STATE_JUMP_LEFT;
+    } else {
+        dave->climb_state = DAVE_CLIMBING_STATE_READY;
+    }
+    dave->ticks_in_state = 0;
+}
+
 void dave_state_freefalling_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
     int key_left, int key_right, int key_up) {
     dave->state = DAVE_STATE_FREEFALLING;
@@ -361,7 +375,15 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
     }
 
     if (is_dave_on_tree(dave, map)) {
-        if (key_up && dave->jump_state >= 3 && dave->jump_state <= 64) {
+        if ((key_up == 0) && (key_right || key_left)) {
+            dave_state_climbing_enter(dave, map, key_left, key_right, key_up, key_jetpack);
+        }
+
+        if (key_up && (key_right || key_left) && dave->jump_state >= 3 && dave->jump_state <= 76) {
+            printf("TREE jumpstate: %d \n", dave->jump_state);
+            dave->jump_cooldown_count = 1;
+            dave_state_climbing_enter(dave, map, key_left, key_right, key_up, key_jetpack);
+
             dave->jump_state= 0;
             return;
         }
@@ -434,12 +456,12 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
                 dave->face_direction = DAVE_DIRECTION_RIGHT;
 
                 if (dave->jump_state <= 94) {
-                if (!dave_collision_right(dave, 1, map)){
-                    dave->tile->x+=1;
-                    if (!dave_collision_right(dave, 1, map)) {
+                    if (!dave_collision_right(dave, 1, map)){
                         dave->tile->x+=1;
+                        if (!dave_collision_right(dave, 1, map)) {
+                            dave->tile->x+=1;
+                        }
                     }
-                }
                 }
 
                 dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_RIGHT;
@@ -501,28 +523,59 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
         return;
     }
 
-    if (key_up && (key_left == 0) && (key_right == 0)) {
-        dave->tile->y = dave->tile->y - 1;
-    } else if (key_down && (key_left == 0) && (key_right == 0)) {
-        dave->tile->y = dave->tile->y + 1;
+    if (key_up && (key_left == 0) && (key_right == 0) && (key_down == 0)) {
+        if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
+            dave->tile->y = dave->tile->y - 2;
+            dave->step_count++;
+            dave->climb_state = DAVE_CLIMBING_STATE_COOLDOWN;
+        } else {
+            dave->climb_state = DAVE_CLIMBING_STATE_READY;
+        }
+
+    } else if (key_down && (key_left == 0) && (key_right == 0) && (key_up == 0)) {
+        if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
+            dave->tile->y = dave->tile->y + 2;
+            dave->step_count++;
+            dave->climb_state = DAVE_CLIMBING_STATE_COOLDOWN;
+        } else {
+            dave->climb_state = DAVE_CLIMBING_STATE_READY;
+        }
 
         if (dave_on_ground(dave, map)) {
             dave_state_standing_enter(dave, map, key_left, key_right, key_up);
             return;
         }
-    } else if (key_left && (key_up == 0) && (key_down == 0)) {
-        dave->tile->x = dave->tile->x - 1;
-    } else if (key_right && (key_up == 0) && (key_down == 0)) {
-        dave->tile->x = dave->tile->x + 1;
+    } else if (key_left && (key_up == 0) && (key_right == 0)) {
+        if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
+            dave->tile->x = dave->tile->x - 2;
+            dave->step_count++;
+            dave->climb_state = DAVE_CLIMBING_STATE_COOLDOWN;
+        } else {
+            dave->climb_state = DAVE_CLIMBING_STATE_READY;
+        }
+
+    } else if (key_right && (key_up == 0) && (key_left==0)) {
+        if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
+            dave->tile->x = dave->tile->x + 2;
+            dave->step_count++;
+            dave->climb_state = DAVE_CLIMBING_STATE_COOLDOWN;
+        } else {
+            dave->climb_state = DAVE_CLIMBING_STATE_READY;
+        }
+
+    } else if ((key_right || key_left) && key_up) {
+        if (dave->jump_cooldown_count <= 0) {
+            dave->tile->y-=1;
+            dave_state_jumping_enter(dave, map, key_left, key_right, key_up);
+            return;
+        } else {
+            dave->jump_cooldown_count--;
+        }
     }
+
+    dave->ticks_in_state++;
 }
 
-static void dave_state_climbing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
-        int key_left, int key_right, int key_up, int key_jetpack) {
-    printf("CLIMBING \n");
-    dave->state = DAVE_STATE_CLIMBING;
-    dave->ticks_in_state = 0;
-}
 
 static void dave_state_standing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up, int key_jetpack) {
@@ -673,6 +726,27 @@ static int dave_get_sprite(tile_t *tile) {
                 sprite = SPRITE_IDX_DAVE_JETPACK_RIGHT3;
             }
         }
+    } else if (dave->state == DAVE_STATE_CLIMBING) {
+        if (dave->climb_state == DAVE_CLIMBING_STATE_READY || 
+                dave->climb_state == DAVE_CLIMBING_STATE_COOLDOWN) {
+            if (dave->step_count % 8 == 0 || dave->step_count % 8 == 1) {
+                sprite = SPRITE_IDX_DAVE_CLIMB_HANDS_UP;
+            } else if (dave->step_count % 8 == 2 || dave->step_count % 8 == 3 ||
+                dave->step_count % 8 == 6 || dave->step_count % 8 == 7) {
+                sprite = SPRITE_IDX_DAVE_CLIMB_HAND_RIGHT;
+            } else if (dave->step_count % 8 == 4 || dave->step_count % 8 == 5) {
+                sprite = SPRITE_IDX_DAVE_CLIMB_HAND_LEFT;
+            } else {
+                sprite = SPRITE_IDX_DAVE_FRONT;
+            }
+        } else if (dave->climb_state == DAVE_CLIMBING_STATE_JUMP_RIGHT) {
+
+            sprite = SPRITE_IDX_DAVE_JUMP_RIGHT;
+        } else if (dave->climb_state == DAVE_CLIMBING_STATE_JUMP_LEFT) {
+            sprite = SPRITE_IDX_DAVE_JUMP_LEFT;
+        } else {
+            sprite = SPRITE_IDX_DAVE_FRONT;
+        }
     } else {
         sprite = SPRITE_IDX_DAVE_FRONT;
     }
@@ -684,6 +758,7 @@ dave_t* dave_create() {
     dave_t *dave = malloc(sizeof(dave_t));
     dave->step_count = 0;
     dave->walk_state = DAVE_STATE_STANDING;
+    dave->climb_state = 0;
     dave->freefall_direction = DAVE_DIRECTION_FRONTR;
     dave->face_direction = DAVE_DIRECTION_FRONTR;
     dave->jump_cooldown_count = 0;
