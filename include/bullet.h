@@ -3,21 +3,22 @@
 
 #include "tile.h"
 
+#define BULLET_STATE_FLYING_RIGHT 1
+#define BULLET_STATE_FLYING_LEFT  2
+#define BULLET_STATE_DEAD         3
 
-#define DAVE_BULLET_DIR_RIGHT  0
-#define DAVE_BULLET_DIR_LEFT  1
-
-typedef struct dave_bullet_struct {
+typedef struct bullet_struct {
     tile_t *tile;
 
-    int direction;
     int speed_x;
-    int valid;
+    int state;
+    int steps;
 
-    void (*tick)(struct dave_bullet_struct *bullet,
-            tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT], int left, int right, int up);
-} dave_bullet_t;
+    void (*tick)(struct bullet_struct *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]);
+    int (*is_dead)(struct bullet_struct *bullet);
+} bullet_t;
 
-dave_bullet_t* dave_bullet_create();
+bullet_t* bullet_create_right(int x, int y);
+bullet_t* bullet_create_left(int x, int y);
 
 #endif

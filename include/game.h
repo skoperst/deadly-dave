@@ -5,6 +5,7 @@
 
 #include "tile.h"
 #include "dave.h"
+#include "bullet.h"
 
 /* Format of the level information
  * -path is used for monster movement
@@ -59,6 +60,8 @@ typedef struct keys_state_struct {
     int32_t bracer;
     int32_t bracel;
     int32_t escape;
+    int32_t enter;
+    int32_t space;
     int32_t key_y;
     int32_t key_n;
 } keys_state_t;
@@ -100,7 +103,7 @@ typedef struct game_context_struct {
     uint8_t jetpack;
 
     dave_t *dave;
-    tile_t *bullet;
+    bullet_t *bullet;
     struct monster_state monster[5];
 
     int64_t scroll_offset;

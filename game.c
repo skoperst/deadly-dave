@@ -34,6 +34,10 @@ assets_t* g_assets;
 void render_tile_idx(int tile_idx, int x, int y) {
     SDL_Surface *surface = g_assets->tiles[tile_idx];
 
+    int blend = 0;
+    if (tile_idx == SPRITE_IDX_BULLET_RIGHT || tile_idx == SPRITE_IDX_BULLET_LEFT) {
+        blend = 1;
+    }
     int column_idx, line_idx;
     for (line_idx = 0; line_idx < surface->h; line_idx++) {
         for (column_idx = 0; column_idx < surface->w; column_idx++) {
@@ -43,6 +47,13 @@ void render_tile_idx(int tile_idx, int x, int y) {
             if ( (pixel & 0x000000FF) == 0) {
             } else {
                 if ( (line_idx + y) >= 0) {
+                    if (blend) {
+                        uint32_t oldpixel = g_pixels[(line_idx + y) * 320 + (column_idx + x)];
+
+                        if (oldpixel != 0x000000FF) {
+                            pixel = (pixel ^ oldpixel);
+                        }
+                    }
                     g_pixels[(line_idx + y) * 320 + (column_idx + x)] = pixel;
                 }
             }
@@ -161,6 +172,10 @@ void draw_map_offset(tile_t *map, int offset) {
         }
     }
 
+}
+
+void draw_bullet_offset(bullet_t *bullet, struct game_assets *assets, int x_offset) {
+    draw_tile_offset(bullet->tile, assets, x_offset);
 }
 
 void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
@@ -284,6 +299,9 @@ void check_input2(keys_state_t* state)
     state->jump       = (keystate[SDL_SCANCODE_UP]     != 0) ? 1 : 0;
     state->down       = (keystate[SDL_SCANCODE_DOWN]   != 0) ? 1 : 0;
     state->escape     = (keystate[SDL_SCANCODE_ESCAPE] != 0) ? 1 : 0;
+    state->fire       = (keystate[SDL_SCANCODE_LCTRL]  != 0) ? 1 : 0;
+//    state->enter     = (keystate[SDL_SCANCODE_RETURN] != 0) ? 1 : 0;
+    state->space      = (keystate[SDL_SCANCODE_SPACE]  != 0) ? 1 : 0;
     state->key_y      = (keystate[SDL_SCANCODE_Y] != 0) ? 1 : 0;
     state->key_n      = (keystate[SDL_SCANCODE_N] != 0) ? 1 : 0;
 
@@ -299,7 +317,10 @@ void check_input2(keys_state_t* state)
             printf("mod: %d, scan: %d, repeat: %d \n", modifier, scancode, is_repeat);
             if (event.key.keysym.scancode == SDL_SCANCODE_LALT) {
                 state->jetpack = 1;
-            } 
+            }
+            if (event.key.keysym.scancode == SDL_SCANCODE_RETURN && is_repeat == 0) {
+                state->enter = 1;
+            }
         } else if (event.type == SDL_QUIT) {
             state->quit = 1;
         }
@@ -313,14 +334,19 @@ int start_intro() {
     uint32_t delay;
     game_context_t *game;
     int32_t result = 0;
-    SDL_Event event;
     int stride;
     int idx;
 
+    keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0, 0};
     /* Clear screen */
     SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
     SDL_RenderClear(g_renderer);
 
+    check_input2(&key_state);
+    check_input2(&key_state);
+    check_input2(&key_state);
+    
+    memset(&key_state, 0x00, sizeof(keys_state_t));
     printf("start_intro E \n");
     /* Initialize game state */
     game = malloc(sizeof(game_context_t));
@@ -376,12 +402,23 @@ int start_intro() {
     tile_create_intro_fire(&block[39], 216, 160);
     tile_create_block(&block[40], SPRITE_IDX_DIRT, 232, 160, TILE_SIZE, TILE_SIZE);
 
-    // Game loop with fixed time step at 30 FPS
     while (!intro_should_finish) {
         timer_begin = SDL_GetTicks();
 
+            check_input2(&key_state);
+
         // All next drawings will be done into the texture (as oppose to screen)
-        while(SDL_PollEvent(&event)) {
+        if (key_state.escape) {
+            printf("SDL_QUIT \n");
+            exit(0);
+        }
+        if (key_state.enter || key_state.space) {
+
+            result = 0;
+            intro_should_finish = 1;
+        }
+        //if (key_state
+        /*while(SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 printf("SDL_QUIT \n");
                 exit(0);
@@ -400,7 +437,7 @@ int start_intro() {
                 result = 0;
                 intro_should_finish = 1;
             }
-        }
+        }*/
 
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
@@ -625,14 +662,31 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     }
 
     if (keys->fire) {
-        printf("HANDLING LCTRL \n");
+        printf("HANDLING LCTRL  \n");
         if (game->bullet == NULL) {
+            printf("Creating bullet!!\n");
+            if (game->dave->face_direction == DAVE_DIRECTION_LEFT ||
+                    game->dave->face_direction == DAVE_DIRECTION_FRONTL) {
+                game->bullet = bullet_create_left(game->dave->tile->x - 8, game->dave->tile->y + 8);
+            } else if (game->dave->face_direction == DAVE_DIRECTION_RIGHT ||
+                    game->dave->face_direction == DAVE_DIRECTION_FRONTR) {
+                game->bullet = bullet_create_right(game->dave->tile->x + 8, game->dave->tile->y + 8);
+            }
             //dave_gunfire();
         }
     }
 
     if (!game_adjust_scroll_to_dave(game, game->dave)) {
         game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
+        if (game->bullet != NULL) {
+            game->bullet->tick(game->bullet, map);
+
+            if (game->bullet->is_dead(game->bullet)) {
+                game->bullet = NULL;
+                printf("BULLET DEAD \n");
+            }
+        }
+
         for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
             if (map[i].sprites[0] != 0) {
                 map[i].tick(&map[i]);
@@ -667,6 +721,9 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     draw_map_offset(map, game->scroll_offset);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
+    if (game->bullet != NULL) {
+        draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
+    }
     draw_tile(&bottom_separator, g_assets);
     draw_tile(&top_separator, g_assets);
     if (game->dave->has_trophy) {
@@ -858,6 +915,11 @@ int main(int argc, char* argv[]) {
 
     // Easy onversion between original world (320x200) and current screen size
     SDL_RenderSetScale(g_renderer, DISPLAY_SCALE, DISPLAY_SCALE);
+
+    // Flush any pre-pressed keys
+    SDL_FlushEvent(SDL_KEYDOWN);
+    SDL_FlushEvent(SDL_MOUSEBUTTONDOWN);
+    SDL_FlushEvent(SDL_MOUSEMOTION);
 
     printf("initializing assets \n");
     g_assets = malloc(sizeof(struct game_assets));

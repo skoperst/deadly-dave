@@ -7,7 +7,7 @@ LIBS = -L /usr/local/Cellar/sdl2/2.0.12_1/lib
 CFLAGS = -g -std=gnu89 -Wall
 LFLAGS = -lSDL2main -lSDL2
 
-SRC = game.c tile.c dave.c
+SRC = game.c tile.c dave.c bullet.c
 OBJ = ddave
 
 all: $(SRC)
