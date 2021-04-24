@@ -620,7 +620,7 @@ int game_adjust_scroll_to_dave(game_context_t *game, dave_t *dave) {
 
         } else if (delta < (16 + 14) && game->scroll_offset > 0) {
             if (game->scroll_offset < 15) {
-                game->scroll_remaining = game->scroll_offset - 15;
+                game->scroll_remaining = (0 - game->scroll_offset);
             } else {
                 game->scroll_remaining = -15;
             }
