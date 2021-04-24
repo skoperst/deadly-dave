@@ -222,6 +222,12 @@ void dave_state_jetpacking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILE
         return;
     }
 
+    if (is_dave_collision_fire(dave, map)) {
+        dave_state_burning_enter(dave, map, key_left, key_right, key_up);
+        return;
+    }
+
+
     if (key_left) {
         if (!dave_collision_left(dave, 1, map)) {
             dave->tile->x-=1;
