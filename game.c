@@ -191,7 +191,7 @@ void draw_x_levels_to_go(int x) {
 }
 
 void draw_level(int level) {
-    render_tile_idx(136, 108, 0); // level:
+    render_tile_idx(136, 104, 0); // level:
     render_tile_idx(148, 176, 0); //0
     render_tile_idx(148 + level + 1, 184, 0); //0
 }

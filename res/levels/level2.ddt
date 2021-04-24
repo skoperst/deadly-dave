@@ -126,15 +126,21 @@
    ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
    ,DR3,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DR4;
 
-#   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
-#RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK;
-#RBK,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
-#RBK,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
-#RBK,PPK,   ,   ,PPK,   ,   ,   ,   ,   ,   ,   ,   ,PPK,   ,   ,   ,   ,   ,   ;
-#RBK,   ,   ,   ,   ,   ,   ,   ,PPK,PPK,PPK,   ,   ,   ,RBK,   ,   ,   ,   ,   ;
-#RBK,   ,PPK,PPK,   ,   ,   ,   ,   ,RBK,   ,   ,   , Y ,RBK,   ,PPK,PPK,PPK,PPK;
-#RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK,   ,PPK,   ,   ,RBK,   ,   ,   ,   ,   ;
-#RBK,   ,   ,   ,PPK,PPK,PPK,   ,   ,RBK,   ,   ,   ,   ,RBK,   ,   ,   ,   ,   ;
-#RBK, D ,   ,   ,   ,   ,   ,   ,   ,RBK,   ,   ,   ,PPK,RBK,   ,   ,   ,   ,   ;
-#RBK,RBK,RBK,FR1,FR1,FR2,FR2,FIR,FIR,RBK,FIR,FIR,FIR,FIR,RBK,WAT,WAT,WAT,WAT,WAT;
+#SPX:
+#05,03,02,04,00,05,FD,04,FC,04,FB,03,F9,02,FA,02,
+#FA,01,F9,01,F8,FE,FB,FD,FA,FD,F9,FE,F9,FD,FB,FE,
+#F9,FD,FA,FD,F9,FD,F7,FE,F6,00,F7,01,F9,02,F7,02,
+#F8,03,F8,00,F7,00,F7,01,F6,02,F9,00,FD,FF,FE,FC,
+#01,FC,03,FD,03,FF,03,FF,06,FE,08,FE,08,FF,0B,FF,
+#0E,FF,0E,FE,0F,00,12,00,11,00,11,01,0E,01,0F,01,
+#0A,02,06,02,06,02,EA,EA,D4,47,CD,C2,C5,D2,AD,C9,
+#CE,D3,C5,D2,D4,AC,A0,DB,C7,DD,CF,AC,DC,DB,C5,D3,
+#C3,DD,AD,C5,D8,C9,D4,00,DB,D2,C5,D4,D5,D2,CE,DD,
+#AD,D4,CF,C7,C7,CC,C5,A0,CD,C1,D2,CB,C5,D2,AC,A0,
+#DB,C5,DD,CE,D4,C5,D2,DC,C6,C9,CC,C5,CE,C1,CD,C5,
+#AC,A0,DB,C7,DD,CF,AC,A0,DB,C5,D3,C3,DD,AD,C5,D8,
+#C9,D4,00,DB,D2,C5,D4,D5,D2,CE,DD,AD,D4,CF,C7,C7,
+#00,64,C8,2C,90,F4,58,BC,20,84,E8,00,00,00,00,00,
+#1C,1C,1C,1D,1D,1D,1E,1E,1F,1F,73,00,00,00,00,00,
+#DB,C7,DD,CF,AC,A0,DB,C5,D3,C3,DD,AD,C5,D8,64,0A;
 
