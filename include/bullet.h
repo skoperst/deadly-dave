@@ -14,7 +14,8 @@ typedef struct bullet_struct {
     int state;
     int steps;
 
-    void (*tick)(struct bullet_struct *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]);
+    void (*tick)(struct bullet_struct *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
+        int deadzone_left, int deadzone_right);
     int (*is_dead)(struct bullet_struct *bullet);
 } bullet_t;
 

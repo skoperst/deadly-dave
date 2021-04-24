@@ -38,13 +38,15 @@ void render_tile_idx(int tile_idx, int x, int y) {
     if (tile_idx == SPRITE_IDX_BULLET_RIGHT || tile_idx == SPRITE_IDX_BULLET_LEFT) {
         blend = 1;
     }
+
     int column_idx, line_idx;
     for (line_idx = 0; line_idx < surface->h; line_idx++) {
         for (column_idx = 0; column_idx < surface->w; column_idx++) {
             uint32_t pixel = ((uint32_t*)surface->pixels)[line_idx * surface->w + column_idx];
 
-            // Poor man's alpha blending
-            if ( (pixel & 0x000000FF) == 0) {
+            if ( (pixel & 0x000000FF) == 0) { // is a pixel totally transperant dont draw it
+            } else if (line_idx + y >= 200) {
+            } else if (column_idx + x >= 320) {
             } else {
                 if ( (line_idx + y) >= 0) {
                     if (blend) {
@@ -345,7 +347,7 @@ int start_intro() {
     check_input2(&key_state);
     check_input2(&key_state);
     check_input2(&key_state);
-    
+
     memset(&key_state, 0x00, sizeof(keys_state_t));
     printf("start_intro E \n");
     /* Initialize game state */
@@ -661,29 +663,28 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
         return G_STATE_LEVEL_POPUP;
     }
 
-    if (keys->fire) {
-        printf("HANDLING LCTRL  \n");
-        if (game->bullet == NULL) {
-            printf("Creating bullet!!\n");
-            if (game->dave->face_direction == DAVE_DIRECTION_LEFT ||
-                    game->dave->face_direction == DAVE_DIRECTION_FRONTL) {
-                game->bullet = bullet_create_left(game->dave->tile->x - 8, game->dave->tile->y + 8);
-            } else if (game->dave->face_direction == DAVE_DIRECTION_RIGHT ||
-                    game->dave->face_direction == DAVE_DIRECTION_FRONTR) {
-                game->bullet = bullet_create_right(game->dave->tile->x + 8, game->dave->tile->y + 8);
-            }
-            //dave_gunfire();
-        }
-    }
 
     if (!game_adjust_scroll_to_dave(game, game->dave)) {
         game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
+
         if (game->bullet != NULL) {
-            game->bullet->tick(game->bullet, map);
+            game->bullet->tick(game->bullet, map, (game->scroll_offset * 16), (game->scroll_offset * 16) + 320);
+            printf("DEADZONERIGHT: %d \n", (game->scroll_offset * 16) + 320);
 
             if (game->bullet->is_dead(game->bullet)) {
                 game->bullet = NULL;
                 printf("BULLET DEAD \n");
+            }
+        } else {
+            if (keys->fire) {
+                printf("Creating bullet!!\n");
+                if (game->dave->face_direction == DAVE_DIRECTION_LEFT ||
+                    game->dave->face_direction == DAVE_DIRECTION_FRONTL) {
+                    game->bullet = bullet_create_left(game->dave->tile->x - 8, game->dave->tile->y + 8);
+                } else if (game->dave->face_direction == DAVE_DIRECTION_RIGHT ||
+                    game->dave->face_direction == DAVE_DIRECTION_FRONTR) {
+                    game->bullet = bullet_create_right(game->dave->tile->x + 8, game->dave->tile->y + 8);
+                }
             }
         }
 
@@ -694,7 +695,6 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
         }
         check_dave_pick_item(game, map);
         if (is_dave_in_door(game, map)) {
-            printf("IN DOOR \n");
             printf("IN DOOR \n");
             if (game->dave->has_trophy) {
                 return G_STATE_WARP_RIGHT;

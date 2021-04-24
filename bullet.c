@@ -38,21 +38,25 @@ static int bullet_collision_left(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TI
 
 
 
-static void bullet_tick(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
-    printf("bullet-tick \n");
+static void bullet_tick(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
+        int deadzone_left, int deadzone_right) {
+    printf("bullet-tick x=%d, y=%d \n", bullet->tile->x, bullet->tile->y);
     if (bullet->state == BULLET_STATE_DEAD) {
         return;
     }
     bullet->tile->x+=bullet->speed_x;
-    if (bullet->tile->x > 320) {
+
+    if (bullet->tile->x >= deadzone_right) {
         bullet->state = BULLET_STATE_DEAD;
-        return;
     }
 
-    bullet->steps++;
-    if (bullet->steps > 120) {
+    if (bullet->tile->x <= deadzone_left) {
         bullet->state = BULLET_STATE_DEAD;
     }
+////    bullet->steps++;
+   // if (bullet->steps > 120) {
+     //   bullet->state = BULLET_STATE_DEAD;
+    //}
 
     if (bullet_collision_right(bullet, map) || bullet_collision_left(bullet, map)) {
         bullet->state = BULLET_STATE_DEAD;
@@ -62,6 +66,7 @@ static void bullet_tick(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEI
 static int bullet_is_dead(bullet_t *bullet) {
     return (bullet->state == BULLET_STATE_DEAD) ? 1 : 0;
 }
+
 
 int bullet_get_sprite(tile_t *tile) {
     bullet_t *bullet = (bullet_t *)tile->context;
