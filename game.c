@@ -669,7 +669,6 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
         if (game->bullet != NULL) {
             game->bullet->tick(game->bullet, map, (game->scroll_offset * 16), (game->scroll_offset * 16) + 320);
-            printf("DEADZONERIGHT: %d \n", (game->scroll_offset * 16) + 320);
 
             if (game->bullet->is_dead(game->bullet)) {
                 game->bullet = NULL;

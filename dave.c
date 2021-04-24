@@ -652,7 +652,7 @@ static int dave_is_dead(dave_t *dave) {
 }
 
 static int dave_get_sprite(tile_t *tile) {
-    int sprite;
+    int sprite = 0;
     int walk_mod;
 
     dave_t *dave = (dave_t *)tile->context;
@@ -730,6 +730,8 @@ static int dave_get_sprite(tile_t *tile) {
                 sprite = SPRITE_IDX_DAVE_JETPACK_RIGHT2;
             } else if (dave->ticks_in_state % 3 == 2) {
                 sprite = SPRITE_IDX_DAVE_JETPACK_RIGHT3;
+            } else {
+                sprite = 0;
             }
         }
     } else if (dave->state == DAVE_STATE_CLIMBING) {
