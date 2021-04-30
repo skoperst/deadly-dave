@@ -445,6 +445,9 @@ int start_intro() {
         SDL_RenderClear(g_renderer);
         SDL_LockTexture(g_texture, NULL, (void*)&g_pixels, &stride);
 
+        for (idx = 0; idx < 320 * 200; idx++) {
+            g_pixels[idx] = 0x000000FF;
+        }
         // Draw all tiles
         for (idx = 0; idx < 41; idx++) {
             draw_tile(&block[idx], g_assets);
