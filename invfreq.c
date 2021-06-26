@@ -85,12 +85,12 @@ void invfreq_decode(uint16_t invfreq, invfreq_block_t *out) {
     printf("This beep was %d up, %d down \n", tup, tdown);
 }
 
-void invfreq_decode_soundfx(uint16_t *data, uint8_t *out, size_t out_max_sz) {
+size_t invfreq_decode_soundfx(uint16_t *data, uint8_t *out, size_t out_max_sz) {
     int invfreq_idx = 0;
-    double freq;
+//    double freq;
     invfreq_block_t block;
-    int pcmval = 4095; // 32767 - Too loud
-    int outidx = 0;
+//    int pcmval = 4095; // 32767 - Too loud
+    size_t outidx = 0;
     int i;
 
     while(data[invfreq_idx] != 0xFFFF) {
@@ -103,4 +103,6 @@ void invfreq_decode_soundfx(uint16_t *data, uint8_t *out, size_t out_max_sz) {
             outidx++;
         }
     }
+
+    return outidx * 2;
 }

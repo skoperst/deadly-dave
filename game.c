@@ -10,7 +10,6 @@
 
 #include "game.h"
 #include "soundfx.h"
-#include "invfreq.h"
 
 #define DEBUG_INPUT 1
 
@@ -30,8 +29,8 @@ SDL_Renderer* g_renderer;
 SDL_Texture *g_texture;
 uint32_t        *g_pixels;
 SDL_Texture* g_render_texture;
-SDL_AudioDeviceID g_audio_dev;
 assets_t* g_assets;
+soundfx_t *g_soundfx;
 
 
 void render_tile_idx(int tile_idx, int x, int y) {
@@ -476,7 +475,7 @@ int start_intro() {
         timer_end = SDL_GetTicks();
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
-        printf("delaying %d \n", delay);
+//        printf("delaying %d \n", delay);
         SDL_Delay(delay);
     }
 
@@ -565,6 +564,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map) {
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
                 game->score = game->score + map[idx].score_value;
+                g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
             }
         }
     }
@@ -806,49 +806,6 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     return G_STATE_WARP_RIGHT;
 }
 
-uint8_t *outbufx;
-int outbufx_idx = 0;
-
-void game_audio_callback(void *data, Uint8* stream, int len) {
-    printf("audio callback len: %d \n", len);
-/*    memcpy(stream, outbufx + outbufx_idx, len);
-    outbufx_idx+=4096;
-    if (outbufx_idx >= (1024 * 512)) {
-        outbufx_idx= 0;
-    }*/
-    return;
-}
-
-/*
-int game_init_audio()
-{
-    int i;
-    int ret = 0;
-    SDL_AudioSpec want, have;
-    outbufx = malloc(1024 * 1024);
-    memset(outbufx, 0x00, 1024 * 1024);
-
-//    FILE *outfp = fopen("xx.data", "w+");
-    invfreq_decode_soundfx(got_trophy,  outbufx, 1024 * 1024);
-
-  //  fwrite(bufoutx, 1024 * 1024, 1, outfp);
-   // fclose(outfp);
-    SDL_zero(want);
-    SDL_zero(have);
-
-    int num_audio_drivers = SDL_GetNumAudioDrivers();
-    printf("SDL has %d drivers \n", num_audio_drivers);
-
-    for (i = 0; i < num_audio_drivers; i++) {
-        printf("%s \n", SDL_GetAudioDriver(i));
-    }
-
-
-    SDL_PauseAudioDevice(audio_dev, 0);
-    return 0;
-}
-*/
-
 int gameloop(void) {
     uint32_t timer_begin;
     uint32_t timer_end;
@@ -889,12 +846,11 @@ int gameloop(void) {
         check_input2(&key_state);
 
         if (key_state.bracer) {
-            SDL_PauseAudioDevice(g_audio_dev, 0);
-
+            g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
         }
 
         if (key_state.bracel) {
-            SDL_PauseAudioDevice(g_audio_dev, 1);
+    //        SDL_PauseAudioDevice(g_audio_dev, 1);
             // Used for testing
         }
 
@@ -956,7 +912,7 @@ int gameloop(void) {
         timer_end = SDL_GetTicks();
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
-        printf("delaying %d \n", delay);
+        //printf("delaying %d \n", delay);
 
         SDL_Delay(delay);
     }
@@ -994,18 +950,6 @@ int main(int argc, char* argv[]) {
     // Easy onversion between original world (320x200) and current screen size
     SDL_RenderSetScale(g_renderer, DISPLAY_SCALE, DISPLAY_SCALE);
 
-    audio_spec_want.freq = 44100;
-    audio_spec_want.format = AUDIO_S16LSB;
-    audio_spec_want.channels = 1;
-    audio_spec_want.samples = 4096;
-    audio_spec_want.callback = &game_audio_callback;
-
-    g_audio_dev = SDL_OpenAudioDevice(NULL, 0, &audio_spec_want, &audio_spec, SDL_AUDIO_ALLOW_ANY_CHANGE);
-    if (g_audio_dev == 0) {
-        printf("Failed to open audio device \n");
-        return -3;
-    }
-    SDL_PauseAudioDevice(g_audio_dev, 1);
 
     // Flush any pre-pressed keys
     SDL_FlushEvent(SDL_KEYDOWN);
@@ -1016,6 +960,8 @@ int main(int argc, char* argv[]) {
     g_assets = malloc(sizeof(struct game_assets));
     init_assets(g_assets, g_renderer);
 
+    g_soundfx = soundfx_create();
+
     while (1) {
         ret = start_intro();
         ret = gameloop();
@@ -1025,7 +971,8 @@ int main(int argc, char* argv[]) {
             return 0;
         } else if (ret == 1) {
             printf("bye bye \n");
-            SDL_CloseAudioDevice(g_audio_dev);
+            soundfx_destroy(g_soundfx);
+            g_soundfx = NULL;
             SDL_Quit();
             return 0;
         } else if (ret == 2) {
@@ -1033,7 +980,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    SDL_CloseAudioDevice(g_audio_dev);
+    soundfx_destroy(g_soundfx);
+    g_soundfx = NULL;
     SDL_Quit();
     return 0;
 }

@@ -8,6 +8,6 @@
 #define ENGINE_SNDDEFAULTSAMPLERATE 44100
 
 
-void invfreq_decode_soundfx(uint16_t *data, uint8_t *out, size_t out_max_sz);
+size_t invfreq_decode_soundfx(uint16_t *data, uint8_t *out, size_t out_max_sz);
 
 #endif
