@@ -94,6 +94,7 @@ size_t invfreq_decode_soundfx(uint16_t *data, uint8_t *out, size_t out_max_sz) {
     int i;
 
     while(data[invfreq_idx] != 0xFFFF) {
+        printf("invfreq_idx: %d \n", invfreq_idx);
         invfreq_decode(data[invfreq_idx], &block);
         invfreq_idx++;
 

@@ -277,7 +277,7 @@ void init_game(game_context_t *game)
     game->check_pickup_y = 0;
     game->check_door = 0;
 
-    game->dave = dave_create();
+    game->dave = dave_create(g_soundfx);
     game->dave->tile->x = 20;
     game->dave->tile->y = 40;
     game->dave->tile->width = 20;
@@ -539,6 +539,7 @@ int is_dave_in_door(game_context_t *game, tile_t *map) {
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
         if (is_dave_collision_tile(game->dave, &map[idx])) {
             if (map[idx].mod == DOOR) {
+                g_soundfx->play(g_soundfx, TUNE_NEXTLEVEL);
                 return 1;
             }
         }
@@ -558,6 +559,7 @@ void check_dave_pick_item(game_context_t *game, tile_t *map) {
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
                 game->score = game->score + map[idx].score_value;
+                g_soundfx->play(g_soundfx, TUNE_TREASURE);
                 return;
             } else if (map[idx].mod == TROPHY) {
                 game->dave->has_trophy = 1;
@@ -846,7 +848,8 @@ int gameloop(void) {
         check_input2(&key_state);
 
         if (key_state.bracer) {
-            g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
+            g_soundfx->play(g_soundfx, TUNE_WALKING);
+//            g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
         }
 
         if (key_state.bracel) {

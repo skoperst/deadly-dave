@@ -2,6 +2,7 @@
 #define DAVE_H
 
 #include "tile.h"
+#include "soundfx.h"
 
 #define DAVE_WALKING_STATE_STANDING  0
 #define DAVE_WALKING_STATE_COOLDOWN1_RIGHT  1
@@ -35,6 +36,7 @@
 typedef struct dave_struct {
     tile_t *tile;
 
+    soundfx_t *sfx;
     int state;
     int face_direction;
     int has_trophy;
@@ -55,6 +57,6 @@ typedef struct dave_struct {
     int (*is_dead)(struct dave_struct *dave);
 } dave_t;
 
-dave_t* dave_create();
+dave_t* dave_create(soundfx_t *sfx);
 
 #endif
