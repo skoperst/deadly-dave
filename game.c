@@ -943,7 +943,7 @@ int main(int argc, char* argv[]) {
     }
 
     printf("creating SDL window \n");
-    g_window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 600, 0);
+    g_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 600,  SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE );
 
     printf("creating renderer \n");
     g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
