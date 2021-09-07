@@ -596,6 +596,7 @@ int game_popup_quit_routine(game_context_t *game, tile_t *map,
     }
 
     if (keys->key_n) {
+        g_soundfx->resume(g_soundfx);
         return G_STATE_LEVEL;
     }
 
@@ -673,6 +674,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     }
 
     if (keys->escape) {
+        g_soundfx->stop(g_soundfx);
         return G_STATE_LEVEL_POPUP;
     }
 

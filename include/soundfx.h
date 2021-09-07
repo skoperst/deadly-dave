@@ -26,6 +26,7 @@ typedef struct soundfx_struct {
 
     void (*play)(struct soundfx_struct *sfx, int tune);
     void (*stop)(struct soundfx_struct *sfx);
+    void (*resume)(struct soundfx_struct *sfx);
 } soundfx_t;
 
 soundfx_t* soundfx_create();

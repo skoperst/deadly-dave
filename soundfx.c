@@ -365,6 +365,10 @@ void soundfx_play(soundfx_t *sfx, int tune) {
     SDL_PauseAudioDevice(g_audio_dev, 0);
 }
 
+void soundfx_resume(soundfx_t *sfx) {
+    SDL_PauseAudioDevice(g_audio_dev, 0);
+}
+
 void soundfx_stop(soundfx_t *sfx) {
     printf("soundfx stop \n");
     SDL_PauseAudioDevice(g_audio_dev, 1);
@@ -421,6 +425,7 @@ soundfx_t* soundfx_create() {
     sfx->tune_offset = 0;
     sfx->play = &soundfx_play;
     sfx->stop = &soundfx_stop;
+    sfx->resume = &soundfx_resume;
 
     // Init SDL
     audio_spec_want.freq = 44100;
