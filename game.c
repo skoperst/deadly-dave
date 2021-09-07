@@ -592,7 +592,6 @@ int game_popup_quit_routine(game_context_t *game, tile_t *map,
     }
 
     if (keys->key_y) {
-        printf("YES \n");
         return G_STATE_QUIT_NOW;
     }
 
@@ -769,9 +768,10 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     if (keys->escape) {
         return G_STATE_LEVEL_POPUP;
     }
-
+    game->dave->mute = 1;
     if  (game->dave->tile->x > 300) {
         game->level++;
+        game->dave->mute = 0;
         return G_STATE_NONE;
     }
 
@@ -847,12 +847,11 @@ int gameloop(void) {
         key_state.bracel = 0;
         check_input2(&key_state);
 
+        // These just used for debugging
         if (key_state.bracer) {
-            g_soundfx->play(g_soundfx, TUNE_WALKING);
-//            g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
-        }
-
-        if (key_state.bracel) {
+//            g_soundfx->play(g_soundfx, TUNE_WALKING);
+            //g_soundfx->play(g_soundfx, TUNE_NEXTLEVEL);
+        } else if (key_state.bracel) {
     //        SDL_PauseAudioDevice(g_audio_dev, 1);
             // Used for testing
         }

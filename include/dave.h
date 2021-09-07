@@ -43,6 +43,7 @@ typedef struct dave_struct {
     int has_gun;
     int has_jetpack;
     int ticks_in_state;
+    int mute;
 
     // sub-states & helpers specific to states
     int walk_state;

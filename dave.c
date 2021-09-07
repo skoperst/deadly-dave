@@ -161,7 +161,8 @@ void dave_state_standing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_
     int key_left, int key_right, int key_up) {
     dave->state = DAVE_STATE_STANDING;
     dave->ticks_in_state = 0;
-    dave->sfx->play(dave->sfx, TUNE_SILENCE);
+    if (dave->mute == 0)
+        dave->sfx->stop(dave->sfx);
 }
 
 void dave_state_jumping_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
@@ -172,7 +173,10 @@ void dave_state_jumping_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
     } else {
         dave->face_direction = DAVE_DIRECTION_FRONTR;
     }
-    dave->sfx->play(dave->sfx, TUNE_JUMPING);
+
+    if (dave->mute == 0)
+        dave->sfx->play(dave->sfx, TUNE_JUMPING);
+
     dave->state = DAVE_STATE_JUMPING;
     dave->walk_state = DAVE_STATE_STANDING;
     dave->jump_state = 0;
@@ -190,7 +194,8 @@ void dave_state_walking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
         } else {
             dave->tile->x-=1;
             if (dave->jump_cooldown_count == 0 && !key_up) {
-                dave->sfx->play(dave->sfx, TUNE_WALKING);
+                if (dave->mute == 0)
+                    dave->sfx->play(dave->sfx, TUNE_WALKING);
             }
             dave->face_direction = DAVE_DIRECTION_LEFT;
             dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
@@ -206,7 +211,8 @@ void dave_state_walking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
             return;
         } else {
             if (dave->jump_cooldown_count == 0 && !key_up) {
-                dave->sfx->play(dave->sfx, TUNE_WALKING);
+                if (dave->mute == 0)
+                    dave->sfx->play(dave->sfx, TUNE_WALKING);
             }
             dave->tile->x+=1;
             dave->face_direction = DAVE_DIRECTION_RIGHT;
@@ -266,7 +272,6 @@ void dave_state_jetpacking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMA
 
 static void dave_state_climbing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up, int key_jetpack) {
-    printf("CLIMBING enter\n");
     dave->state = DAVE_STATE_CLIMBING;
     if (key_up && key_right) {
         dave->climb_state = DAVE_CLIMBING_STATE_JUMP_RIGHT;
@@ -395,7 +400,6 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         }
 
         if (key_up && (key_right || key_left) && dave->jump_state >= 3 && dave->jump_state <= 76) {
-            printf("TREE jumpstate: %d \n", dave->jump_state);
             dave->jump_cooldown_count = 1;
             dave_state_climbing_enter(dave, map, key_left, key_right, key_up, key_jetpack);
 
@@ -409,10 +413,14 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         dave->tile->y = dave->tile->y + 2;
 
         if (dave_on_ground(dave, map)) {
+            if (dave->mute == 0) {
+                dave->sfx->stop(dave->sfx);
+            }
             dave_state_walking_enter(dave, map, key_left, key_right, key_up);
             dave->jump_cooldown_count = 5;
             dave->step_count = 0;
             return;
+
         } else {
             dave->tile->y = dave->tile->y - 2;
             dave_state_freefalling_enter(dave, map, key_left, key_right, key_up);
@@ -437,9 +445,11 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
             dave->tile->y = dave->tile->y - 1;
 
             if (dave_collision_top(dave, map)) {
+                //dave->state = DAVE_STATE_STANDING;
                 dave->walk_state = DAVE_STATE_STANDING;
                 dave->jump_state = 94;
                 return;
+
             } else {
                 deltay++;
             }
@@ -773,6 +783,7 @@ static int dave_get_sprite(tile_t *tile) {
 dave_t* dave_create(soundfx_t *sfx) {
     dave_t *dave = malloc(sizeof(dave_t));
     dave->sfx = sfx;
+    dave->mute = 0;
     dave->step_count = 0;
     dave->walk_state = DAVE_STATE_STANDING;
     dave->climb_state = 0;
