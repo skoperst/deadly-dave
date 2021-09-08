@@ -567,6 +567,12 @@ void check_dave_pick_item(game_context_t *game, tile_t *map) {
                 map[idx].sprites[0] = 0;
                 game->score = game->score + map[idx].score_value;
                 g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
+            } else if (map[idx].mod == GUN) {
+                game->dave->has_gun = 1;
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
+                game->score = game->score + map[idx].score_value;
+                //g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
             }
         }
     }
@@ -664,10 +670,12 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     tile_t bottom_separator;
     tile_t top_separator;
     tile_t grail_banner;
+    tile_t gun_banner;
 
     tile_create_bottom_separator(&bottom_separator, 0, 166);
     tile_create_top_separator(&top_separator, 0, 11);
     tile_create_grail_banner(&grail_banner, 70, 180);
+    tile_create_gun_banner(&gun_banner, 240, 170);
     if (keys->quit) {
         printf("should quit! \n");
         return G_STATE_QUIT_NOW;
@@ -690,7 +698,7 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
                 printf("BULLET DEAD \n");
             }
         } else {
-            if (keys->fire) {
+            if (keys->fire && game->dave->has_gun) {
                 printf("Creating bullet!!\n");
                 if (game->dave->face_direction == DAVE_DIRECTION_LEFT ||
                     game->dave->face_direction == DAVE_DIRECTION_FRONTL) {
@@ -742,6 +750,9 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     draw_tile(&top_separator, g_assets);
     if (game->dave->has_trophy) {
         draw_tile(&grail_banner, g_assets);
+    }
+    if (game->dave->has_gun) {
+        draw_tile(&gun_banner, g_assets);
     }
     draw_score(game->score);
     draw_level(game->level);
@@ -820,6 +831,7 @@ int gameloop(void) {
     tile_t bottom_separator;
     tile_t top_separator;
     tile_t grail_banner;
+    tile_t gun_banner;
     tile_t flashing_cursor;
     char level_path[4096];
     int stride;
@@ -836,6 +848,7 @@ int gameloop(void) {
     tile_create_bottom_separator(&bottom_separator, 0, 166);
     tile_create_top_separator(&top_separator, 0, 11);
     tile_create_grail_banner(&grail_banner, 70, 180);
+    tile_create_gun_banner(&gun_banner, 100,150);
     tile_create_flashing_cursor(&flashing_cursor, 224, 96);
 
     while (1) {
@@ -849,6 +862,9 @@ int gameloop(void) {
         key_state.bracel = 0;
         check_input2(&key_state);
 
+        if (game->dave->has_gun) {
+            printf("HAS GUN! \n");
+        }
         // These just used for debugging
         if (key_state.bracer) {
 //            g_soundfx->play(g_soundfx, TUNE_WALKING);

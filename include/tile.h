@@ -51,6 +51,7 @@ static const int SPRITE_IDX_PIPE_RIGHT             = 15;
 static const int SPRITE_IDX_RED_BRICK              = 17;
 static const int SPRITE_IDX_DIRT                   = 18;
 static const int SPRITE_IDX_BLUE_COLUMN            = 19;
+static const int SPRITE_IDX_GUN                    = 20;
 static const int SPRITE_IDX_DIRT_BOTTOM_LEFT       = 21;
 static const int SPRITE_IDX_DIRT_TOP_LEFT          = 22;
 static const int SPRITE_IDX_DIRT_TOP_RIGHT         = 23;
@@ -109,6 +110,7 @@ static const int SPRITE_IDX_CURSOR1                = 167;
 static const int SPRITE_IDX_CURSOR2                = 168;
 static const int SPRITE_IDX_CURSOR3                = 169;
 static const int SPRITE_IDX_CURSOR4                = 170;
+static const int SPRITE_IDX_GUN_BANNER             = 134;
 static const int SPRITE_IDX_GRAIL_BANNER           = 138;
 static const int SPRITE_IDX_TITLE_FLAMES1          = 144;
 static const int SPRITE_IDX_TITLE_FLAMES2          = 145;
@@ -152,6 +154,7 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
 void tile_create_intro_fire(tile_t* t, int x, int y);
 void tile_create_intro_banner(tile_t* t, int x, int y);
 void tile_create_grail_banner(tile_t *t, int x, int y);
+void tile_create_gun_banner(tile_t *t, int x, int y);
 
 // Popup box
 void tile_create_popup_part(tile_t* t, int x, int y);

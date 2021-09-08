@@ -791,6 +791,7 @@ dave_t* dave_create(soundfx_t *sfx) {
     dave->face_direction = DAVE_DIRECTION_FRONTR;
     dave->jump_cooldown_count = 0;
     dave->has_trophy = 0;
+    dave->has_gun = 0;
     dave->ticks_in_state = 0;
     dave->tick = &dave_tick;
     dave->is_dead = &dave_is_dead;
