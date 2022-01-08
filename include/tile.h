@@ -164,6 +164,8 @@ void tile_create_flashing_cursor(tile_t* t, int x, int y);
 void tile_create_bottom_separator(tile_t* t, int x, int y);
 void tile_create_top_separator(tile_t* t, int x, int y);
 
+void tile_create(tile_t* t, char tag[4], int x, int y);
+
 int tile_file_parse(tile_t* map, int *x, int *y, const char* path);
 int tile_map_parse(tile_t* map, int *x, int *y, char* map_str);
 

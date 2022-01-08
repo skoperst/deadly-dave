@@ -277,14 +277,6 @@ void init_game(game_context_t *game)
     game->check_pickup_y = 0;
     game->check_door = 0;
 
-    game->dave = dave_create(g_soundfx);
-    game->dave->tile->x = 20;
-    game->dave->tile->y = 40;
-    game->dave->tile->width = 20;
-    game->dave->tile->height = 16;
-    game->dave->state = DAVE_STATE_STANDING;
-    game->dave->jump_state = 0;
-    game->dave->step_count = 0;
 
     game->scroll_offset = 0;
     game->scroll_remaining = 0;
@@ -819,6 +811,94 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     draw_lives(game->lives);
 
     return G_STATE_WARP_RIGHT;
+}
+
+int game_load_level(game_context_t *game, tile_t *map, char *file) {
+    long fsize;
+    char *buf;
+    FILE* f = fopen(file, "rb");
+    fseek(f, 0, SEEK_END);
+    fsize = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    buf = malloc(fsize + 1);
+    fread(buf, 1, fsize, f);
+    fclose(f);
+
+    buf[fsize] = 0;
+
+    int cur_col = 0;
+    int pos = 0;
+
+    int i = 0;
+    int in_comment = 0;
+    int collected_count = 0;
+    char tag[4];
+    tag[3] = 0;
+
+    char *map_str = buf;
+    while (map_str[i] != 0) {
+        if (in_comment) {
+            if (map_str[i] == '\n') {
+                in_comment = 0;
+            }
+        } else {
+            if (map_str[i] == '#') {
+                in_comment = 1;
+            } else if (map_str[i] == ',') {
+                if (collected_count == 3) {
+                    collected_count = 0;
+                    if ((strcmp(tag, " D ") == 0) || (strcmp(tag, "D+M") == 0)) {
+                        game->dave = dave_create(g_soundfx);
+                        game->dave->default_x = cur_col * 16;
+                        game->dave->default_y = pos * 16;
+                        game->dave->tile->x = cur_col * 16;
+                        game->dave->tile->y = pos * 16;
+                        game->dave->tile->width = 20;
+                        game->dave->tile->height = 16;
+                        game->dave->state = DAVE_STATE_STANDING;
+                        game->dave->jump_state = 0;
+                        game->dave->step_count = 0;
+                    } else if (strcmp(tag, "SUN") == 0) {
+                        game->monsters[0] = monster_create_sun();
+                        game->monsters[0]->tile->x = cur_col * 16;
+                        game->monsters[0]->tile->y = pos * 20;
+                        game->monsters[1] = NULL;
+                    } else if (strcmp(tag, "SPI") == 0) {
+                        game->monsters[0] = monster_create_spider();
+                        game->monsters[0]->tile->x = cur_col * 16;
+                        game->monsters[0]->tile->y = (pos * 20) - 12;
+                        game->monsters[1] = NULL;
+                    }
+
+                    tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
+                    pos++;
+                } else {
+                    return -1;
+                }
+            } else if (map_str[i] == ';') {
+                if (collected_count == 3) {
+                    collected_count = 0;
+                    tile_create(&map[cur_col*12 + pos], tag, cur_col*16, pos*16);
+                    cur_col++;
+                    pos = 0;
+                } else {
+                    return -2;
+                }
+            } else if (map_str[i] == '\n') {
+                //just ignore
+            } else {
+                if (collected_count >= 3) {
+                    return -3;
+                }
+                tag[collected_count] = map_str[i];
+                collected_count++;
+            }
+        }
+        i++;
+    } // while
+
+    return 0;
 }
 
 int gameloop(void) {
