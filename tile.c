@@ -78,7 +78,7 @@ void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height
     t->collision_dx = 0;
     t->collision_dy = 0;
     t->collision_dw = 0;
-    t->collision_dh = 0;
+    t->collision_dh = 4;
 
     t->mod = DOOR;
 
@@ -150,6 +150,12 @@ void tile_create_intro_banner(tile_t* t, int x, int y) {
 
     t->sprites[24] = 0;
     t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
@@ -223,7 +229,6 @@ void tile_create_stars_moon(tile_t *t, int x, int y) {
     t->collision_dw = 0;
     t->collision_dh = 0;
 
-
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
@@ -292,7 +297,6 @@ void tile_create_tree(tile_t* t, int x, int y, int type) {
     t->collision_dw = 0;
     t->collision_dh = 0;
 
-
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
@@ -329,7 +333,6 @@ void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
     t->collision_dy = 0;
     t->collision_dw = -12;
     t->collision_dh = 0;
-
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -432,6 +435,12 @@ void tile_create_flashing_cursor(tile_t* t, int x, int y) {
 
     t->sprites[20] = 0;
     t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -444,6 +453,10 @@ void tile_create_top_separator(tile_t* t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_TOP_BAR;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -456,6 +469,10 @@ void tile_create_bottom_separator(tile_t* t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_BOTTOM_BAR;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -468,6 +485,10 @@ void tile_create_grail_banner(tile_t* t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_TROPHY_BANNER;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -480,6 +501,10 @@ void tile_create_gun_banner(tile_t* t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_GUN_BANNER;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -492,6 +517,10 @@ void tile_create_purple_gem(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_PURPLE_GEM;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->mod = LOOT;
     t->score_value = 50;
 
@@ -530,6 +559,10 @@ void tile_create_red_gem(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_RED_GEM;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->mod = LOOT;
     t->score_value = 150;
 
@@ -546,6 +579,10 @@ void tile_create_ring(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_RING;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->mod = LOOT;
     t->score_value = 550;
 
@@ -562,6 +599,10 @@ void tile_create_crown(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_CROWN;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->mod = LOOT;
     t->score_value = 800;
 
@@ -578,6 +619,10 @@ void tile_create_scepter(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_SCEPTER;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->mod = LOOT;
     t->score_value = 400;
 
@@ -614,6 +659,10 @@ void tile_create_grail(tile_t *t, int x, int y) {
 
     t->sprites[50] = 0;
     t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
     t->mod = TROPHY;
     t->score_value = 1000;
 
