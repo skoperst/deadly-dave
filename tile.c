@@ -625,6 +625,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_block(t, SPRITE_IDX_PURPLE_PLATFORM, x, y, 16, 16);
     } else if (strcmp(tag, "DRT") == 0) {
         tile_create_block(t, SPRITE_IDX_DIRT, x, y, 16, 16);
+    } else if (strcmp(tag, "BIM") == 0) {
+        tile_create_block(t, SPRITE_IDX_METAL_BEAM, x, y, 16, 16);
     } else if (strcmp(tag, "DRB") == 0) {
         tile_create_block(t, SPRITE_IDX_DIRT_BLOOD, x, y, 16, 16);
     } else if (strcmp(tag, "BCM") == 0) {
