@@ -8,35 +8,6 @@
 #include "bullet.h"
 #include "monster.h"
 
-/* Format of the level information
- * -path is used for monster movement
- * -tiles contain tileset indices
- * -padding unused but included for capatibility
- */
-typedef struct game_map {
-    tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
-    int dave_start_x;
-    int dave_start_y;
-} game_map_t;
-
-/* Monster state information for a single monster
- * -type is the tileset number (0 is unused)
- * -path_index references dave_level path data
- * -dead_timer is used for death delay
- * - *_p[xy] contain world or waypoint data
- */
-struct monster_state {
-    uint8_t type;
-    uint8_t path_index;
-    uint8_t dead_timer;
-    uint8_t monster_x;
-    uint8_t monster_y;
-    uint16_t monster_px;
-    uint16_t monster_py;
-    int8_t next_px;
-    int8_t next_py;
-};
-
 #define RIGHT 50
 #define LEFT  51
 #define UP    52
@@ -95,11 +66,6 @@ typedef struct game_context_struct {
     uint8_t jetpack_delay;
     uint8_t jump_timer;
     uint8_t try_right;
-    uint8_t check_pickup_x;
-    uint8_t check_pickup_y;
-    uint8_t check_door;
-    uint8_t can_climb;
-    uint8_t collision_point[9];
     uint8_t gun;
     uint8_t jetpack;
 
@@ -115,18 +81,8 @@ typedef struct game_context_struct {
     uint64_t score;
 } game_context_t;
 
-typedef struct raw_rgba8888_tile_struct {
-    uint32_t *pixels;
-    int64_t width;
-    int64_t height;
-} raw_rgba8888_tile_t;
 
-/* Game asset structure
- * Only tileset data for now
- * Could include music/sounds, etc
- */
 typedef struct game_assets {
-    SDL_Texture *graphics_tiles[200];
     SDL_Surface *tiles[1000];
 } assets_t;
 

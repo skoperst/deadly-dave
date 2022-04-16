@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
-#include <signal.h>
-#include <execinfo.h>
 #include <math.h>
 
 #define SDL_MAIN_HANDLED
@@ -195,10 +193,6 @@ void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
 }
 
 void draw_monster_offset(monster_t *monster, struct game_assets *assets, int x_offset) {
-
-/*    printf("drawing monster x:%d, y:%d \n", monster->tile->x, monster->tile->y);
-    printf("drawing monster with offsset: x:%d, y:%d \n", 
-            (monster->tile->x - (x_offset * 16)), monster->tile->y);*/
     if (monster->tile->get_sprite(monster->tile) != 0) {
         render_tile_idx(monster->tile->get_sprite(monster->tile),
             monster->tile->x - (x_offset * 16), monster->tile->y);
@@ -244,7 +238,7 @@ void draw_lives(int lives) {
     }
 }
 
-/**
+/*
  * Draws score on top left corner. Score is limited to 5 digits.
  */
 void draw_score(int score) {
@@ -283,12 +277,14 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
             if ((i >= 89 && i <= 120 ) || (i >= 129 && i <= 132 )) {
                 SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
             }
-            assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
+            //assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
         }
     }
 }
 
-/* Set game and monster properties to default values */
+/*
+ * Set game and monster properties to default values
+ */
 void init_game(game_context_t *game) {
     game->quit = 0;
     game->tick = 0;
@@ -307,9 +303,6 @@ void init_game(game_context_t *game) {
     game->last_dir = 0;
     game->jump_timer = 0;
     game->on_ground = 1;
-    game->check_pickup_x = 0;
-    game->check_pickup_y = 0;
-    game->check_door = 0;
 
     game->scroll_offset = 0;
     game->scroll_remaining = 0;
@@ -372,7 +365,7 @@ int start_intro() {
     int idx;
 
     keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0, 0};
-    /* Clear screen */
+    // Clear screen
     SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
     SDL_RenderClear(g_renderer);
 
@@ -552,17 +545,18 @@ int game_popup_quit_routine(game_context_t *game, tile_t *map,
 }
 
 
-// When dave nears screen edge and there is more tiles in that edge,
-// we will scroll the screen to make new screen visible under the assumption
-// usually the player moving to one direction.
-//
-// offset = 0                             offset = 0 + delta
-// +-------------------+                 +--------------------+
-// |        1          .                 .           2        |
-// |                   .                 .                    |
-// |              DAVE .      ---->      . DAVE               |
-// |                   .                 .                    |
-// +-------------------+                 +--------------------+
+/*
+ * When dave nears screen edge and there is more tiles in that edge, we will scroll the screen
+ * to make new screen visible under the assumption usually the player moving to one direction.
+ *
+ *  offset = 0                             offset = 0 + delta
+ *  +-------------------+                 +--------------------+
+ *  |        1          .                 .           2        |
+ *  |                   .                 .                    |
+ *  |              DAVE .      ---->      . DAVE               |
+ *  |                   .                 .                    |
+ *  +-------------------+                 +--------------------+
+ */
 int game_adjust_scroll_to_dave(game_context_t *game, dave_t *dave) {
     /* Here we still have scrolling to do so we just scroll the screen a bit */
     if (game->scroll_remaining != 0) {
@@ -684,17 +678,21 @@ void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
 /*
  * tile collision box calculation:
+ *                 ex. collision box inside sprite                 ex. collision box bigger than sprite
+ * y              +---------------------------+          y        +------------------------+
+ *                |                           |                   |                        |
+ * y+dy           |   +------------+          |          y+dy     |  +---------------------------+
+ *                |   |            |          |                   |  |                     |     |
+ *                |   |            |          |    or             |  |                     |     |
+ *                |   |            |          |                   |  |                     |     |
+ * (y+dy)+(h+dh)  |   +------------+          |                   |  |                     |     |
+ *                |                           |                   |  |                     |     |
+ * y+h            +---------------------------+          y+h      +--|---------------------+     |
+ *                                                                   |                           |
+ *                                                 (y+dy)+(h+dh)     +---------------------------+
  *
- * y              +-----------------------------+
- *                |                             |
- * y+dy           |   +------------+            |
- *                |   |            |            |
- *                |   |            |            |
- *                |   |            |            |
- * (y+dy)+(h+dh)  |   +------------+            |
- *                |                             |
- * y+h            +-----------------------------+
- *                x  x+dx    (x+dx)+(w+dw)     x+w
+ *                x  x+dx    (x+dx)+(w+dw)     x+w                x  x+dx               x+w  (x+dx)+(w+dw)
+ *
  */
 int collision_detect(tile_t *tile1, tile_t *tile2) {
     int box1_x = tile1->x + tile1->collision_dx;
@@ -1037,8 +1035,8 @@ int gameloop(int starting_level) {
 
         } else if (g_state == G_STATE_LEVEL_START) {
             printf("Resetting dave location \n");
-            game->dave->tile->x = game->dave->tile->default_x;
-            game->dave->tile->y = game->dave->tile->default_y;
+            game->dave->tile->x = game->dave->default_x;
+            game->dave->tile->y = game->dave->default_y;
             game->scroll_offset = 0;
             game_set_scroll_to_dave(game, game->dave);
             next_state = G_STATE_LEVEL;
@@ -1092,22 +1090,8 @@ int gameloop(int starting_level) {
     return 0;
 }
 
-void sigseg_handler(int sig) {
-    void *array[10];
-    size_t size;
-
-    // get void*'s for all entries on the stack
-    size = backtrace(array, 10);
-
-    // print out all the frames to stderr
-    fprintf(stderr, "Error: signal %d:\n", sig);
-    backtrace_symbols_fd(array, size, STDERR_FILENO);
-    exit(1);
-}
-
 int game_main(int is_windowed, int starting_level) {
     int ret = 0;
-    signal(SIGSEGV, sigseg_handler);
     SDL_AudioSpec audio_spec_want, audio_spec;
     const uint8_t DISPLAY_SCALE = 3;
 

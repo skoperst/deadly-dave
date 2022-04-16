@@ -35,9 +35,6 @@ static int bullet_collision_left(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TI
     return 0;
 }
 
-
-
-
 static void bullet_tick(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int deadzone_left, int deadzone_right) {
     printf("bullet-tick x=%d, y=%d \n", bullet->tile->x, bullet->tile->y);
@@ -53,10 +50,6 @@ static void bullet_tick(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEI
     if (bullet->tile->x <= deadzone_left) {
         bullet->state = BULLET_STATE_DEAD;
     }
-////    bullet->steps++;
-   // if (bullet->steps > 120) {
-     //   bullet->state = BULLET_STATE_DEAD;
-    //}
 
     if (bullet_collision_right(bullet, map) || bullet_collision_left(bullet, map)) {
         bullet->state = BULLET_STATE_DEAD;
@@ -67,8 +60,7 @@ static int bullet_is_dead(bullet_t *bullet) {
     return (bullet->state == BULLET_STATE_DEAD) ? 1 : 0;
 }
 
-
-int bullet_get_sprite(tile_t *tile) {
+static int bullet_get_sprite(tile_t *tile) {
     bullet_t *bullet = (bullet_t *)tile->context;
 
     if (bullet->state == BULLET_STATE_FLYING_LEFT) {
@@ -78,9 +70,7 @@ int bullet_get_sprite(tile_t *tile) {
     }
 }
 
-/**
- * Create a bullet that flys left
- */
+/* Create a bullet that flys left */
 bullet_t* bullet_create_left(int x, int y) {
     bullet_t *bullet = malloc(sizeof(bullet_t));
 
@@ -110,9 +100,7 @@ bullet_t* bullet_create_left(int x, int y) {
     return bullet;
 }
 
-/**
- * Create a bullet that flys right
- */
+/* Create a bullet that flys right */
 bullet_t* bullet_create_right(int x, int y) {
     bullet_t *bullet = malloc(sizeof(bullet_t));
 

@@ -31,20 +31,12 @@ int tile_is_inside(tile_t* tile, int x, int y) {
     return 0;
 }
 
-int tile_is_empty(tile_t *tile) {
-    if (tile->mod == 0) {
-        return 1;
-    }
-    return 0;
-}
 /*
  * Create a simple block tile (one sprite, doesn't animate)
  */
 void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height) {
     t->x = x;
     t->y = y;
-    t->vx = 0;
-    t->vy = 0;
     t->width = width;
     t->height = height;
 
@@ -67,8 +59,6 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
 void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height) {
     t->x = x;
     t->y = y;
-    t->vx = 0;
-    t->vy = 0;
     t->width = width;
     t->height = height;
     t->sprites[0] = sprite;

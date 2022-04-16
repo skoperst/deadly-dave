@@ -11,10 +11,10 @@ static int dave_collision_right(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
-            if (map[idx].is_inside(&map[idx], dave->tile->x + 12, dave->tile->y+2)) {
+            if (map[idx].is_inside(&map[idx], dave->tile->x + 12, dave->tile->y + 2)) {
                 return 1;
             }
-            if (map[idx].is_inside(&map[idx], dave->tile->x + 12, dave->tile->y+15)) {
+            if (map[idx].is_inside(&map[idx], dave->tile->x + 12, dave->tile->y + 15)) {
                 return 1;
             }
         }
@@ -29,10 +29,10 @@ static int dave_collision_top(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
-            if (map[idx].is_inside(&map[idx], dave->tile->x+4, dave->tile->y + 1)) {
+            if (map[idx].is_inside(&map[idx], dave->tile->x + 4, dave->tile->y + 1)) {
                 return 1;
             }
-            if (map[idx].is_inside(&map[idx], dave->tile->x+9, dave->tile->y + 1)) {
+            if (map[idx].is_inside(&map[idx], dave->tile->x + 9, dave->tile->y + 1)) {
                 return 1;
             }
         }
@@ -45,7 +45,6 @@ static int dave_collision_top(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
  */
 static int dave_collision_left(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
     int idx = 0;
-
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
             if (map[idx].is_inside(&map[idx], dave->tile->x + 1, dave->tile->y + 2)) {
@@ -364,7 +363,6 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         }
     }
 
-
     if (dave->jump_state == 94) {
         dave->tile->y = dave->tile->y + 2;
 
@@ -416,7 +414,7 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
             dave->walk_state == DAVE_WALKING_STATE_COOLDOWN1_RIGHT ||
             dave->walk_state == DAVE_WALKING_STATE_COOLDOWN2_RIGHT) {
         dave->walk_state = DAVE_STATE_STANDING;
-     //   return;
+
     } else {
         if (key_left) {
             if (dave->walk_state == DAVE_STATE_STANDING){
@@ -629,6 +627,11 @@ static int dave_is_dead(dave_t *dave) {
     return 0;
 }
 
+/*
+ * In this function we need to return the sprite (tile index) which need to be drawn for dave,
+ * this would depend on state (jumping, walking, falling etc..) and the animation cycle in each state.
+ * And for some states we consider the direction in which dave is standing/walking.
+ */
 static int dave_get_sprite(tile_t *tile) {
     int sprite = 0;
     int walk_mod;
@@ -756,16 +759,14 @@ dave_t* dave_create(soundfx_t *sfx, int x, int y) {
     dave->on_fire = 0;
     dave->on_tree = 0;
     dave->ticks_in_state = 0;
+    dave->default_x = x;
+    dave->default_y = y;
     dave->tick = &dave_tick;
     dave->is_dead = &dave_is_dead;
 
     dave->tile = malloc(sizeof(tile_t));
     dave->tile->x = x;
     dave->tile->y = y;
-    dave->tile->default_x = x;
-    dave->tile->default_y = y;
-    dave->tile->vx = 0;
-    dave->tile->vy = 0;
     dave->tile->width = 20;
     dave->tile->height = 16;
     dave->tile->collision_dx = 2;

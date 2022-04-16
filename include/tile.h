@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/* Quick conversion between grid and pixel basis */
+/*
+ * Quick conversion between grid and pixel basis
+ */
 #define TILE_SIZE 16
 #define TILEMAP_WIDTH 100
 #define TILEMAP_HEIGHT 12
@@ -19,7 +21,11 @@ static const int TILE_DAVE_MOD_LEFT      = 3;
 static const int TILE_DAVE_MOD_JUMPING_RIGHT = 4;
 static const int TILE_DAVE_MOD_JUMPING_LEFT  = 5;
 
-// TILE MODIFIER
+/*
+ * Modifiers of tiles, sort of logical category/characteristic.
+ * So for example dirt block and red brick block will be 'brick', or
+ * vines and fire both will be fire as they cause dave to get burned by it
+ */
 static const int EMPTY      = 0;
 static const int CLEAR      = 1;
 static const int BRICK      = 2;
@@ -35,7 +41,9 @@ static const int JETPACK    = 11;
 static const int MONSTER    = 12;
 
 
-// SPRITE INDEXES
+/*
+ * Each index represent a sprite loaded from resource images
+ */
 static const int SPRITE_IDX_DIRT_BLOOD             = 1;
 static const int SPRITE_IDX_DOOR                   = 2;
 static const int SPRITE_IDX_METAL_BEAM             = 3;
@@ -144,24 +152,27 @@ static const int SPRITE_IDX_TOP_BAR                = 172;
 static const int SPRITES_MAX                       = 172;
 
 
+/*
+ * The tile is the basic building of tile-based graphics. Each tile will hold the information
+ * of one game piece which can be interactive and can be idle, can animate or be idle,
+ * can move and change its parameters.
+ */
 typedef struct tile_struct {
+    /* Pointer to the owner of this tile */
     void *context;
 
-    // Starting x,y
-    int default_x;
-    int default_y;
-
-    // Current x,y
     int x;
     int y;
-
-    // Veloity in x,y directions
-    int vx;
-    int vy;
 
     int width;
     int height;
 
+    /*
+     * The delta (difference) in x,y,w,h for the collision box, so for example when
+     * all 0, it means collision box is exactly rect x,y,w,h. If we want the collision box 
+     * to be bigger in 1 pixel, we will set dx = -1, dy = -1, dw = 2, dh = 2. Note the change in width
+     * and height is 2 as we need eventually to add one pixel at each side 
+     */
     int collision_dx;
     int collision_dy;
     int collision_dw;
@@ -172,28 +183,30 @@ typedef struct tile_struct {
     int sprite_idx;
     int score_value;
 
-    int (*get_sprite)(struct tile_struct *tile);
+    /* A tick is a function owner of a tile calls so the tile can 'do its thing', whatever it might be. */
     void (*tick)(struct tile_struct *tile);
-    int (*is_inside)(struct tile_struct *tile, int x, int y);
-    int (*is_on_ground)(struct tile_struct *tile);
-    int (*is_dead)(struct tile_struct *tile);
 
+    /* Returns the sprite index to draw for this tile, 0 will indicate no need to draw anything */
+    int (*get_sprite)(struct tile_struct *tile);
+
+    /* Returns 1 if x,y is inside the tile's given rect: x,y,w,h */
+    int (*is_inside)(struct tile_struct *tile, int x, int y);
 } tile_t;
 
-// Create simple non-interacting block
+/* Create simple non-interacting block */
 void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height);
 
-// Intro related
+/* Intro related */
 void tile_create_intro_fire(tile_t* t, int x, int y);
 void tile_create_intro_banner(tile_t* t, int x, int y);
 void tile_create_grail_banner(tile_t *t, int x, int y);
 void tile_create_gun_banner(tile_t *t, int x, int y);
 
-// Popup box
+/* Popup box */
 void tile_create_popup_part(tile_t* t, int x, int y);
 void tile_create_flashing_cursor(tile_t* t, int x, int y);
 
-// Game screen top & bottom bars
+/* Game screen top & bottom bars */
 void tile_create_bottom_separator(tile_t* t, int x, int y);
 void tile_create_top_separator(tile_t* t, int x, int y);
 
@@ -201,8 +214,5 @@ void tile_create(tile_t* t, char tag[4], int x, int y);
 
 int tile_file_parse(tile_t* map, int *x, int *y, const char* path);
 int tile_map_parse(tile_t* map, int *x, int *y, char* map_str);
-
-int tile_is_empty(tile_t *tile);
-
 
 #endif
