@@ -108,6 +108,26 @@ void tile_create_gun(tile_t* t, int sprite, int x, int y, int width, int height)
     t->is_inside = &tile_is_inside;
 }
 
+void tile_create_jetpack(tile_t* t, int sprite, int x, int y, int width, int height) {
+    t->x = x;
+    t->y = y;
+    t->width = width;
+    t->height = height;
+    t->sprites[0] = sprite;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
+    t->mod = JETPACK;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
 /*
  * Create the flaming banner tile for into screen title
  */
@@ -615,6 +635,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_door(t, SPRITE_IDX_DOOR, x, y, 16, 16);
     } else if (strcmp(tag, "GUN") == 0) {
         tile_create_gun(t, SPRITE_IDX_GUN, x, y, 16, 16);
+    } else if (strcmp(tag, "JPK") == 0) {
+        tile_create_jetpack(t, SPRITE_IDX_JETPACK, x, y, 16, 16);
     } else if (strcmp(tag, " * ") == 0) {
         tile_create_purple_gem(t, x, y);
     } else if (strcmp(tag, " v ") == 0) {

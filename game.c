@@ -780,6 +780,11 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
                 map[idx].sprites[0] = 0;
                 game->score = game->score + map[idx].score_value;
                 g_soundfx->play(g_soundfx, TUNE_GOT_SOMETHING);
+            } else if (map[idx].mod == JETPACK) {
+                game->dave->jetpack_bars = 600;
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
+                g_soundfx->play(g_soundfx, TUNE_GOT_SOMETHING);
             } else if (map[idx].mod == DOOR) {
                 if (game->dave->has_trophy) {
                     g_soundfx->play(g_soundfx, TUNE_NEXTLEVEL);

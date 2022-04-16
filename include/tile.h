@@ -38,6 +38,7 @@ static const int MONSTER    = 12;
 // SPRITE INDEXES
 static const int SPRITE_IDX_DIRT_BLOOD             = 1;
 static const int SPRITE_IDX_DOOR                   = 2;
+static const int SPRITE_IDX_JETPACK                = 4;
 static const int SPRITE_IDX_BLUE_BRICK             = 5;
 static const int SPRITE_IDX_FIRE1                  = 6;
 static const int SPRITE_IDX_FIRE2                  = 7;
