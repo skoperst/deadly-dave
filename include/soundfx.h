@@ -5,12 +5,15 @@
 
 
 
-#define TUNE_SILENCE     0
-#define TUNE_GOT_TROPHY  1
-#define TUNE_TREASURE  2
-#define TUNE_NEXTLEVEL  3
-#define TUNE_WALKING 4
-#define TUNE_JUMPING 5
+#define TUNE_SILENCE        0
+#define TUNE_GOT_TROPHY     1
+#define TUNE_TREASURE       2
+#define TUNE_NEXTLEVEL      3
+#define TUNE_WALKING        4
+#define TUNE_JUMPING        5
+#define TUNE_GOT_SOMETHING  6
+#define TUNE_EXPLOSION      7
+#define TUNE_OUCH           8
 
 typedef struct soundfx_tune_struct {
     char name[64];
@@ -20,7 +23,7 @@ typedef struct soundfx_tune_struct {
 } soundfx_tune_t;
 
 typedef struct soundfx_struct {
-    soundfx_tune_t tunes[6];
+    soundfx_tune_t tunes[9];
     int tune_idx;
     int tune_offset;
 
