@@ -273,8 +273,7 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
 }
 
 /* Set game and monster properties to default values */
-void init_game(game_context_t *game)
-{
+void init_game(game_context_t *game) {
     game->quit = 0;
     game->tick = 0;
     game->lives = 4;
@@ -303,8 +302,7 @@ void init_game(game_context_t *game)
     game->level = 0;
 }
 
-void get_keys(keys_state_t* state)
-{
+void get_keys(keys_state_t* state) {
     SDL_Event event;
 
     const uint8_t *keystate = SDL_GetKeyboardState(NULL);
@@ -598,7 +596,7 @@ int game_is_scrolling(game_context_t *game) {
     return 0;
 }
 
-int game_do_bullets(game_context_t *game, tile_t *map, keys_state_t *keys)
+void game_do_bullets(game_context_t *game, tile_t *map, keys_state_t *keys)
 {
     if (game->bullet != NULL) {
         game->bullet->tick(game->bullet, map, (game->scroll_offset * 16), (game->scroll_offset * 16) + 320);
@@ -621,7 +619,7 @@ int game_do_bullets(game_context_t *game, tile_t *map, keys_state_t *keys)
     }
 }
 
-int game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
+void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
     int k;
 
     tile_t bottom_separator;
@@ -659,8 +657,7 @@ int game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
     draw_lives(game->lives);
 }
 
-int collision_detect(tile_t *tile1, tile_t *tile2)
-{
+int collision_detect(tile_t *tile1, tile_t *tile2) {
     int box1_x = tile1->x + tile1->collision_dx;
     int box1_y = tile1->y + tile1->collision_dy;
     int box1_w = tile1->width + tile1->collision_dw;
@@ -685,7 +682,6 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     dave_t *dave = game->dave;
 
     int i = 0;
-    int k = 0;
 
     if (keys->quit) {
         printf("should quit! \n");
@@ -744,7 +740,7 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         if ((map[idx].sprites[0] != 0) &&
                 collision_detect(game->dave->tile, &map[idx])) {
 
-            printf("COLLISION IDX: %d\n", idx);
+            //printf("COLLISION IDX: %d\n", idx);
             if (map[idx].mod == LOOT) {
                 game->score = game->score + map[idx].score_value;
                 map[idx].sprites[0] = 0;
@@ -782,8 +778,8 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     for (idx = 0; idx < 5; idx++) {
         if (game->monsters[idx] != NULL) {
-            printf("Checking collision for MONSTER %d \n", idx);
-            printf("monster[%d] x:%d y:%d \n", idx, game->monsters[idx]->tile->x, game->monsters[idx]->tile->y);
+            //printf("Checking collision for MONSTER %d \n", idx);
+            //printf("monster[%d] x:%d y:%d \n", idx, game->monsters[idx]->tile->x, game->monsters[idx]->tile->y);
             if (game->bullet != NULL) {
                 if (collision_detect(game->bullet->tile, game->monsters[idx]->tile)) {
                     if (game->monsters[idx]->on_fire != 1) {

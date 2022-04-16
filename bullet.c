@@ -95,8 +95,13 @@ bullet_t* bullet_create_left(int x, int y) {
     bullet->tile = malloc(sizeof(tile_t));
     bullet->tile->x = x;
     bullet->tile->y = y;
-    bullet->tile->width = 0;
-    bullet->tile->height = 0;
+    bullet->tile->width = 2;
+    bullet->tile->height = 2;
+    bullet->tile->collision_dx = 0;
+    bullet->tile->collision_dy = 0;
+    bullet->tile->collision_dw = 0;
+    bullet->tile->collision_dh = 0;
+
     bullet->tile->tick = NULL;
     bullet->tile->is_inside = NULL;
     bullet->tile->context = bullet;
@@ -122,8 +127,12 @@ bullet_t* bullet_create_right(int x, int y) {
     bullet->tile = malloc(sizeof(tile_t));
     bullet->tile->x = x;
     bullet->tile->y = y;
-    bullet->tile->width = 0;
-    bullet->tile->height = 0;
+    bullet->tile->width = 2;
+    bullet->tile->height = 2;
+    bullet->tile->collision_dx = 0;
+    bullet->tile->collision_dy = 0;
+    bullet->tile->collision_dw = 0;
+    bullet->tile->collision_dh = 0;
     bullet->tile->tick = NULL;
     bullet->tile->is_inside = NULL;
     bullet->tile->context = bullet;

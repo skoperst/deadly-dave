@@ -159,6 +159,11 @@ monster_t* monster_create() {
     monster->tile->y = 0;
     monster->tile->width = 24;
     monster->tile->height = 21;
+    monster->tile->collision_dx = 0;
+    monster->tile->collision_dy = 0;
+    monster->tile->collision_dw = 0;
+    monster->tile->collision_dh = 0;
+
     monster->tile->mod = MONSTER;
     monster->tile->sprites[0] = 0;
     monster->tile->sprite_idx = 0;
