@@ -439,7 +439,7 @@ void tile_create_grail_banner(tile_t* t, int x, int y) {
     t->y = y;
     t->width = 176;
     t->height = 14;
-    t->sprites[0] = SPRITE_IDX_GRAIL_BANNER;
+    t->sprites[0] = SPRITE_IDX_TROPHY_BANNER;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
     t->get_sprite = &tile_get_sprite;

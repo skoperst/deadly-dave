@@ -211,6 +211,22 @@ void draw_x_levels_to_go(int x) {
     draw_text_line(good_work, 50, 58, g_renderer);
 }
 
+void draw_jetpack(int bars)
+{
+    int i = 0;
+    if (bars < 0) {
+        bars = 0;
+    } else if (bars > 600) {
+        bars = 600;
+    }
+
+    render_tile_idx(SPRITE_IDX_JETPACK_LABEL, 0, 170);
+    render_tile_idx(SPRITE_IDX_JETPACK_BAR_FRAME, 72, 170);
+    for (i = 0; i< (bars/10); i++) {
+        render_tile_idx(SPRITE_IDX_JETPACK_BAR, 76 + i*2, 174);
+    }
+}
+
 void draw_level(int level) {
     render_tile_idx(136, 104, 0); // level:
     render_tile_idx(148, 176, 0); //0
@@ -299,7 +315,7 @@ void init_game(game_context_t *game) {
     game->scroll_remaining = 0;
 
     game->bullet = NULL;
-    game->level = 0;
+    game->level = 2;
 }
 
 void get_keys(keys_state_t* state) {
@@ -629,7 +645,7 @@ void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     tile_create_bottom_separator(&bottom_separator, 0, 166);
     tile_create_top_separator(&top_separator, 0, 11);
-    tile_create_grail_banner(&grail_banner, 70, 180);
+    tile_create_grail_banner(&grail_banner, 70, 183);
     tile_create_gun_banner(&gun_banner, 240, 170);
 
     for (k = 0; k < 320 * 200; k++) {
@@ -651,6 +667,9 @@ void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
     }
     if (game->dave->has_gun) {
         draw_tile(&gun_banner, g_assets);
+    }
+    if (game->dave->jetpack_bars > 0) {
+        draw_jetpack(game->dave->jetpack_bars);
     }
     draw_score(game->score);
     draw_level(game->level);
@@ -746,6 +765,9 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
                 map[idx].sprites[0] = 0;
                 map[idx].mod = 0;
                 g_soundfx->play(g_soundfx, TUNE_TREASURE);
+
+                // Hack
+                //game->dave->jetpack_bars = 600;
             } else if (map[idx].mod == TROPHY) {
                 game->dave->has_trophy = 1;
                 map[idx].mod = 0;
@@ -795,6 +817,7 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
             if (collision_detect(game->dave->tile, game->monsters[idx]->tile)) {
                 if (game->monsters[idx]->is_alive(game->monsters[idx])) {
                     game->dave->on_fire = 1;
+                    game->monsters[idx]->on_fire = 1;
                 }
             }
 
@@ -1016,7 +1039,7 @@ int gameloop(void) {
                 game->dave->step_count = 0;
                 game->dave->state = DAVE_STATE_STANDING;
                 game->dave->has_gun = 0;
-                game->dave->has_jetpack = 0;
+                game->dave->jetpack_bars = 0;
                 game->scroll_offset = 0;
                 clear_map(map);
                 game_level_load(game, map, "res/levels/warp_right.ddt");

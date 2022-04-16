@@ -14,6 +14,7 @@
 #define TUNE_GOT_SOMETHING  6
 #define TUNE_EXPLOSION      7
 #define TUNE_OUCH           8
+#define TUNE_FLYING         9
 
 typedef struct soundfx_tune_struct {
     char name[64];
@@ -23,7 +24,7 @@ typedef struct soundfx_tune_struct {
 } soundfx_tune_t;
 
 typedef struct soundfx_struct {
-    soundfx_tune_t tunes[9];
+    soundfx_tune_t tunes[10];
     int tune_idx;
     int tune_offset;
 

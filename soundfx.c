@@ -275,6 +275,10 @@ uint16_t walking[] = {
     0x1AF4, 0xFFFF
 };
 
+uint16_t flying[] = {
+    0x20D0, 0xFFFF
+};
+
 uint16_t jumping[] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
     0x0B7C, 0x0B7C, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -514,6 +518,11 @@ soundfx_t* soundfx_create() {
     sfx->tunes[8].raw = malloc(4096 * 512);
     memset(sfx->tunes[8].raw, 0x00, 4096 * 512);
     sfx->tunes[8].sz = invfreq_decode_soundfx(ouch, sfx->tunes[8].raw, 4096 * 512);
+
+    strcpy(sfx->tunes[9].name, "flying");
+    sfx->tunes[9].raw = malloc(4096 * 512);
+    memset(sfx->tunes[9].raw, 0x00, 4096 * 512);
+    sfx->tunes[9].sz = invfreq_decode_soundfx(flying, sfx->tunes[9].raw, 4096 * 512);
 
     sfx->tune_idx = 0;
     sfx->tune_offset = 0;

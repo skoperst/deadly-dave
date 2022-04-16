@@ -208,7 +208,16 @@ void dave_state_jetpacking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILE
             dave->tile->y+=1;
         }
     }
+
     dave->ticks_in_state++;
+    dave->jetpack_bars--;
+    if (dave->jetpack_bars <= 0) {
+        dave->jetpack_bars = 0;
+        dave_state_standing_enter(dave, map, key_left, key_right, key_up);
+    }
+
+    if (dave->sfx->tune_idx == 0)
+        dave->sfx->play(dave->sfx, TUNE_FLYING);
 }
 
 void dave_state_jetpacking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
@@ -271,7 +280,7 @@ void dave_state_walking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         return;
     }
 
-    if (key_jetpack) {
+    if (key_jetpack && (dave->jetpack_bars > 0)) {
         dave_state_jetpacking_enter(dave, map, key_left, key_right, key_up);
         return;
     }
@@ -329,7 +338,7 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         return;
     }
 
-    if (key_jetpack) {
+    if (key_jetpack && (dave->jetpack_bars > 0)) {
         dave_state_jetpacking_enter(dave, map, key_left, key_right, key_up);
         return;
     }
@@ -451,7 +460,7 @@ static void dave_state_freefalling_routine(dave_t *dave,
         return;
     }
 
-    if (key_jetpack) {
+    if (key_jetpack && (dave->jetpack_bars > 0)) {
         dave_state_jetpacking_enter(dave, map, key_left, key_right, key_up);
         return;
     }
@@ -556,7 +565,7 @@ static void dave_state_standing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
         return;
     }
 
-    if (key_jetpack) {
+    if (key_jetpack && (dave->jetpack_bars > 0)) {
         dave_state_jetpacking_enter(dave, map, key_left, key_right, key_up);
         return;
     }
@@ -743,6 +752,7 @@ dave_t* dave_create(soundfx_t *sfx, int x, int y) {
     dave->jump_cooldown_count = 0;
     dave->has_trophy = 0;
     dave->has_gun = 0;
+    dave->jetpack_bars = 0;
     dave->on_fire = 0;
     dave->on_tree = 0;
     dave->ticks_in_state = 0;

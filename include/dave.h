@@ -41,7 +41,7 @@ typedef struct dave_struct {
     int face_direction;
     int has_trophy;
     int has_gun;
-    int has_jetpack;
+    int jetpack_bars;
     int on_fire;
     int on_tree;
     int ticks_in_state;
