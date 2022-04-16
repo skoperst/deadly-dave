@@ -9,7 +9,7 @@ uint16_t engine_sndCount;
 int16_t engine_currSoundPlaying;
 uint8_t sound_limiter, *sndPriorities;
 char game_ext[4];
-const uint32_t pitAltCounter = 0x1140;
+const uint32_t pitAltCounter = 0x1000;
 
 typedef struct invfreq_block_struct {
     uint16_t pcm[4096];
