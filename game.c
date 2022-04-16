@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include <execinfo.h>
 #include <math.h>
 
 #define SDL_MAIN_HANDLED
@@ -34,6 +36,7 @@ soundfx_t *g_soundfx;
 
 
 void render_tile_idx(int tile_idx, int x, int y) {
+    printf("tile_idx: %d \n", tile_idx);
     SDL_Surface *surface = g_assets->tiles[tile_idx];
 
     int blend = 0;
@@ -1039,8 +1042,22 @@ int gameloop(void) {
     return 0;
 }
 
+void sigseg_handler(int sig) {
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+
 int main(int argc, char* argv[]) {
     int ret = 0;
+    signal(SIGSEGV, sigseg_handler);
     SDL_AudioSpec audio_spec_want, audio_spec;
     const uint8_t DISPLAY_SCALE = 3;
 
