@@ -564,6 +564,7 @@ int game_popup_quit_routine(game_context_t *game, tile_t *map,
 // |                   .                 .                    |
 // +-------------------+                 +--------------------+
 int game_adjust_scroll_to_dave(game_context_t *game, dave_t *dave) {
+    /* Here we still have scrolling to do so we just scroll the screen a bit */
     if (game->scroll_remaining != 0) {
         if (game->scroll_remaining > 0) {
             game->scroll_remaining--;
@@ -577,9 +578,14 @@ int game_adjust_scroll_to_dave(game_context_t *game, dave_t *dave) {
             }
         }
         return 1;
-    } else {
+    }
+    /*
+     * If we got here we have no previous scrolling in progress and we need to caluclate 
+     * and decide if any scrolling is needed. 
+     */
+    else {
         int delta = (game->dave->tile->x - (game->scroll_offset * 16));
-        if (delta > 320 - (16 + 16 + 8)) {
+        if (delta > 320 - (16 + 16 + 8) && game->scroll_offset < 80) {
             if ((80 -  game->scroll_offset) < 15) {
                 game->scroll_remaining = (80 - game->scroll_offset);
             } else {
