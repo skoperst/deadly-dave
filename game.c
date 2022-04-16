@@ -315,7 +315,7 @@ void init_game(game_context_t *game) {
     game->scroll_remaining = 0;
 
     game->bullet = NULL;
-    game->level = 2;
+    game->level = 0;
 }
 
 void get_keys(keys_state_t* state) {
