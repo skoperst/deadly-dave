@@ -36,7 +36,6 @@ soundfx_t *g_soundfx;
 
 
 void render_tile_idx(int tile_idx, int x, int y) {
-    printf("tile_idx: %d \n", tile_idx);
     SDL_Surface *surface = g_assets->tiles[tile_idx];
 
     int blend = 0;
@@ -295,7 +294,6 @@ void init_game(game_context_t *game)
     game->check_pickup_y = 0;
     game->check_door = 0;
 
-
     game->scroll_offset = 0;
     game->scroll_remaining = 0;
 
@@ -303,7 +301,7 @@ void init_game(game_context_t *game)
     game->level = 0;
 }
 
-void check_input2(keys_state_t* state)
+void get_keys(keys_state_t* state)
 {
     SDL_Event event;
 
@@ -362,9 +360,9 @@ int start_intro() {
     SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
     SDL_RenderClear(g_renderer);
 
-    check_input2(&key_state);
-    check_input2(&key_state);
-    check_input2(&key_state);
+    get_keys(&key_state);
+    get_keys(&key_state);
+    get_keys(&key_state);
 
     memset(&key_state, 0x00, sizeof(keys_state_t));
     printf("start_intro E \n");
@@ -425,7 +423,7 @@ int start_intro() {
     while (!intro_should_finish) {
         timer_begin = SDL_GetTicks();
 
-            check_input2(&key_state);
+        get_keys(&key_state);
 
         // All next drawings will be done into the texture (as oppose to screen)
         if (key_state.escape) {
@@ -960,21 +958,7 @@ int gameloop(void) {
         SDL_RenderClear(g_renderer);
         SDL_LockTexture(g_texture, NULL, (void*)&g_pixels, &stride);
 
-        key_state.bracer = 0;
-        key_state.bracel = 0;
-        check_input2(&key_state);
-
-//        if (game->dave->has_gun) {
-//            printf("HAS GUN! \n");
-//        }
-        // These just used for debugging
-        if (key_state.bracer) {
-//            g_soundfx->play(g_soundfx, TUNE_WALKING);
-            //g_soundfx->play(g_soundfx, TUNE_NEXTLEVEL);
-        } else if (key_state.bracel) {
-    //        SDL_PauseAudioDevice(g_audio_dev, 1);
-            // Used for testing
-        }
+        get_keys(&key_state);
 
         if (g_state == G_STATE_NONE) {
             clear_map(map);
