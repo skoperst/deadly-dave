@@ -130,4 +130,5 @@ typedef struct game_assets {
     SDL_Surface *tiles[1000];
 } assets_t;
 
+int game_main(int is_windowed);
 #endif

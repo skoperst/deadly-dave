@@ -1066,7 +1066,7 @@ void sigseg_handler(int sig) {
     exit(1);
 }
 
-int main(int argc, char* argv[]) {
+int game_main(int is_windowed) {
     int ret = 0;
     signal(SIGSEGV, sigseg_handler);
     SDL_AudioSpec audio_spec_want, audio_spec;
@@ -1087,9 +1087,12 @@ int main(int argc, char* argv[]) {
         return -2;
     }
 
-    printf("creating SDL window \n");
-    g_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 600,  SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE );
-
+    if (is_windowed) {
+        printf("creating SDL window \n");
+        g_window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 600,  0 );
+    } else {
+        g_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 600,  SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE );
+    }
     printf("creating renderer \n");
     g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
     g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 320, 200);
