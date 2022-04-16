@@ -540,7 +540,7 @@ void tile_create_teal_gem(tile_t *t, int x, int y) {
 
     t->collision_dx = 0;
     t->collision_dy = 0;
-    t->collision_dw = 0;
+    t->collision_dw = 1;
     t->collision_dh = 0;
 
     t->mod = LOOT;
