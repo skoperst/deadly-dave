@@ -551,5 +551,16 @@ soundfx_t* soundfx_create() {
 
 void soundfx_destroy(soundfx_t *sfx)
 {
+    free(sfx->tunes[0].raw);
+    free(sfx->tunes[1].raw);
+    free(sfx->tunes[2].raw);
+    free(sfx->tunes[3].raw);
+    free(sfx->tunes[4].raw);
+    free(sfx->tunes[5].raw);
+    free(sfx->tunes[6].raw);
+    free(sfx->tunes[7].raw);
+    free(sfx->tunes[8].raw);
+    free(sfx->tunes[9].raw);
+    free(sfx);
     SDL_CloseAudioDevice(g_audio_dev);
 }

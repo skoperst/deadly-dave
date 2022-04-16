@@ -251,6 +251,16 @@ void draw_score(int score) {
     }
 }
 
+void deinit_assets(struct game_assets *assets) {
+    int i;
+    for (i = 0; i < 1000; i++) {
+        if (assets->tiles[i] != NULL) {
+            SDL_FreeSurface(assets->tiles[i]);
+            assets->tiles[i] = NULL;
+        }
+    }
+}
+
 void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
     int i;
     char fname[50];
@@ -272,11 +282,12 @@ void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
         {
             surface = SDL_LoadBMP(fname);
             assets->tiles[i] = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
+            SDL_FreeSurface(surface);
 
             // Monster tiles should use black transparency
-            if ((i >= 89 && i <= 120 ) || (i >= 129 && i <= 132 )) {
+/*            if ((i >= 89 && i <= 120 ) || (i >= 129 && i <= 132 )) {
                 SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
-            }
+            }*/
             //assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
         }
     }
@@ -969,6 +980,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                     tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
                     pos++;
                 } else {
+                    free(buf);
                     return -1;
                 }
             } else if (map_str[i] == ';') {
@@ -978,12 +990,14 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                     cur_col++;
                     pos = 0;
                 } else {
+                    free(buf);
                     return -2;
                 }
             } else if (map_str[i] == '\n') {
                 //just ignore
             } else {
                 if (collected_count >= 3) {
+                    free(buf);
                     return -3;
                 }
                 tag[collected_count] = map_str[i];
@@ -993,6 +1007,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
         i++;
     } // while
 
+    free(buf);
     return 0;
 }
 
@@ -1063,10 +1078,12 @@ int gameloop(int starting_level) {
         } else if (g_state == G_STATE_GAMEOVER) {
             printf("GAME OVER!!! \n");
             SDL_UnlockTexture(g_texture);
+            free(game);
             return 2;
 
         } else if (g_state == G_STATE_QUIT_NOW) {
             SDL_UnlockTexture(g_texture);
+            free(game);
             return 1;
 
         } else {
@@ -1144,6 +1161,8 @@ int game_main(int is_windowed, int starting_level) {
             printf("bye bye \n");
             soundfx_destroy(g_soundfx);
             g_soundfx = NULL;
+            SDL_DestroyTexture(g_texture);
+            deinit_assets(g_assets);
             SDL_Quit();
             return 0;
         } else if (ret == 2) {
