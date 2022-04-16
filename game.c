@@ -315,7 +315,7 @@ void init_game(game_context_t *game) {
     game->scroll_remaining = 0;
 
     game->bullet = NULL;
-    game->level = 0;
+    game->level = 1;
 }
 
 void get_keys(keys_state_t* state) {
@@ -676,6 +676,20 @@ void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
     draw_lives(game->lives);
 }
 
+/*
+ * tile collision box calculation:
+ *
+ * y              +-----------------------------+
+ *                |                             |
+ * y+dy           |   +------------+            |
+ *                |   |            |            |
+ *                |   |            |            |
+ *                |   |            |            |
+ * (y+dy)+(h+dh)  |   +------------+            |
+ *                |                             |
+ * y+h            +-----------------------------+
+ *                x  x+dx    (x+dx)+(w+dw)     x+w
+ */
 int collision_detect(tile_t *tile1, tile_t *tile2) {
     int box1_x = tile1->x + tile1->collision_dx;
     int box1_y = tile1->y + tile1->collision_dy;
@@ -690,7 +704,7 @@ int collision_detect(tile_t *tile1, tile_t *tile2) {
     if (box1_x < box2_x + box2_w &&
         box1_x + box1_w > box2_x &&
         box1_y < box2_y + box2_h &&
-        box1_h + box1_y > box2_y) {
+        box1_y + box1_h > box2_y) {
         return 1;
     }
 
@@ -759,32 +773,32 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         if ((map[idx].sprites[0] != 0) &&
                 collision_detect(game->dave->tile, &map[idx])) {
 
-            //printf("COLLISION IDX: %d\n", idx);
             if (map[idx].mod == LOOT) {
                 game->score = game->score + map[idx].score_value;
                 map[idx].sprites[0] = 0;
                 map[idx].mod = 0;
                 g_soundfx->play(g_soundfx, TUNE_TREASURE);
 
-                // Hack
-                //game->dave->jetpack_bars = 600;
             } else if (map[idx].mod == TROPHY) {
                 game->dave->has_trophy = 1;
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
                 game->score = game->score + map[idx].score_value;
                 g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
+
             } else if (map[idx].mod == GUN) {
                 game->dave->has_gun = 1;
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
                 game->score = game->score + map[idx].score_value;
                 g_soundfx->play(g_soundfx, TUNE_GOT_SOMETHING);
+
             } else if (map[idx].mod == JETPACK) {
                 game->dave->jetpack_bars = 600;
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
                 g_soundfx->play(g_soundfx, TUNE_GOT_SOMETHING);
+
             } else if (map[idx].mod == DOOR) {
                 if (game->dave->has_trophy) {
                     g_soundfx->play(g_soundfx, TUNE_NEXTLEVEL);
@@ -985,10 +999,6 @@ int gameloop(void) {
     game_context_t* game;
     tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
     keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0, 0};
-  //  tile_t bottom_separator;
-  //  tile_t top_separator;
-  //  tile_t grail_banner;
-  //  tile_t gun_banner;
     tile_t flashing_cursor;
     char level_path[4096];
     int stride;
@@ -999,11 +1009,6 @@ int gameloop(void) {
 
     game = malloc(sizeof(game_context_t));
     init_game(game);
-/*
-    tile_create_bottom_separator(&bottom_separator, 0, 166);
-    tile_create_top_separator(&top_separator, 0, 11);
-    tile_create_grail_banner(&grail_banner, 70, 180);
-    tile_create_gun_banner(&gun_banner, 100,150);*/
     tile_create_flashing_cursor(&flashing_cursor, 224, 96);
 
     while (1) {
@@ -1021,7 +1026,6 @@ int gameloop(void) {
             snprintf(level_path, 4096, "res/levels/level%ld.ddt", (long)game->level);
 
             game_level_load(game, map, level_path);
-//            tile_file_parse(map, &current_level_begin_x, &current_level_begin_y, level_path);
             next_state = G_STATE_LEVEL_START;
 
         } else if (g_state == G_STATE_LEVEL_START) {

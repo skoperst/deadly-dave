@@ -1,0 +1,57 @@
+# Original Dangerous Dave Level 7
+
+   ,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK;
+   ,RBK,PIR, D ,   ,   ,   ,   ,   ,  M,DRT;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
+   ,RBK,   ,   ,   ,   ,GUN,   ,  M,DRT,DRT;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI2;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI4;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI5;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,RBK,   ,RBK;
+   ,RBK,   , v ,RBK,   ,   , v ,RBK,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   , v ,RBK,   ,   ,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
+   ,RBK,   , Y ,RBK,   ,   ,   ,RBK,RBK,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,RBK, X ,RBK;
+   ,RBK,   ,   ,   , v ,RBK,   ,RBK,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,RBK,   ,RBK;
+   ,RBK,   , v ,RBK,   ,   ,   ,RBK,   ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,RBK,   ,RBK;
+   ,RBK, V ,   ,   , v ,RBK,   ,   ,   ,RBK;
+   ,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK;
+   ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
+   ,DRT,DRT,DRT,DRT,DRT, v ,DRT,DRT,DRT,DRT;
+   ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
+   ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
+   ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
+   ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
+
+#   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+#RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,DRT,DRT;
+#RBK, * ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,RBK,DRT,DRT;
+#RBK,   ,   , v ,   ,   ,   , v ,   ,   ,   , Y ,   ,   ,   , v ,   ,   ,RBK,DRT,DRT;
+#RBK,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,RBK,DRT,DRT;
+#RBK, v ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,RBK,DRT,DRT;
+#RBK,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,RBK,DRT,RBK;
+#RBK, v ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,RBK,DRT,RBK;
+#RBK,   ,   ,   ,RBK,RBK,RBK,RBK,   ,   ,   ,RBK,RBK,RBK,RBK,RBK,RBK,   ,RBK,DRT,RBK;
+#RBK,PIR, D ,   ,   ,   ,   ,   ,   ,   ,   ,RBK, X ,   ,   ,   ,   ,   ,RBK,DRT,RBK;
+#RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,DRT,DRT;
+

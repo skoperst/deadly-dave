@@ -177,6 +177,12 @@ void tile_create_intro_fire(tile_t* t, int x, int y) {
 
     t->sprites[24] = 0;
     t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
@@ -319,9 +325,9 @@ void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
     t->sprite_idx = idx_offset;
     t->mod = FIRE;
 
-    t->collision_dx = 0;
+    t->collision_dx = 6;
     t->collision_dy = 0;
-    t->collision_dw = 0;
+    t->collision_dw = -12;
     t->collision_dh = 0;
 
 
@@ -357,9 +363,9 @@ void tile_create_vines(tile_t* t, int x, int y, int idx_offset) {
     t->sprite_idx = idx_offset;
 
     t->mod = FIRE;
-    t->collision_dx = 0;
+    t->collision_dx = 6;
     t->collision_dy = 0;
-    t->collision_dw = 0;
+    t->collision_dw = -12;
     t->collision_dh = 0;
 
     t->get_sprite = &tile_get_sprite;
@@ -397,9 +403,9 @@ void tile_create_water(tile_t* t, int x, int y, int idx_offset) {
     t->sprite_idx = idx_offset;
     t->mod = FIRE;
 
-    t->collision_dx = 0;
+    t->collision_dx = 6;
     t->collision_dy = 0;
-    t->collision_dw = 0;
+    t->collision_dw = -12;
     t->collision_dh = 0;
 
     t->get_sprite = &tile_get_sprite;
