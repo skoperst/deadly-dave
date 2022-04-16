@@ -553,7 +553,7 @@ int game_popup_quit_routine(game_context_t *game, tile_t *map,
 
 
 // When dave nears screen edge and there is more tiles in that edge,
-// we will scroll the screen to make new scren visible under the assumption
+// we will scroll the screen to make new screen visible under the assumption
 // usually the player moving to one direction.
 //
 // offset = 0                             offset = 0 + delta
@@ -992,7 +992,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
     return 0;
 }
 
-int gameloop(void) {
+int gameloop(int starting_level) {
     uint32_t timer_begin;
     uint32_t timer_end;
     uint32_t delay;
@@ -1009,6 +1009,7 @@ int gameloop(void) {
 
     game = malloc(sizeof(game_context_t));
     init_game(game);
+    game->level = starting_level;
     tile_create_flashing_cursor(&flashing_cursor, 224, 96);
 
     while (1) {
@@ -1098,7 +1099,7 @@ void sigseg_handler(int sig) {
     exit(1);
 }
 
-int game_main(int is_windowed) {
+int game_main(int is_windowed, int starting_level) {
     int ret = 0;
     signal(SIGSEGV, sigseg_handler);
     SDL_AudioSpec audio_spec_want, audio_spec;
@@ -1144,7 +1145,7 @@ int game_main(int is_windowed) {
 
     while (1) {
         ret = start_intro();
-        ret = gameloop();
+        ret = gameloop(starting_level);
         printf("game-loop finished with ret-code: %d \n", ret);
 
         if (ret == 0) {
