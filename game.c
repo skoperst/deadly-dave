@@ -871,13 +871,7 @@ int game_load_level(game_context_t *game, tile_t *map, char *file) {
                 if (collected_count == 3) {
                     collected_count = 0;
                     if ((strcmp(tag, " D ") == 0) || (strcmp(tag, "D+M") == 0)) {
-                        game->dave = dave_create(g_soundfx);
-                        game->dave->default_x = cur_col * 16;
-                        game->dave->default_y = pos * 16;
-                        game->dave->tile->x = cur_col * 16;
-                        game->dave->tile->y = pos * 16;
-                        game->dave->tile->width = 20;
-                        game->dave->tile->height = 16;
+                        game->dave = dave_create(g_soundfx, cur_col * 16, pos * 16);
                         game->dave->state = DAVE_STATE_STANDING;
                         game->dave->jump_state = 0;
                         game->dave->step_count = 0;

@@ -140,12 +140,29 @@ static const int SPRITES_MAX                       = 172;
 
 
 typedef struct tile_struct {
+    void *context;
+
+    // Starting x,y
+    int default_x;
+    int default_y;
+
+    // Current x,y
     int x;
     int y;
+
+    // Veloity in x,y directions
+    int vx;
+    int vy;
+
     int width;
     int height;
+
+    int collision_dx;
+    int collision_dy;
+    int collision_dw;
+    int collision_dh;
+
     int mod;
-    void *context;
     int sprites[100];
     int sprite_idx;
     int score_value;
