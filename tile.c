@@ -37,18 +37,26 @@ int tile_is_empty(tile_t *tile) {
     }
     return 0;
 }
-
 /*
  * Create a simple block tile (one sprite, doesn't animate)
  */
 void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height) {
     t->x = x;
     t->y = y;
+    t->vx = 0;
+    t->vy = 0;
     t->width = width;
     t->height = height;
+
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->mod = BRICK;
 
     t->get_sprite = &tile_get_sprite;
@@ -59,11 +67,19 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
 void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height) {
     t->x = x;
     t->y = y;
+    t->vx = 0;
+    t->vy = 0;
     t->width = width;
     t->height = height;
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->mod = DOOR;
 
     t->get_sprite = &tile_get_sprite;
@@ -79,6 +95,12 @@ void tile_create_gun(tile_t* t, int sprite, int x, int y, int width, int height)
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->mod = GUN;
 
     t->get_sprite = &tile_get_sprite;
@@ -100,19 +122,11 @@ void tile_create_intro_banner(tile_t* t, int x, int y) {
     t->sprites[6] = t->sprites[7] = t->sprites[8] = t->sprites[9] =
     t->sprites[10] = t->sprites[11] = SPRITE_IDX_TITLE_FLAMES2;
 
-    t->sprites[12] = SPRITE_IDX_TITLE_FLAMES3;
-    t->sprites[13] = SPRITE_IDX_TITLE_FLAMES3;
-    t->sprites[14] = SPRITE_IDX_TITLE_FLAMES3;
-    t->sprites[15] = SPRITE_IDX_TITLE_FLAMES3;
-    t->sprites[16] = SPRITE_IDX_TITLE_FLAMES3;
-    t->sprites[17] = SPRITE_IDX_TITLE_FLAMES3;
+    t->sprites[12] = t->sprites[13] = t->sprites[14] = t->sprites[15] =
+    t->sprites[16] = t->sprites[17] = SPRITE_IDX_TITLE_FLAMES3;
 
-    t->sprites[18] = SPRITE_IDX_TITLE_FLAMES4;
-    t->sprites[19] = SPRITE_IDX_TITLE_FLAMES4;
-    t->sprites[20] = SPRITE_IDX_TITLE_FLAMES4;
-    t->sprites[21] = SPRITE_IDX_TITLE_FLAMES4;
-    t->sprites[22] = SPRITE_IDX_TITLE_FLAMES4;
-    t->sprites[23] = SPRITE_IDX_TITLE_FLAMES4;
+    t->sprites[18] = t->sprites[19] = t->sprites[20] = t->sprites[21] =
+    t->sprites[22] = t->sprites[23] = SPRITE_IDX_TITLE_FLAMES4;
 
     t->sprites[24] = 0;
     t->sprite_idx = 0;
@@ -158,6 +172,11 @@ void tile_create_stars(tile_t *t, int x, int y) {
     t->sprite_idx = 0;
     t->mod = CLIMB;
 
+    t->collision_dx = 7;
+    t->collision_dy = 7;
+    t->collision_dw = -14;
+    t->collision_dh = -4;
+
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
@@ -172,6 +191,12 @@ void tile_create_stars_moon(tile_t *t, int x, int y) {
     t->sprites[1] = 0;
     t->sprite_idx = 0;
     t->mod = CLIMB;
+
+    t->collision_dx = 0;
+    t->collision_dy = 3;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -203,6 +228,11 @@ void tile_create_trunk(tile_t *t, int x, int y) {
     t->sprite_idx = 0;
     t->mod = CLIMB;
 
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
@@ -230,6 +260,12 @@ void tile_create_tree(tile_t* t, int x, int y, int type) {
     t->sprites[1] = 0;
     t->sprite_idx = 0;
     t->mod = CLIMB;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -261,10 +297,17 @@ void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
 
     t->sprites[40] = 0;
     t->sprite_idx = idx_offset;
+    t->mod = FIRE;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
+
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
-    t->mod = FIRE;
 }
 
 void tile_create_vines(tile_t* t, int x, int y, int idx_offset) {
@@ -292,10 +335,16 @@ void tile_create_vines(tile_t* t, int x, int y, int idx_offset) {
 
     t->sprites[40] = 0;
     t->sprite_idx = idx_offset;
+
+    t->mod = FIRE;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
-    t->mod = FIRE;
 }
 
 void tile_create_water(tile_t* t, int x, int y, int idx_offset) {
@@ -326,10 +375,16 @@ void tile_create_water(tile_t* t, int x, int y, int idx_offset) {
 
     t->sprites[50] = 0;
     t->sprite_idx = idx_offset;
+    t->mod = FIRE;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
-    t->mod = FIRE;
 }
 
 void tile_create_flashing_cursor(tile_t* t, int x, int y) {
@@ -427,6 +482,12 @@ void tile_create_teal_gem(tile_t *t, int x, int y) {
     t->sprites[0] = SPRITE_IDX_TEAL_GEM;
     t->sprites[1] = 0;
     t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
     t->mod = LOOT;
     t->score_value = 100;
 

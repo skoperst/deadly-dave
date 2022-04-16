@@ -167,9 +167,11 @@ typedef struct tile_struct {
     int sprite_idx;
     int score_value;
 
-    int (*get_sprite)(struct tile_struct* tile);
-    void (*tick)(struct tile_struct* tile);
-    int (*is_inside)(struct tile_struct* tile, int x, int y);
+    int (*get_sprite)(struct tile_struct *tile);
+    void (*tick)(struct tile_struct *tile);
+    int (*is_inside)(struct tile_struct *tile, int x, int y);
+    int (*is_on_ground)(struct tile_struct *tile);
+    int (*is_dead)(struct tile_struct *tile);
 
 } tile_t;
 

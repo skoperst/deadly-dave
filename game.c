@@ -182,7 +182,6 @@ void draw_map_offset(tile_t *map, int offset) {
             draw_tile_offset(&map[i + (offset*12)], g_assets, offset);
         }
     }
-
 }
 
 void draw_bullet_offset(bullet_t *bullet, struct game_assets *assets, int x_offset) {
@@ -190,17 +189,20 @@ void draw_bullet_offset(bullet_t *bullet, struct game_assets *assets, int x_offs
 }
 
 void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
-    draw_tile_offset(dave->tile, assets, x_offset);
+    if (dave->tile->get_sprite(dave->tile) != 0) {
+        draw_tile_offset(dave->tile, assets, x_offset);
+    }
 }
 
 void draw_monster_offset(monster_t *monster, struct game_assets *assets, int x_offset) {
 
-    printf("drawing monster x:%d, y:%d \n", monster->tile->x, monster->tile->y);
+/*    printf("drawing monster x:%d, y:%d \n", monster->tile->x, monster->tile->y);
     printf("drawing monster with offsset: x:%d, y:%d \n", 
-            (monster->tile->x - (x_offset * 16)), monster->tile->y);
-    render_tile_idx(monster->tile->get_sprite(monster->tile),
+            (monster->tile->x - (x_offset * 16)), monster->tile->y);*/
+    if (monster->tile->get_sprite(monster->tile) != 0) {
+        render_tile_idx(monster->tile->get_sprite(monster->tile),
             monster->tile->x - (x_offset * 16), monster->tile->y);
-//    draw_tile_offset(monster->tile, assets, x_offset);
+    }
 }
 
 void draw_x_levels_to_go(int x) {
@@ -483,7 +485,6 @@ int start_intro() {
         timer_end = SDL_GetTicks();
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
-//        printf("delaying %d \n", delay);
         SDL_Delay(delay);
     }
 
@@ -493,96 +494,10 @@ int start_intro() {
     return result;
 }
 
-/*
- * In original game pickup collision is slightly bigger then other collisions
- */
-int is_dave_collision_tile_pick(dave_t *dave, tile_t *tile) {
-    if (tile_is_empty(tile)) {
-        return 0;
-    }
-
-    if (tile->is_inside(tile, dave->tile->x, dave->tile->y+2)) {
-        return 1;
-    }
-    if (tile->is_inside(tile, dave->tile->x, dave->tile->y+15)) {
-        return 1;
-    }
-    if (tile->is_inside(tile, dave->tile->x+15, dave->tile->y+2)) {
-        return 1;
-    }
-    if (tile->is_inside(tile, dave->tile->x+15, dave->tile->y+16)) {
-        return 1;
-    }
-
-    return 0;
-}
-
-int is_dave_collision_tile(dave_t *dave, tile_t *tile) {
-    if (tile_is_empty(tile)) {
-        return 0;
-    }
-
-    if (tile->is_inside(tile, dave->tile->x+2, dave->tile->y+2)) {
-        return 1;
-    }
-    if (tile->is_inside(tile, dave->tile->x+2, dave->tile->y+15)) {
-        return 1;
-    }
-    if (tile->is_inside(tile, dave->tile->x+13, dave->tile->y+2)) {
-        return 1;
-    }
-    if (tile->is_inside(tile, dave->tile->x+13, dave->tile->y+15)) {
-        return 1;
-    }
-
-    return 0;
-}
-
-int is_dave_in_door(game_context_t *game, tile_t *map) {
-    if (game->dave->is_dead(game->dave)) {
-        return 0;
-    }
-
-    int idx = 0;
-    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
-        if (is_dave_collision_tile(game->dave, &map[idx])) {
-            if (map[idx].mod == DOOR) {
-                g_soundfx->play(g_soundfx, TUNE_NEXTLEVEL);
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-void check_dave_pick_item(game_context_t *game, tile_t *map) {
-    if (game->dave->is_dead(game->dave)) {
-        return;
-    }
-    int idx = 0;
-    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
-        if (is_dave_collision_tile_pick(game->dave, &map[idx])) {
-            if (map[idx].mod == LOOT) {
-                map[idx].mod = 0;
-                map[idx].sprites[0] = 0;
-                game->score = game->score + map[idx].score_value;
-                g_soundfx->play(g_soundfx, TUNE_TREASURE);
-                return;
-            } else if (map[idx].mod == TROPHY) {
-                game->dave->has_trophy = 1;
-                map[idx].mod = 0;
-                map[idx].sprites[0] = 0;
-                game->score = game->score + map[idx].score_value;
-                g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
-            } else if (map[idx].mod == GUN) {
-                game->dave->has_gun = 1;
-                map[idx].mod = 0;
-                map[idx].sprites[0] = 0;
-                game->score = game->score + map[idx].score_value;
-                //g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
-            }
-        }
+void clear_monsters(game_context_t *game) {
+    int i = 0;
+    for (i = 0; i < 5; i++) {
+        game->monsters[i] = NULL;
     }
 }
 
@@ -622,6 +537,18 @@ int game_popup_quit_routine(game_context_t *game, tile_t *map,
     return G_STATE_LEVEL_POPUP;
 }
 
+
+// When dave nears screen edge and there is more tiles in that edge,
+// we will scroll the screen to make new scren visible under the assumption
+// usually the player moving to one direction.
+//
+// offset = 0                             offset = 0 + delta
+// +-------------------+                 +--------------------+
+// |        1          .                 .           2        |
+// |                   .                 .                    |
+// |              DAVE .      ---->      . DAVE               |
+// |                   .                 .                    |
+// +-------------------+                 +--------------------+
 int game_adjust_scroll_to_dave(game_context_t *game, dave_t *dave) {
     if (game->scroll_remaining != 0) {
         if (game->scroll_remaining > 0) {
@@ -671,9 +598,31 @@ int game_is_scrolling(game_context_t *game) {
     return 0;
 }
 
-int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
-    int i = 0;
-    int k = 0;
+int game_do_bullets(game_context_t *game, tile_t *map, keys_state_t *keys)
+{
+    if (game->bullet != NULL) {
+        game->bullet->tick(game->bullet, map, (game->scroll_offset * 16), (game->scroll_offset * 16) + 320);
+
+        if (game->bullet->is_dead(game->bullet)) {
+            game->bullet = NULL;
+            printf("BULLET DEAD \n");
+        }
+    } else {
+        if (keys->fire && game->dave->has_gun) {
+            printf("Creating bullet!!\n");
+            if (game->dave->face_direction == DAVE_DIRECTION_LEFT ||
+                game->dave->face_direction == DAVE_DIRECTION_FRONTL) {
+                game->bullet = bullet_create_left(game->dave->tile->x - 8, game->dave->tile->y + 8);
+            } else if (game->dave->face_direction == DAVE_DIRECTION_RIGHT ||
+                game->dave->face_direction == DAVE_DIRECTION_FRONTR) {
+                game->bullet = bullet_create_right(game->dave->tile->x + 8, game->dave->tile->y + 8);
+            }
+        }
+    }
+}
+
+int game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
+    int k;
 
     tile_t bottom_separator;
     tile_t top_separator;
@@ -684,69 +633,6 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     tile_create_top_separator(&top_separator, 0, 11);
     tile_create_grail_banner(&grail_banner, 70, 180);
     tile_create_gun_banner(&gun_banner, 240, 170);
-    if (keys->quit) {
-        printf("should quit! \n");
-        return G_STATE_QUIT_NOW;
-    }
-
-    if (keys->escape) {
-        g_soundfx->stop(g_soundfx);
-        return G_STATE_LEVEL_POPUP;
-    }
-
-
-    if (!game_adjust_scroll_to_dave(game, game->dave)) {
-        game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
-
-        if (game->monsters[0] != NULL) {
-            game->monsters[0]->tick(game->monsters[0]);
-        }
-        if (game->bullet != NULL) {
-            game->bullet->tick(game->bullet, map, (game->scroll_offset * 16), (game->scroll_offset * 16) + 320);
-
-            if (game->bullet->is_dead(game->bullet)) {
-                game->bullet = NULL;
-                printf("BULLET DEAD \n");
-            }
-        } else {
-            if (keys->fire && game->dave->has_gun) {
-                printf("Creating bullet!!\n");
-                if (game->dave->face_direction == DAVE_DIRECTION_LEFT ||
-                    game->dave->face_direction == DAVE_DIRECTION_FRONTL) {
-                    game->bullet = bullet_create_left(game->dave->tile->x - 8, game->dave->tile->y + 8);
-                } else if (game->dave->face_direction == DAVE_DIRECTION_RIGHT ||
-                    game->dave->face_direction == DAVE_DIRECTION_FRONTR) {
-                    game->bullet = bullet_create_right(game->dave->tile->x + 8, game->dave->tile->y + 8);
-                }
-            }
-        }
-
-        for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-            if (map[i].sprites[0] != 0) {
-                map[i].tick(&map[i]);
-            }
-        }
-        check_dave_pick_item(game, map);
-        if (is_dave_in_door(game, map)) {
-            printf("IN DOOR \n");
-            if (game->dave->has_trophy) {
-                return G_STATE_WARP_RIGHT;
-            }
-        }
-
-        if (game->dave->is_dead(game->dave)) {
-            game->lives--;
-            game->dave->state = DAVE_STATE_STANDING;
-            game->dave->jump_state = 0;
-            game->dave->step_count = 0;
-
-            if (game->lives == 0) {
-                return G_STATE_GAMEOVER;
-            }
-
-            return G_STATE_LEVEL_START;
-        }
-    }
 
     for (k = 0; k < 320 * 200; k++) {
         g_pixels[k] = 0x000000FF;
@@ -771,7 +657,158 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     draw_score(game->score);
     draw_level(game->level);
     draw_lives(game->lives);
+}
 
+int collision_detect(tile_t *tile1, tile_t *tile2)
+{
+    int box1_x = tile1->x + tile1->collision_dx;
+    int box1_y = tile1->y + tile1->collision_dy;
+    int box1_w = tile1->width + tile1->collision_dw;
+    int box1_h = tile1->height + tile1->collision_dh;
+
+    int box2_x = tile2->x + tile2->collision_dx;
+    int box2_y = tile2->y + tile2->collision_dy;
+    int box2_w = tile2->width + tile2->collision_dw;
+    int box2_h = tile2->height + tile2->collision_dh;
+
+    if (box1_x < box2_x + box2_w &&
+        box1_x + box1_w > box2_x &&
+        box1_y < box2_y + box2_h &&
+        box1_h + box1_y > box2_y) {
+        return 1;
+    }
+
+    return 0;
+}
+
+int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
+    dave_t *dave = game->dave;
+
+    int i = 0;
+    int k = 0;
+
+    if (keys->quit) {
+        printf("should quit! \n");
+        return G_STATE_QUIT_NOW;
+    }
+
+    if (keys->escape) {
+        g_soundfx->stop(g_soundfx);
+        return G_STATE_LEVEL_POPUP;
+    }
+
+
+    // If we need to adjust screen by scrolling, just draw scene without progressing any
+    // game objects.
+    if (game_adjust_scroll_to_dave(game, game->dave)) {
+        game_do_draw(game, map, keys);
+        return G_STATE_LEVEL;
+    }
+
+    // Tick dave, monsters, and all block tiles in map
+    game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
+    if (game->monsters[0] != NULL) {
+        game->monsters[0]->tick(game->monsters[0]);
+    }
+
+    for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+        if (map[i].sprites[0] != 0) {
+            map[i].tick(&map[i]);
+        }
+    }
+
+    game_do_bullets(game, map, keys);
+
+    //collisions
+    //check_dave_pick_item(game, map);
+    /*if (game->dave->is_dead(game->dave)) {
+        return;
+    }*/
+
+    if (dave->is_dead(game->dave)) {
+        game->lives--;
+        game->dave->state = DAVE_STATE_STANDING;
+        game->dave->jump_state = 0;
+        game->dave->step_count = 0;
+        game->dave->on_fire = 0;
+
+        if (game->lives == 0) {
+            return G_STATE_GAMEOVER;
+        }
+
+        return G_STATE_LEVEL_START;
+    }
+
+    int idx = 0;
+    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT ; idx++) {
+        if ((map[idx].sprites[0] != 0) &&
+                collision_detect(game->dave->tile, &map[idx])) {
+
+            printf("COLLISION IDX: %d\n", idx);
+            if (map[idx].mod == LOOT) {
+                game->score = game->score + map[idx].score_value;
+                map[idx].sprites[0] = 0;
+                map[idx].mod = 0;
+                g_soundfx->play(g_soundfx, TUNE_TREASURE);
+            } else if (map[idx].mod == TROPHY) {
+                game->dave->has_trophy = 1;
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
+                game->score = game->score + map[idx].score_value;
+                g_soundfx->play(g_soundfx, TUNE_GOT_TROPHY);
+            } else if (map[idx].mod == GUN) {
+                game->dave->has_gun = 1;
+                map[idx].mod = 0;
+                map[idx].sprites[0] = 0;
+                game->score = game->score + map[idx].score_value;
+                g_soundfx->play(g_soundfx, TUNE_GOT_SOMETHING);
+            } else if (map[idx].mod == DOOR) {
+                if (game->dave->has_trophy) {
+                    g_soundfx->play(g_soundfx, TUNE_NEXTLEVEL);
+                    return G_STATE_WARP_RIGHT;
+                }
+
+            } else if (map[idx].mod == FIRE) {
+                if (game->dave->on_fire != 1) {
+                    game->dave->on_fire = 1;
+                    g_soundfx->stop(g_soundfx);
+                    g_soundfx->play(g_soundfx, TUNE_OUCH);
+                }
+            } else if (map[idx].mod == CLIMB) {
+                game->dave->on_tree = 1;
+            }
+        }
+    }
+
+    for (idx = 0; idx < 5; idx++) {
+        if (game->monsters[idx] != NULL) {
+            printf("Checking collision for MONSTER %d \n", idx);
+            printf("monster[%d] x:%d y:%d \n", idx, game->monsters[idx]->tile->x, game->monsters[idx]->tile->y);
+            if (game->bullet != NULL) {
+                if (collision_detect(game->bullet->tile, game->monsters[idx]->tile)) {
+                    if (game->monsters[idx]->on_fire != 1) {
+                        printf("HIT \n");
+                        game->bullet = NULL;
+                        game->monsters[idx]->on_fire = 1;
+                        g_soundfx->stop(g_soundfx);
+                        g_soundfx->play(g_soundfx, TUNE_EXPLOSION);
+                    }
+                }
+            }
+
+            if (collision_detect(game->dave->tile, game->monsters[idx]->tile)) {
+                if (game->monsters[idx]->is_alive(game->monsters[idx])) {
+                    game->dave->on_fire = 1;
+                }
+            }
+
+/*            if (collision_detect(game->bullet->tile, game->monsters[idx]->tile)) {
+                printf("MONSTER COLLISION \n");
+            }*/
+        }
+    }
+
+    game_do_draw(game, map, keys);
     return G_STATE_LEVEL;
 }
 
@@ -808,7 +845,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
             map[i].tick(&map[i]);
         }
     }
-    check_dave_pick_item(game, map);
+    //check_dave_pick_item(game, map);
 
     for (k = 0; k < 320 * 200; k++) {
         g_pixels[k] = 0x000000FF;
@@ -835,7 +872,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     return G_STATE_WARP_RIGHT;
 }
 
-int game_load_level(game_context_t *game, tile_t *map, char *file) {
+int game_level_load(game_context_t *game, tile_t *map, char *file) {
     long fsize;
     char *buf;
     FILE* f = fopen(file, "rb");
@@ -880,7 +917,7 @@ int game_load_level(game_context_t *game, tile_t *map, char *file) {
                         game->monsters[0]->tile->x = cur_col * 16;
                         game->monsters[0]->tile->y = pos * 20;
                         game->monsters[1] = NULL;
-                    } else if (strcmp(tag, "SPI") == 0) {
+                    } else if (strcmp(tag, "SP1") == 0) {
                         game->monsters[0] = monster_create_spider();
                         game->monsters[0]->tile->x = cur_col * 16;
                         game->monsters[0]->tile->y = (pos * 20) - 12;
@@ -924,10 +961,10 @@ int gameloop(void) {
     game_context_t* game;
     tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT];
     keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0, 0};
-    tile_t bottom_separator;
-    tile_t top_separator;
-    tile_t grail_banner;
-    tile_t gun_banner;
+  //  tile_t bottom_separator;
+  //  tile_t top_separator;
+  //  tile_t grail_banner;
+  //  tile_t gun_banner;
     tile_t flashing_cursor;
     char level_path[4096];
     int stride;
@@ -938,11 +975,11 @@ int gameloop(void) {
 
     game = malloc(sizeof(game_context_t));
     init_game(game);
-
+/*
     tile_create_bottom_separator(&bottom_separator, 0, 166);
     tile_create_top_separator(&top_separator, 0, 11);
     tile_create_grail_banner(&grail_banner, 70, 180);
-    tile_create_gun_banner(&gun_banner, 100,150);
+    tile_create_gun_banner(&gun_banner, 100,150);*/
     tile_create_flashing_cursor(&flashing_cursor, 224, 96);
 
     while (1) {
@@ -955,23 +992,24 @@ int gameloop(void) {
         get_keys(&key_state);
 
         if (g_state == G_STATE_NONE) {
+            clear_monsters(game);
             clear_map(map);
             snprintf(level_path, 4096, "res/levels/level%ld.ddt", (long)game->level);
 
-            game_load_level(game, map, level_path);
+            game_level_load(game, map, level_path);
 //            tile_file_parse(map, &current_level_begin_x, &current_level_begin_y, level_path);
             next_state = G_STATE_LEVEL_START;
 
-        } if (g_state == G_STATE_LEVEL_START) {
+        } else if (g_state == G_STATE_LEVEL_START) {
             printf("Resetting dave location \n");
-            game->dave->tile->x = game->dave->default_x;
-            game->dave->tile->y = game->dave->default_y;
+            game->dave->tile->x = game->dave->tile->default_x;
+            game->dave->tile->y = game->dave->tile->default_y;
             game->scroll_offset = 0;
             game_set_scroll_to_dave(game, game->dave);
             next_state = G_STATE_LEVEL;
 
         } else if (g_state == G_STATE_LEVEL) {
-            next_state = game_level_routine(game, map, &key_state);
+            next_state = game_level(game, map, &key_state);
 
         } else if (g_state == G_STATE_LEVEL_POPUP) {
             next_state = game_popup_quit_routine(game, map, &flashing_cursor, &key_state);
@@ -985,7 +1023,7 @@ int gameloop(void) {
                 game->dave->has_jetpack = 0;
                 game->scroll_offset = 0;
                 clear_map(map);
-                game_load_level(game, map, "res/levels/warp_right.ddt");
+                game_level_load(game, map, "res/levels/warp_right.ddt");
             }
             next_state = game_warp_right(game, map, &key_state);
 
@@ -1012,7 +1050,6 @@ int gameloop(void) {
         timer_end = SDL_GetTicks();
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
-        //printf("delaying %d \n", delay);
 
         SDL_Delay(delay);
     }
@@ -1021,16 +1058,16 @@ int gameloop(void) {
 }
 
 void sigseg_handler(int sig) {
-  void *array[10];
-  size_t size;
+    void *array[10];
+    size_t size;
 
-  // get void*'s for all entries on the stack
-  size = backtrace(array, 10);
+    // get void*'s for all entries on the stack
+    size = backtrace(array, 10);
 
-  // print out all the frames to stderr
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
-  exit(1);
+    // print out all the frames to stderr
+    fprintf(stderr, "Error: signal %d:\n", sig);
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    exit(1);
 }
 
 int main(int argc, char* argv[]) {
