@@ -37,7 +37,11 @@ void render_tile_idx(int tile_idx, int x, int y) {
     SDL_Surface *surface = g_assets->tiles[tile_idx];
 
     int blend = 0;
-    if (tile_idx == SPRITE_IDX_BULLET_RIGHT || tile_idx == SPRITE_IDX_BULLET_LEFT) {
+    if (tile_idx == SPRITE_IDX_BULLET_RIGHT || tile_idx == SPRITE_IDX_BULLET_LEFT ||
+            tile_idx == SPRITE_IDX_MONSTER_SUN1 || tile_idx == SPRITE_IDX_MONSTER_SUN2 ||
+            tile_idx == SPRITE_IDX_MONSTER_SUN3 || tile_idx == SPRITE_IDX_MONSTER_SUN4 ||
+            tile_idx == SPRITE_IDX_MONSTER_SPIDER1 || tile_idx == SPRITE_IDX_MONSTER_SPIDER2 ||
+            tile_idx == SPRITE_IDX_MONSTER_SPIDER3 || tile_idx == SPRITE_IDX_MONSTER_SPIDER4) {
         blend = 1;
     }
 
@@ -49,6 +53,7 @@ void render_tile_idx(int tile_idx, int x, int y) {
             if ( (pixel & 0x000000FF) == 0) { // is a pixel totally transperant dont draw it
             } else if (line_idx + y >= 200) {
             } else if (column_idx + x >= 320) {
+            } else if (column_idx + x < 0) {
             } else {
                 if ( (line_idx + y) >= 0) {
                     if (blend) {
@@ -184,6 +189,16 @@ void draw_bullet_offset(bullet_t *bullet, struct game_assets *assets, int x_offs
 
 void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
     draw_tile_offset(dave->tile, assets, x_offset);
+}
+
+void draw_monster_offset(monster_t *monster, struct game_assets *assets, int x_offset) {
+
+    printf("drawing monster x:%d, y:%d \n", monster->tile->x, monster->tile->y);
+    printf("drawing monster with offsset: x:%d, y:%d \n", 
+            (monster->tile->x - (x_offset * 16)), monster->tile->y);
+    render_tile_idx(monster->tile->get_sprite(monster->tile),
+            monster->tile->x - (x_offset * 16), monster->tile->y);
+//    draw_tile_offset(monster->tile, assets, x_offset);
 }
 
 void draw_x_levels_to_go(int x) {
@@ -682,6 +697,9 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
     if (!game_adjust_scroll_to_dave(game, game->dave)) {
         game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
 
+        if (game->monsters[0] != NULL) {
+            game->monsters[0]->tick(game->monsters[0]);
+        }
         if (game->bullet != NULL) {
             game->bullet->tick(game->bullet, map, (game->scroll_offset * 16), (game->scroll_offset * 16) + 320);
 
@@ -735,6 +753,9 @@ int game_level_routine(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     draw_map_offset(map, game->scroll_offset);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
+    if (game->monsters[0] != NULL) {
+        draw_monster_offset(game->monsters[0], g_assets, game->scroll_offset);
+    }
     if (game->bullet != NULL) {
         draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
     }
@@ -916,8 +937,6 @@ int gameloop(void) {
     char level_path[4096];
     int stride;
     int next_state;
-    int current_level_begin_x = 0;
-    int current_level_begin_y = 0;
     int g_state = G_STATE_NONE;
     int g_prev_state = G_STATE_NONE;
 
@@ -942,9 +961,9 @@ int gameloop(void) {
         key_state.bracel = 0;
         check_input2(&key_state);
 
-        if (game->dave->has_gun) {
-            printf("HAS GUN! \n");
-        }
+//        if (game->dave->has_gun) {
+//            printf("HAS GUN! \n");
+//        }
         // These just used for debugging
         if (key_state.bracer) {
 //            g_soundfx->play(g_soundfx, TUNE_WALKING);
@@ -958,13 +977,14 @@ int gameloop(void) {
             clear_map(map);
             snprintf(level_path, 4096, "res/levels/level%ld.ddt", (long)game->level);
 
-            tile_file_parse(map, &current_level_begin_x, &current_level_begin_y, level_path);
+            game_load_level(game, map, level_path);
+//            tile_file_parse(map, &current_level_begin_x, &current_level_begin_y, level_path);
             next_state = G_STATE_LEVEL_START;
 
         } if (g_state == G_STATE_LEVEL_START) {
             printf("Resetting dave location \n");
-            game->dave->tile->x = current_level_begin_x;
-            game->dave->tile->y = current_level_begin_y;
+            game->dave->tile->x = game->dave->default_x;
+            game->dave->tile->y = game->dave->default_y;
             game->scroll_offset = 0;
             game_set_scroll_to_dave(game, game->dave);
             next_state = G_STATE_LEVEL;
@@ -984,8 +1004,7 @@ int gameloop(void) {
                 game->dave->has_jetpack = 0;
                 game->scroll_offset = 0;
                 clear_map(map);
-                tile_file_parse(map, &game->dave->tile->x,
-                    &game->dave->tile->y, "res/levels/warp_right.ddt");
+                game_load_level(game, map, "res/levels/warp_right.ddt");
             }
             next_state = game_warp_right(game, map, &key_state);
 
@@ -1047,9 +1066,7 @@ int main(int argc, char* argv[]) {
     g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
     g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 320, 200);
 
-    // Easy onversion between original world (320x200) and current screen size
     SDL_RenderSetScale(g_renderer, DISPLAY_SCALE, DISPLAY_SCALE);
-
 
     // Flush any pre-pressed keys
     SDL_FlushEvent(SDL_KEYDOWN);

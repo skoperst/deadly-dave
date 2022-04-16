@@ -52,6 +52,8 @@ typedef struct dave_struct {
     int jump_cooldown_count;
     int freefall_direction;
     int climb_state;
+    int default_x;
+    int default_y;
 
     void (*tick)(struct dave_struct *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int left, int right, int up, int down, int jetpack);

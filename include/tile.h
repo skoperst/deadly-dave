@@ -32,6 +32,7 @@ static const int DOOR       = 8;
 static const int DAVE       = 9;
 static const int GUN        = 10;
 static const int JETPACK    = 11;
+static const int MONSTER    = 12;
 
 
 // SPRITE INDEXES
@@ -100,6 +101,14 @@ static const int SPRITE_IDX_DAVE_JETPACK_RIGHT3    = 79;
 static const int SPRITE_IDX_DAVE_JETPACK_LEFT1     = 80;
 static const int SPRITE_IDX_DAVE_JETPACK_LEFT2     = 81;
 static const int SPRITE_IDX_DAVE_JETPACK_LEFT3     = 82;
+static const int SPRITE_IDX_MONSTER_SPIDER1        = 89;
+static const int SPRITE_IDX_MONSTER_SPIDER2        = 90;
+static const int SPRITE_IDX_MONSTER_SPIDER3        = 91;
+static const int SPRITE_IDX_MONSTER_SPIDER4        = 92;
+static const int SPRITE_IDX_MONSTER_SUN1           = 97;
+static const int SPRITE_IDX_MONSTER_SUN2           = 98;
+static const int SPRITE_IDX_MONSTER_SUN3           = 99;
+static const int SPRITE_IDX_MONSTER_SUN4           = 100;
 static const int SPRITE_IDX_BULLET_RIGHT           = 127;
 static const int SPRITE_IDX_BULLET_LEFT            = 128;
 static const int SPRITE_IDX_EXPLOSION1             = 129;

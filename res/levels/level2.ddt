@@ -69,7 +69,7 @@
    ,DRT,DRT,BCM,   ,   ,   ,BCM,DRT,DRT,DRT;
    ,DRT,DRT,BCM,   ,   ,   ,BCM,DRT,DRT,DRT;
    ,DRT,DRT,BCM,   ,   ,   ,BCM,DRT,DRT,DRT;
-   ,DRT,DRT,BCM,   ,   ,VI2,BCM,DRT,DRT,DRT;
+   ,DRT,DRT,BCM,SPI,   ,VI2,BCM,DRT,DRT,DRT;
    ,DRT,DRT,BCM,   ,   ,   ,BCM,DRT,DRT,DRT;
    ,DRT,DRT,BCM,   ,   ,   ,BCM,DRT,DRT,DRT;
    ,DRT,DRT,BCM,   ,   ,VI1,BCM,DRT,DRT,DRT;

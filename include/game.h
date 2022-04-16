@@ -6,6 +6,7 @@
 #include "tile.h"
 #include "dave.h"
 #include "bullet.h"
+#include "monster.h"
 
 /* Format of the level information
  * -path is used for monster movement
@@ -104,7 +105,7 @@ typedef struct game_context_struct {
 
     dave_t *dave;
     bullet_t *bullet;
-    struct monster_state monster[5];
+    monster_t *monsters[5];
 
     int64_t scroll_offset;
     int64_t scroll_remaining;
