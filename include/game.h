@@ -20,6 +20,7 @@
 #define DAVE_WALKING_STATE_COOLDOWN2_LEFT  4
 #define DAVE_WALKING_STATE_RIGHT 5
 #define DAVE_WALKING_STATE_LEFT 6
+#define MAX_MONSTERS 10
 
 typedef struct keys_state_struct {
     int32_t jump;
@@ -71,7 +72,7 @@ typedef struct game_context_struct {
 
     dave_t *dave;
     bullet_t *bullet;
-    monster_t *monsters[5];
+    monster_t *monsters[MAX_MONSTERS];
 
     int64_t scroll_offset;
     int64_t scroll_remaining;

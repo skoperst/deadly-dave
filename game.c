@@ -199,6 +199,18 @@ void draw_monster_offset(monster_t *monster, struct game_assets *assets, int x_o
     }
 }
 
+void draw_monsters_offset(monster_t *monsters[MAX_MONSTERS], struct game_assets *assets, int x_offset) {
+    int i = 0;
+    for (i = 0; i < MAX_MONSTERS; i++) {
+        if (monsters[i] != NULL) {
+            if  (monsters[i]->tile->get_sprite(monsters[i]->tile) != 0) {
+                render_tile_idx(monsters[i]->tile->get_sprite(monsters[i]->tile),
+                    monsters[i]->tile->x - (x_offset * 16), monsters[i]->tile->y);
+            }
+        }
+    }
+}
+
 void draw_x_levels_to_go(int x) {
     char good_work[128];
     snprintf(good_work, sizeof(good_work), "GOOD WORK! ONLY %d MORE TO GO!", x);
@@ -514,7 +526,7 @@ int start_intro() {
 
 void clear_monsters(game_context_t *game) {
     int i = 0;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < MAX_MONSTERS; i++) {
         game->monsters[i] = NULL;
     }
 }
@@ -665,9 +677,8 @@ void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     draw_map_offset(map, game->scroll_offset);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
-    if (game->monsters[0] != NULL) {
-        draw_monster_offset(game->monsters[0], g_assets, game->scroll_offset);
-    }
+    draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
+
     if (game->bullet != NULL) {
         draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
     }
@@ -751,8 +762,11 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     // Tick dave, monsters, and all block tiles in map
     game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
-    if (game->monsters[0] != NULL) {
-        game->monsters[0]->tick(game->monsters[0]);
+
+    for (i = 0; i < MAX_MONSTERS; i++) {
+        if (game->monsters[i] != NULL) {
+            game->monsters[i]->tick(game->monsters[i]);
+        }
     }
 
     for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
@@ -926,8 +940,16 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
 }
 
 int game_level_load(game_context_t *game, tile_t *map, char *file) {
+    int i = 0;
     long fsize;
     char *buf;
+    int pos = 0, cur_col = 0;
+    int in_comment = 0;
+    int collected_count = 0;
+    char tag[4] = {0, 0, 0, 0};
+    char *map_str = NULL;
+
+    int monsters_count = 0;
     FILE* f = fopen(file, "rb");
     fseek(f, 0, SEEK_END);
     fsize = ftell(f);
@@ -939,16 +961,9 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
 
     buf[fsize] = 0;
 
-    int cur_col = 0;
-    int pos = 0;
+    map_str = buf;
 
-    int i = 0;
-    int in_comment = 0;
-    int collected_count = 0;
-    char tag[4];
-    tag[3] = 0;
-
-    char *map_str = buf;
+    clear_monsters(game);
     while (map_str[i] != 0) {
         if (in_comment) {
             if (map_str[i] == '\n') {
@@ -966,15 +981,15 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         game->dave->jump_state = 0;
                         game->dave->step_count = 0;
                     } else if (strcmp(tag, "SUN") == 0) {
-                        game->monsters[0] = monster_create_sun();
-                        game->monsters[0]->tile->x = cur_col * 16;
-                        game->monsters[0]->tile->y = pos * 20;
-                        game->monsters[1] = NULL;
+                        game->monsters[monsters_count] = monster_create_sun();
+                        game->monsters[monsters_count]->tile->x = cur_col * 16;
+                        game->monsters[monsters_count]->tile->y = pos * 20;
+                        monsters_count++;
                     } else if (strcmp(tag, "SP1") == 0) {
-                        game->monsters[0] = monster_create_spider();
-                        game->monsters[0]->tile->x = cur_col * 16;
-                        game->monsters[0]->tile->y = (pos * 20) - 12;
-                        game->monsters[1] = NULL;
+                        game->monsters[monsters_count] = monster_create_spider();
+                        game->monsters[monsters_count]->tile->x = cur_col * 16;
+                        game->monsters[monsters_count]->tile->y = (pos * 20) - 12;
+                        monsters_count++;
                     }
 
                     tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
