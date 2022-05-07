@@ -41,7 +41,9 @@ void render_tile_idx(int tile_idx, int x, int y) {
             tile_idx == SPRITE_IDX_MONSTER_SUN1 || tile_idx == SPRITE_IDX_MONSTER_SUN2 ||
             tile_idx == SPRITE_IDX_MONSTER_SUN3 || tile_idx == SPRITE_IDX_MONSTER_SUN4 ||
             tile_idx == SPRITE_IDX_MONSTER_SPIDER1 || tile_idx == SPRITE_IDX_MONSTER_SPIDER2 ||
-            tile_idx == SPRITE_IDX_MONSTER_SPIDER3 || tile_idx == SPRITE_IDX_MONSTER_SPIDER4) {
+            tile_idx == SPRITE_IDX_MONSTER_SPIDER3 || tile_idx == SPRITE_IDX_MONSTER_SPIDER4 ||
+            tile_idx == SPRITE_IDX_MONSTER_SWIRL1 || tile_idx == SPRITE_IDX_MONSTER_SWIRL2 ||
+            tile_idx == SPRITE_IDX_MONSTER_SWIRL3 || tile_idx == SPRITE_IDX_MONSTER_SWIRL4) {
         blend = 1;
     }
 
@@ -987,6 +989,11 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         monsters_count++;
                     } else if (strcmp(tag, "SP1") == 0) {
                         game->monsters[monsters_count] = monster_create_spider();
+                        game->monsters[monsters_count]->tile->x = cur_col * 16;
+                        game->monsters[monsters_count]->tile->y = (pos * 20) - 12;
+                        monsters_count++;
+                    } else if (strcmp(tag, "SW1") == 0) {
+                        game->monsters[monsters_count] = monster_create_swirl();
                         game->monsters[monsters_count]->tile->x = cur_col * 16;
                         game->monsters[monsters_count]->tile->y = (pos * 20) - 12;
                         monsters_count++;

@@ -5,14 +5,59 @@
 #include "tile.h"
 #include "monster.h"
 
-int sun_path[] = {-2, 3, 1, 3, -2, 3, -4, 3, -5, -2, -2, -3, -5, 0, -4, 2, -4, 3, 0, 0,
-    0, 1, -3, 5, -2, 6, -1, 8, 2, 10, 8, 10, 12, 8, 13, 6, 10, 6, 5, 3, 4, -1, 4, -3, 3,
-    -4, 2, -6, 1, -10, -3, -11, -7, -11, 0, -8, 3, -11, -4, -7, -6, -5, -7, -3, -5, 2, -2, 3};
+/*
+ * Spidy, monster of level2
+ */
+int spidy_path[] = {
+     5,  3,  2,  4,  0,  5, -3,  4,    -4,  4, -5,  3, -7,  2, -6,  2,
+    -6,  1, -7,  1, -8, -2, -5, -3,    -6, -3, -7, -2  -7, -3, -5, -2,
+    -7, -3, -6, -3, -7, -3, -9, -2,   -10,  0, -9,  1, -7,  2, -9,  2,
+    -8,  3, -8,  0, -9,  0, -9,  1,   -10,  2, -7,  0, -3, -1, -2, -4,
+     1, -4,  3, -3,  3, -1,  3, -1,     6, -2,  8, -2,  8, -1, 11, -1,
+    14, -1, 14,  2, 15,  0, 18,  0,    17,  0, 17,  1, 14,  1, 15,  1,
+    10,  2,  6,  2,  6, 2
+};
 
-int spider_path[] = {5, 3, 2, 4, 0, 5, -3, 4, -4, 4, -5, 3, -7, 2, -6, 2, -6, 1, -7, 1, -8, -2, -5, -3, -6, -3, -7, -2, -7, -3, -5, -2, -7, -3, -6, -3, -7, -3, -9, -2, -10, 0, -9, 1, -7, 2, -9, 2, -8, 3, -8, 0, -9, 0, -9, 1, -10, 2, -7, 0, -3, -1, -2, -4, 1, -4, 3, -3, 3, -1, 3, -1, 6, -2, 8, -2, 8, -1, 11, -1, 14, -1, 14, -2, 15, 0, 18, 0, 17, 0, 17, 1, 14, 1, 15, 1, 10, 2, 6, 2, 6, 2};
+/*
+ * Swirl, monster of level3
+ */
+int swirl_path[] = {
+    -6, -4, -8, -2,-11,  0,-14,  0,    -10,  0,-11,  0,-11,  0,-10,  0,
+    -9,  1, -5,  1, -3,  2, -2,  2,     -2,  4, -1,  5,  0,  6,  0,  6,
+     1,  8,  5,  6, 11,  7,  9,  6,      8,  9,  2,  7,  6,  5,  4, 10,
+    11,  6, 15,  2, 14, -2, 11, -3,      9, -8,  4, -7,  1, -7,  1, -8,
+     0, -7,  0, -7,  0, -8, -1, -7,     -3, -8, -3, -5,  0, -5, -2, -5
+};
+
+
+int sun_path[] = {
+    -2,  3,  1,  3, -2,  3, -4,  3,     -5, -2, -2, -3, -5,  0, -4,  2,
+    -4,  3,  0,  0,  0,  1, -3,  5,     -2,  6, -1,  8,  2, 10,  8, 10,
+    12,  8, 13,  6, 10,  6,  5,  3,      4, -1,  4, -3,  3, -4,  2, -6,
+     1,-10, -3,-11, -7,-11,  0, -8,      3,-11, -4, -7, -6, -5, -7, -3,
+    -5,  2, -2, 3
+};
 
 
 
+
+
+monster_t* monster_create_swirl() {
+    monster_t *monster = monster_create();
+
+    memcpy(monster->route, swirl_path, sizeof(swirl_path));
+    monster->route_sz = (sizeof(swirl_path)/sizeof(int));
+
+    monster->tile->sprites[0] = SPRITE_IDX_MONSTER_SWIRL1;
+    monster->tile->sprites[1] = SPRITE_IDX_MONSTER_SWIRL2;
+    monster->tile->sprites[2] = SPRITE_IDX_MONSTER_SWIRL3;
+    monster->tile->sprites[3] = SPRITE_IDX_MONSTER_SWIRL4;
+    monster->tile->sprites[4] = SPRITE_IDX_MONSTER_SWIRL3;
+    monster->tile->sprites[5] = SPRITE_IDX_MONSTER_SWIRL2;
+    monster->tile->sprites[6] = 0;
+
+    return monster;
+}
 
 monster_t* monster_create_sun() {
     monster_t *monster = monster_create();
@@ -34,8 +79,8 @@ monster_t* monster_create_sun() {
 monster_t* monster_create_spider() {
     monster_t *monster = monster_create();
 
-    memcpy(monster->route, spider_path, sizeof(spider_path));
-    monster->route_sz = (sizeof(spider_path)/sizeof(int));
+    memcpy(monster->route, spidy_path, sizeof(spidy_path));
+    monster->route_sz = (sizeof(spidy_path)/sizeof(int));
 
     monster->tile->sprites[0] = SPRITE_IDX_MONSTER_SPIDER1;
     monster->tile->sprites[1] = SPRITE_IDX_MONSTER_SPIDER2;
