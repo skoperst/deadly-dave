@@ -41,7 +41,7 @@
    ,STR,   ,   ,   ,   ,  M,DRT,DRT,DRT,DRT;
    ,   ,   ,STR,   ,   ,   ,   ,  M,DRT,DRT;
    ,   ,STR,   ,   ,   ,   ,   ,   ,  M,DRT;
-   ,   ,   ,SUN,   ,   ,   ,GUN,   ,  M,DRT;
+   ,   ,   ,SU1,   ,   ,   ,GUN,   ,  M,DRT;
    ,   ,   ,STR,   ,   ,   ,   ,   ,  M,DRT;
    ,   ,STR,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,   ,   ,   ,   ,   ,   ,   ,   ,  M,DRT;
@@ -118,7 +118,7 @@
    ,DRT,   ,   ,   ,DRB,   ,   ,DRB,  M,DRT;
    ,DRT,   ,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,DRT, V ,DRB,   ,   ,   ,DRB,   ,  M,DRT;
-   ,DRT,   ,   ,   ,   ,   ,   ,   ,  M,DRT;
+   ,DRT,   ,   ,SU2,   ,   ,   ,   ,  M,DRT;
    ,DRT,   ,   ,   ,   ,   ,   ,DRB,  M,DRT;
    ,DRT,   ,   ,   , V ,   ,   ,   ,  M,DRT;
    ,   ,   ,   ,   ,   ,   ,   ,   ,  M,DRT;

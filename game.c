@@ -982,10 +982,15 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         game->dave->state = DAVE_STATE_STANDING;
                         game->dave->jump_state = 0;
                         game->dave->step_count = 0;
-                    } else if (strcmp(tag, "SUN") == 0) {
+                    } else if (strcmp(tag, "SU1") == 0) {
                         game->monsters[monsters_count] = monster_create_sun();
                         game->monsters[monsters_count]->tile->x = cur_col * 16;
                         game->monsters[monsters_count]->tile->y = pos * 20;
+                        monsters_count++;
+                    } else if (strcmp(tag, "SU2") == 0) {
+                        game->monsters[monsters_count] = monster_create_sun();
+                        game->monsters[monsters_count]->tile->x = cur_col * 16;
+                        game->monsters[monsters_count]->tile->y = (pos * 20) - 12;
                         monsters_count++;
                     } else if (strcmp(tag, "SP1") == 0) {
                         game->monsters[monsters_count] = monster_create_spider();
