@@ -10,12 +10,12 @@
  */
 int spidy_path[] = {
      5,  3,  2,  4,  0,  5, -3,  4,    -4,  4, -5,  3, -7,  2, -6,  2,
-    -6,  1, -7,  1, -8, -2, -5, -3,    -6, -3, -7, -2  -7, -3, -5, -2,
+    -6,  1, -7,  1, -8, -2, -5, -3,    -6, -3, -7, -2, -7, -3, -5, -2,
     -7, -3, -6, -3, -7, -3, -9, -2,   -10,  0, -9,  1, -7,  2, -9,  2,
     -8,  3, -8,  0, -9,  0, -9,  1,   -10,  2, -7,  0, -3, -1, -2, -4,
      1, -4,  3, -3,  3, -1,  3, -1,     6, -2,  8, -2,  8, -1, 11, -1,
-    14, -1, 14,  2, 15,  0, 18,  0,    17,  0, 17,  1, 14,  1, 15,  1,
-    10,  2,  6,  2,  6, 2
+    14, -1, 14, -2, 15,  0, 18,  0,    17,  0, 17,  1, 14,  1, 15,  1,
+    10,  2,  6,  2,  6,  2
 };
 
 /*
@@ -142,8 +142,6 @@ static void monster_state_active_routine(monster_t *monster) {
 }
 
 static void monster_tick(monster_t *monster) {
-    printf("monster state: %d \n", monster->state);
-    printf("routex: %d, routey: %d \n", monster->route[monster->route_idx], monster->route[monster->route_idx+1]);
 
     if (monster->state == MONSTER_STATE_ACTIVE) {
         monster_state_active_routine(monster);
