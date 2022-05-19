@@ -1,13 +1,11 @@
 #ifndef _INVFREQ_H_
 #define _INVFREQ_H_
 
-/**
- * Utility functions 
- */
-#define PC_PIT_RATE 1193182
-#define ENGINE_SNDDEFAULTSAMPLERATE 44100
-
-
-size_t invfreq_decode_soundfx(uint16_t *data, uint8_t *out, size_t out_max_sz);
+double invfreq_exp(double x);
+double invfreq_log(double x);
+double invfreq_sqrt(double x);
+double invfreq_pow(double x, double a);
+double invfreq_sin(double x);
+size_t invfreq_decode_soundfx(uint16_t *data, uint8_t *out, int samples_per_beep);
 
 #endif
