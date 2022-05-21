@@ -527,7 +527,7 @@ soundfx_t* soundfx_create() {
 
     strcpy(sfx->tunes[5].name, "jumping");
     sfx->tunes[5].raw = malloc(4096 * 512);
-    sfx->tunes[5].sz = invfreq_decode_soundfx(jumping, sfx->tunes[5].raw, 300);
+    sfx->tunes[5].sz = invfreq_decode_soundfx(jumping, sfx->tunes[5].raw, 345);
 
     strcpy(sfx->tunes[6].name, "got_something");
     sfx->tunes[6].raw = malloc(4096 * 512);
