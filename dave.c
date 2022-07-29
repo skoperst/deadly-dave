@@ -223,6 +223,7 @@ void dave_state_jetpacking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMA
         int key_left, int key_right, int key_up) {
     dave->state = DAVE_STATE_JETPACKING;
     dave->ticks_in_state = 0;
+    dave->sfx->play(dave->sfx, TUNE_TOJETPACK);
 }
 
 static void dave_state_climbing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
@@ -286,6 +287,7 @@ void dave_state_walking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
 
     if (!dave_on_ground(dave, map)) {
         dave_state_freefalling_enter(dave, map, key_left, key_right, key_up);
+        dave->sfx->play(dave->sfx, TUNE_FALLING);
         return;
     }
     if (key_up) {
@@ -570,6 +572,7 @@ static void dave_state_standing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
 
     if (!dave_on_ground(dave, map)) {
         dave_state_freefalling_enter(dave, map, key_left, key_right, key_up);
+        dave->sfx->play(dave->sfx, TUNE_FALLING);
         return;
     }
 

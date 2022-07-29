@@ -465,6 +465,15 @@ uint16_t falling[] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x21C0, 0xFFFF, 0xFFFF
 };
 
+uint16_t tojetpack[] = {
+    0x05DC, 0x0564, 0x04EC, 0x099C, 0x07F8, 0x0438, 0x099C, 0x17E8,
+    0x03C0, 0x14DC, 0x099C, 0x0A50, 0x0348, 0x0A14, 0x0AC8, 0x02D0,
+    0x0F00, 0x0294, 0x1BE4, 0x0258, 0x0FF0, 0x021C, 0x0528, 0x01E0,
+    0x0F00, 0x0528, 0x01A4, 0x07BC, 0x01A4, 0x01A4, 0x0654, 0x01A4,
+    0x0744, 0x01A4, 0x021C, 0x08E8, 0x0294, 0x0B04, 0x0348, 0x0D20,
+    0x0438, 0x0528, 0x06CC, 0x0960, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF
+};
+
 void soundfx_play(soundfx_t *sfx, int tune) {
     printf("[soundfx] soundfx_play tune: %d \n", tune);
     sfx->tune_idx = tune;
@@ -553,6 +562,11 @@ soundfx_t* soundfx_create() {
     memset(sfx->tunes[10].raw, 0x00, 4096 * 512);
     sfx->tunes[10].sz = invfreq_decode_soundfx(falling, sfx->tunes[10].raw, 240);
 
+    strcpy(sfx->tunes[11].name, "tojetpack");
+    sfx->tunes[11].raw = malloc(4096 * 512);
+    memset(sfx->tunes[11].raw, 0x00, 4096 * 512);
+    sfx->tunes[11].sz = invfreq_decode_soundfx(tojetpack, sfx->tunes[11].raw, 240);
+
     sfx->tune_idx = 0;
     sfx->tune_offset = 0;
     sfx->play = &soundfx_play;
@@ -591,6 +605,7 @@ void soundfx_destroy(soundfx_t *sfx)
     free(sfx->tunes[8].raw);
     free(sfx->tunes[9].raw);
     free(sfx->tunes[10].raw);
+    free(sfx->tunes[11].raw);
     free(sfx);
     SDL_CloseAudioDevice(g_audio_dev);
 }
