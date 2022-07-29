@@ -42,16 +42,3 @@
    ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
    ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
    ,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
-
-#   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
-#RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,DRT,DRT;
-#RBK, * ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,RBK,DRT,DRT;
-#RBK,   ,   , v ,   ,   ,   , v ,   ,   ,   , Y ,   ,   ,   , v ,   ,   ,RBK,DRT,DRT;
-#RBK,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,RBK,DRT,DRT;
-#RBK, v ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,RBK,DRT,DRT;
-#RBK,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,   ,   ,   ,RBK,RBK,DRT,RBK;
-#RBK, v ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,RBK,DRT,RBK;
-#RBK,   ,   ,   ,RBK,RBK,RBK,RBK,   ,   ,   ,RBK,RBK,RBK,RBK,RBK,RBK,   ,RBK,DRT,RBK;
-#RBK,PIR, D ,   ,   ,   ,   ,   ,   ,   ,   ,RBK, X ,   ,   ,   ,   ,   ,RBK,DRT,RBK;
-#RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,DRT,DRT;
-

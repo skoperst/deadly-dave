@@ -28,5 +28,6 @@ monster_t* monster_create();
 monster_t* monster_create_sun();
 monster_t* monster_create_spider();
 monster_t* monster_create_swirl();
+monster_t* monster_create_bones();
 
 #endif

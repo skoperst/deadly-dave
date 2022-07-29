@@ -6,7 +6,7 @@
 #include "monster.h"
 
 /*
- * Spidy, monster of level2
+ * Spidy, monster of level3
  */
 int spidy_path[] = {
      5,  3,  2,  4,  0,  5, -3,  4,    -4,  4, -5,  3, -7,  2, -6,  2,
@@ -19,7 +19,7 @@ int spidy_path[] = {
 };
 
 /*
- * Swirl, monster of level3
+ * Swirl, monster of level4
  */
 int swirl_path[] = {
     -6, -4, -8, -2,-11,  0,-14,  0,    -10,  0,-11,  0,-11,  0,-10,  0,
@@ -29,7 +29,9 @@ int swirl_path[] = {
      0, -7,  0, -7,  0, -8, -1, -7,     -3, -8, -3, -5,  0, -5, -2, -5
 };
 
-
+/*
+ * Sun, monster of level5
+ */
 int sun_path[] = {
     -2,  3,  1,  3, -2,  3, -4,  3,     -5, -2, -2, -3, -5,  0, -4,  2,
     -4,  3,  0,  0,  0,  1, -3,  5,     -2,  6, -1,  8,  2, 10,  8, 10,
@@ -38,9 +40,64 @@ int sun_path[] = {
     -5,  2, -2, 3
 };
 
+/*
+ * Bones, monster of level6
+ */
+int bones_path[] = {
+    6,  0, 10,  0,  9,  0,  9,  0,       9,  0, 10,  0,  9,  0,  9,  0,
+    9,  0, 10,  0, 10,  0, 10,  0,      10,  0,  9,  0,  7,  0, -3,  0,
+   -8,  0,-10,  0,-10,  0,-10,  0,     -10,  0,-10,  0, -8,  0, -10, 0,
+   -9,  0,-10,  0, -9,  0, -8,  0,     -10,  0, -8,  0, -3,  0
+};
+
+/*
+ * Ufos, monster of level7
+ */
+int ufos_path[] = {
+    4,  0,  4,  1,  4,  2,  3,  2,       2,  4,  1,  5,  1,  7,  0,  9,
+    0,  8,  0, 10, -2,  8, -5,  8,      -6,  7, -5,  9, -5,  7, -4,  1,
+   -4,  0, -3, -1, -3, -3, -3, -6,      -3, -7, -1, -8, -2, -9,  2,-10,
+    1,-10,  3, -9,  5, -9,  4, -6,       5, -5,  3, -3,  4, -2
+};
+/*
+int guards_path[] = {
+    -6, 1, -4, 2, -4, 3, -3, 4, -1, 3, -4, 3, -3, 2, -5, 2, -2, 3, 0, 4, 4, 2, 5, 2, 4, 1, 3, 3, 2, 5, 5, 3, 4, 2, 6, 1, 5, 0, 5, -1, 4, -2, 2, -3, 1, -3, 1, -3, 3, -3, 5, -1, 3, -1, 3, -2, 2, -3, 0, -3, -3, -2, -5, -2, -7, -1, -3, -2, -2, -3, -1, -3, -2, -3, -3, -3, -4, -2, -5, 0, 
+};
+
+int envy_path[] = {
+    7, 1, 7, -1, 8, 2, 6, -2, 7, 2, 7, -2, 8, 2, 7, -2, -7, -1, -8, 3, -7, -2, -7, 2, -6, -2, -8, 2, -7, -2, -7, 0, 
+};
+
+int plate_path[] = {
+    -5, 0, -6, 0, -13, 0, -21, 0, -30, 0, -29, 0, -17, 0, 3, 0, 5, 0, 4, 0, 15, 0, 8, 0, 20, 0, 19, 0, 17, 0, 12, 0, 18, 0
+};
+*/
 
 
 
+monster_t* monster_create_bones() {
+    monster_t *monster = monster_create();
+    monster->tile->width = 24;
+    monster->tile->height = 22;
+
+    memcpy(monster->route, bones_path, sizeof(bones_path));
+    monster->route_sz = (sizeof(bones_path)/sizeof(int));
+
+    monster->tile->sprites[0] = SPRITE_IDX_MONSTER_BONES1;
+    monster->tile->sprites[1] = SPRITE_IDX_MONSTER_BONES1;
+
+    monster->tile->sprites[2] = SPRITE_IDX_MONSTER_BONES2;
+    monster->tile->sprites[3] = SPRITE_IDX_MONSTER_BONES2;
+
+    monster->tile->sprites[4] = SPRITE_IDX_MONSTER_BONES3;
+    monster->tile->sprites[5] = SPRITE_IDX_MONSTER_BONES3;
+
+    monster->tile->sprites[6] = SPRITE_IDX_MONSTER_BONES4;
+    monster->tile->sprites[7] = SPRITE_IDX_MONSTER_BONES4;
+    monster->tile->sprites[8] = 0;
+
+    return monster;
+}
 
 monster_t* monster_create_swirl() {
     monster_t *monster = monster_create();

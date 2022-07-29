@@ -43,7 +43,9 @@ void render_tile_idx(int tile_idx, int x, int y) {
             tile_idx == SPRITE_IDX_MONSTER_SPIDER1 || tile_idx == SPRITE_IDX_MONSTER_SPIDER2 ||
             tile_idx == SPRITE_IDX_MONSTER_SPIDER3 || tile_idx == SPRITE_IDX_MONSTER_SPIDER4 ||
             tile_idx == SPRITE_IDX_MONSTER_SWIRL1 || tile_idx == SPRITE_IDX_MONSTER_SWIRL2 ||
-            tile_idx == SPRITE_IDX_MONSTER_SWIRL3 || tile_idx == SPRITE_IDX_MONSTER_SWIRL4) {
+            tile_idx == SPRITE_IDX_MONSTER_SWIRL3 || tile_idx == SPRITE_IDX_MONSTER_SWIRL4 ||
+            tile_idx == SPRITE_IDX_MONSTER_BONES1 || tile_idx == SPRITE_IDX_MONSTER_BONES2 ||
+            tile_idx == SPRITE_IDX_MONSTER_BONES3 || tile_idx == SPRITE_IDX_MONSTER_BONES4) {
         blend = 1;
     }
 
@@ -130,8 +132,7 @@ void draw_text_line_black(const char *line, int x, int y, SDL_Renderer *renderer
     }
 }
 
-void draw_popup_box(int x, int y, int rows, int columns)
-{
+void draw_popup_box(int x, int y, int rows, int columns) {
     tile_t popup_box[40][40];
     int cur_sprite;
     int col, row;
@@ -219,8 +220,7 @@ void draw_x_levels_to_go(int x) {
     draw_text_line(good_work, 50, 58, g_renderer);
 }
 
-void draw_jetpack(int bars)
-{
+void draw_jetpack(int bars) {
     int i = 0;
     if (bars < 0) {
         bars = 0;
@@ -1002,6 +1002,11 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         game->monsters[monsters_count]->tile->x = cur_col * 16;
                         game->monsters[monsters_count]->tile->y = (pos * 20) - 12;
                         monsters_count++;
+                    } else if (strcmp(tag, "BZ1") == 0) {
+                        game->monsters[monsters_count] = monster_create_bones();
+                        game->monsters[monsters_count]->tile->x = cur_col * 16;
+                        game->monsters[monsters_count]->tile->y = (pos * 16) - 2;
+                        monsters_count++;
                     }
 
                     tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
@@ -1051,7 +1056,7 @@ int gameloop(int starting_level) {
     int next_state;
     int g_state = G_STATE_NONE;
     int g_prev_state = G_STATE_NONE;
-
+    int tick_interval = 14;
 
     game = malloc(sizeof(game_context_t));
     init_game(game);
@@ -1125,8 +1130,8 @@ int gameloop(int starting_level) {
         SDL_RenderPresent(g_renderer);
 
         timer_end = SDL_GetTicks();
-        delay = 14 - (timer_end-timer_begin);
-        delay = delay > 14 ? 0 : delay;
+        delay = tick_interval - (timer_end-timer_begin);
+        delay = delay > tick_interval ? 0 : delay;
 
         SDL_Delay(delay);
     }
@@ -1158,7 +1163,7 @@ int game_main(int is_windowed, int starting_level) {
         printf("creating SDL window \n");
         g_window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 600,  0 );
     } else {
-        g_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 600,  SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE );
+        g_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 600,  SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE);
     }
     printf("creating renderer \n");
     g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
