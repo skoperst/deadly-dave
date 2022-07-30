@@ -36,7 +36,7 @@
    ,BCM,   ,   ,   ,BBK,BBK,BBK,BBK,   ,BCM;
    ,BCM,   ,   ,   ,WT4,WT5,WT1,BBK,   ,BCM;
    ,BCM,   ,   ,   ,   ,   ,WT3,BBK,   ,BCM;
-   ,BCM,   ,   ,   ,   ,   ,WT2,BBK,   ,BCM;
+   ,BCM,   ,   ,   ,   ,   ,WT2,BBK,BZ1,BCM;
    ,BCM,   ,   ,   ,   ,   ,WT5,BBK,   ,BCM;
    ,BCM, v ,   ,  M,RBK,   ,WT4,BBK,   ,BCM;
    ,BCM,   ,   ,  M,RBK,   ,WT1,BBK,   ,BCM;
@@ -54,7 +54,7 @@
    ,BCM,   ,   ,   ,   ,  M,DRT,   ,   ,BCM;
    ,BCM, v ,   ,   ,   ,   ,   ,   , V ,BCM;
    ,BCM,   ,   ,   ,   ,   ,   ,DRB,DRB,BCM;
-   ,BCM,   ,  M,RBK,   , v ,   ,   ,   ,BIM;
+   ,BCM,   ,  M,RBK,   , v ,   ,   ,BZ1,BIM;
    ,BCM,   ,   ,   ,   ,   ,   , v ,   ,BIM;
    ,BCM, v ,   ,   ,   ,   ,   ,   ,   ,BIM;
    ,BCM,   ,   ,   ,  M,RBK,   , v ,   ,BIM;
@@ -67,11 +67,11 @@
    ,BCM,   ,  M,RBK,   ,   ,   ,   , * ,BIM;
    ,BCM,   ,   , * ,   ,  M,DRT,DRT,DRT,BCM;
    ,BCM,   ,   ,   ,   ,  M,DRT,   , Y ,BCM;
-   ,BCM,   ,   ,   , * ,  M,DRT, * ,   ,BCM;
+   ,BCM,   ,   ,   , * ,  M,DRT, * ,BZ1,BCM;
    ,BCM,   ,   ,   ,   ,  M,DRT,   ,   ,BCM;
    ,BCM,   ,   ,  M,DRT,  M,DRT, * ,   ,BCM;
    ,BCM,   ,   ,   ,   ,  M,DRT,   ,   ,BCM;
-   ,BCM,   ,   ,   , * ,  M,DRT, * ,   ,BCM;
+   ,BCM,   ,BZ1,   , * ,  M,DRT, * ,   ,BCM;
    ,BCM,   ,   ,   ,   ,  M,DRT,   ,   ,BCM;
    ,BCM,   ,   ,DRB,DRB,DRB,DRT,DRT,   ,BCM;
    ,BCM,   ,   ,   , * ,VI2,DRT,   ,   ,BCM;
