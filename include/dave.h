@@ -28,10 +28,21 @@
 #define DAVE_STATE_DEAD        7
 #define DAVE_STATE_BLINKING    8
 
-#define DAVE_DIRECTION_FRONTR  0
-#define DAVE_DIRECTION_FRONTL  1
-#define DAVE_DIRECTION_LEFT    2
-#define DAVE_DIRECTION_RIGHT   3
+/*
+ * Facing is a bit strange because original code has a few nuances. One of them being a front
+ * posture (dave looking at the player), but when jumping dave has a direction.
+ *
+ * FRONT - Dave looks to player, has no inclination, this changes on first <- or -> keystroke
+ * FRONTR - Dave looks to player, has inclination to the right
+ * FRONTL - Dave looks to player, has inclination to the left
+ * LEFT - Dave looks left
+ * RIGHT - Dave looks right
+ */
+#define DAVE_DIRECTION_FRONT   0
+#define DAVE_DIRECTION_FRONTR  1
+#define DAVE_DIRECTION_FRONTL  2
+#define DAVE_DIRECTION_LEFT    3
+#define DAVE_DIRECTION_RIGHT   4
 
 typedef struct dave_struct {
     tile_t *tile;
@@ -52,7 +63,6 @@ typedef struct dave_struct {
     int step_count;
     int jump_state;
     int jump_cooldown_count;
-    int freefall_direction;
     int climb_state;
     int default_x;
     int default_y;

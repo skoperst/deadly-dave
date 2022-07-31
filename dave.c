@@ -245,11 +245,11 @@ void dave_state_freefalling_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEM
 
     if (dave->face_direction == DAVE_DIRECTION_RIGHT ||
         dave->face_direction == DAVE_DIRECTION_FRONTR) {
-        dave->freefall_direction = DAVE_DIRECTION_FRONTR;
+        dave->face_direction = DAVE_DIRECTION_FRONTR;
 
     } else if (dave->face_direction == DAVE_DIRECTION_LEFT ||
         dave->face_direction == DAVE_DIRECTION_FRONTL) {
-        dave->freefall_direction = DAVE_DIRECTION_FRONTL;
+        dave->face_direction = DAVE_DIRECTION_FRONTL;
     }
 }
 
@@ -474,18 +474,18 @@ static void dave_state_freefalling_routine(dave_t *dave,
 
     dave->tile->y = dave->tile->y + 1;
     if (key_left) {
-        dave->freefall_direction = DAVE_DIRECTION_LEFT;
+        //dave->freefall_direction = DAVE_DIRECTION_LEFT;
         dave->face_direction = DAVE_DIRECTION_LEFT;
     } else if (key_right) {
-        dave->freefall_direction = DAVE_DIRECTION_RIGHT;
+        //dave->freefall_direction = DAVE_DIRECTION_RIGHT;
         dave->face_direction = DAVE_DIRECTION_RIGHT;
     }
 
-    if (dave->freefall_direction == DAVE_DIRECTION_LEFT) {
+    if (dave->face_direction == DAVE_DIRECTION_LEFT) {
         if (!dave_collision_left(dave, map)) {
             dave->tile->x = dave->tile->x - 1;
         }
-    } else if (dave->freefall_direction == DAVE_DIRECTION_RIGHT) {
+    } else if (dave->face_direction == DAVE_DIRECTION_RIGHT) {
         if (!dave_collision_right(dave, map)) {
             dave->tile->x = dave->tile->x + 1;
         }
@@ -643,13 +643,13 @@ static int dave_get_sprite(tile_t *tile) {
     walk_mod = dave->step_count % 8;
 
     if (dave->state == DAVE_STATE_FREEFALLING) {
-        if (dave->freefall_direction == DAVE_DIRECTION_LEFT) {
+        if (dave->face_direction == DAVE_DIRECTION_LEFT) {
             sprite = SPRITE_IDX_DAVE_LEFT_HANDSFREE;
-        } else if (dave->freefall_direction == DAVE_DIRECTION_RIGHT) {
+        } else if (dave->face_direction == DAVE_DIRECTION_RIGHT) {
             sprite = SPRITE_IDX_DAVE_RIGHT_HANDSFREE;
-        } else if (dave->freefall_direction == DAVE_DIRECTION_FRONTR) {
+        } else if (dave->face_direction == DAVE_DIRECTION_FRONTR) {
             sprite = SPRITE_IDX_DAVE_JUMP_RIGHT;
-        } else if (dave->freefall_direction == DAVE_DIRECTION_FRONTL) {
+        } else if (dave->face_direction == DAVE_DIRECTION_FRONTL) {
             sprite = SPRITE_IDX_DAVE_JUMP_LEFT;
         } else {
             sprite = SPRITE_IDX_DAVE_FRONT;
@@ -753,7 +753,6 @@ dave_t* dave_create(soundfx_t *sfx, int x, int y) {
     dave->step_count = 0;
     dave->walk_state = DAVE_STATE_STANDING;
     dave->climb_state = 0;
-    dave->freefall_direction = DAVE_DIRECTION_FRONTR;
     dave->face_direction = DAVE_DIRECTION_FRONTR;
     dave->jump_cooldown_count = 0;
     dave->has_trophy = 0;
