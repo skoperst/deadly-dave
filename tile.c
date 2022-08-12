@@ -483,7 +483,39 @@ void tile_create_grail_banner(tile_t* t, int x, int y) {
     t->tick = &tile_tick;
 }
 
-void tile_create_gun_banner(tile_t* t, int x, int y) {
+void tile_create_label_warp(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 72;
+    t->height = 15;
+    t->sprites[0] = SPRITE_IDX_LABEL_WARP;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+}
+
+void tile_create_label_zone(tile_t *t, int x, int y) {
+    t->x = x;
+    t->y = y;
+    t->width = 68;
+    t->height = 15;
+    t->sprites[0] = SPRITE_IDX_LABEL_ZONE;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+}
+
+void tile_create_gun_banner(tile_t *t, int x, int y) {
     t->x = x;
     t->y = y;
     t->width = 62;

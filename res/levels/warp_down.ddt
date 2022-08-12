@@ -1,0 +1,35 @@
+# Original Dangerous Dave Level 1
+# RBK - red brick
+# BBK - blue brick
+#  *  - purple circle
+#  v  - blue diamond
+#  V  - red diamong
+#  Y  - grail
+#  D  - dave
+# PIR - pipe right
+#  X  - door
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,BBK,BBK,BBK,BBK,BBK,BBK,BBK,BBK,BBK,BBK;
+ D ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,BBK,BBK,BBK,BBK,BBK,BBK,BBK,BBK,BBK,BBK;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,   ;
+
+

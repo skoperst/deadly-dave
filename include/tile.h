@@ -152,6 +152,8 @@ static const int SPRITE_IDX_EXPLOSION4             = 132;
 static const int SPRITE_IDX_JETPACK_LABEL          = 133;
 static const int SPRITE_IDX_GUN_BANNER             = 134;
 static const int SPRITE_IDX_TROPHY_BANNER          = 138;
+static const int SPRITE_IDX_LABEL_WARP             = 139;
+static const int SPRITE_IDX_LABEL_ZONE             = 140;
 static const int SPRITE_IDX_JETPACK_BAR_FRAME      = 141;
 static const int SPRITE_IDX_JETPACK_BAR            = 142;
 static const int SPRITE_IDX_TITLE_FLAMES1          = 144;
@@ -223,10 +225,18 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
 /* Intro related */
 void tile_create_intro_fire(tile_t* t, int x, int y);
 void tile_create_intro_banner(tile_t* t, int x, int y);
+
+/*
+ * Tiles for special purpose
+ */
 void tile_create_grail_banner(tile_t *t, int x, int y);
 void tile_create_gun_banner(tile_t *t, int x, int y);
+void tile_create_label_warp(tile_t *t, int x, int y);
+void tile_create_label_zone(tile_t *t, int x, int y);
 
-/* Popup box */
+/*
+ * Popup box
+ */
 void tile_create_popup_part(tile_t* t, int x, int y);
 void tile_create_flashing_cursor(tile_t* t, int x, int y);
 

@@ -6,10 +6,8 @@
 
 #include "invfreq.h"
 
-uint16_t engine_sndCount;
 int16_t engine_currSoundPlaying;
 uint8_t sound_limiter, *sndPriorities;
-char game_ext[4];
 uint32_t pc_pit_rate = 1193180;
 const uint32_t pitAltCounter = 0x2000;
 
@@ -89,8 +87,9 @@ double invfreq_fmod(double x, double y)
     /* float load/store to inner loops ruining performance and code size */
     uint64_t uxi = ux.i;
 
-    if (uy.i<<1 == 0 || isnan(y) || ex == 0x7ff)
-    	return (x*y)/(x*y);
+    if (uy.i<<1 == 0 || isnan(y) || ex == 0x7ff) {
+        return (x*y)/(x*y);
+    }
     if (uxi<<1 <= uy.i<<1) {
         if (uxi<<1 == uy.i<<1)
         	return 0*x;
@@ -149,13 +148,15 @@ double invfreq_sin (double theta)
     double sx;
     double sign = 1.0;
     double pi = 3.14159265358979323846;
-    /* Chebyshev constants for cos, range -PI/4 - PI/4.  */
+
+    // Chebyshev constants for cos, range -PI/4 - PI/4.
     const double C0 = -0x1.ffffffffe98aep-2;
     const double C1 =  0x1.55555545c50c7p-5;
     const double C2 = -0x1.6c16b348b6874p-10;
     const double C3 =  0x1.a00eb9ac43ccp-16;
     const double C4 = -0x1.23c97dd8844d7p-22;
-    /* Chebyshev constants for sin, range -PI/4 - PI/4.  */
+
+    // Chebyshev constants for sin, range -PI/4 - PI/4.
     const double S0 = -0x1.5555555551cd9p-3;
     const double S1 =  0x1.1111110c2688bp-7;
     const double S2 = -0x1.a019f8b4bd1f9p-13;
@@ -180,50 +181,31 @@ double invfreq_sin (double theta)
     }
 
     const double theta2 = theta * theta;
-    /* We are operating on |x|, so we need to add back the original
-     signbit for sinf.  */
-  /* Determine positive or negative primary interval.  */
-  /* Are we in the primary interval of sin or cos?  */
-  if ((n & 2) == 0)
-    {
-      /* Here sinf() is calculated using sin Chebyshev polynomial:
-	x+x^3*(S0+x^2*(S1+x^2*(S2+x^2*(S3+x^2*S4)))).  */
-      sx = S3 + theta2 * S4;     /* S3+x^2*S4.  */
-      sx = S2 + theta2 * sx;     /* S2+x^2*(S3+x^2*S4).  */
-      sx = S1 + theta2 * sx;     /* S1+x^2*(S2+x^2*(S3+x^2*S4)).  */
-      sx = S0 + theta2 * sx;     /* S0+x^2*(S1+x^2*(S2+x^2*(S3+x^2*S4))).  */
-      sx = theta + theta * theta2 * sx;
+    /* We are operating on |x|, so we need to add back the original signbit for sinf.  */
+    /* Determine positive or negative primary interval.  */
+    /* Are we in the primary interval of sin or cos?  */
+    if ((n & 2) == 0) {
+        /* Here sinf() is calculated using sin Chebyshev polynomial: x+x^3*(S0+x^2*(S1+x^2*(S2+x^2*(S3+x^2*S4)))).  */
+        sx = S3 + theta2 * S4;     // S3+x^2*S4.
+        sx = S2 + theta2 * sx;     // S2+x^2*(S3+x^2*S4).
+        sx = S1 + theta2 * sx;     // S1+x^2*(S2+x^2*(S3+x^2*S4)).
+        sx = S0 + theta2 * sx;     // S0+x^2*(S1+x^2*(S2+x^2*(S3+x^2*S4))).
+        sx = theta + theta * theta2 * sx;
+    } else {
+        /* Here sinf() is calculated using cos Chebyshev polynomial: 1.0+x^2*(C0+x^2*(C1+x^2*(C2+x^2*(C3+x^2*C4)))). */
+        sx = C3 + theta2 * C4;     // C3+x^2*C4.
+        sx = C2 + theta2 * sx;     // C2+x^2*(C3+x^2*C4).
+        sx = C1 + theta2 * sx;     // C1+x^2*(C2+x^2*(C3+x^2*C4)).
+        sx = C0 + theta2 * sx;     // C0+x^2*(C1+x^2*(C2+x^2*(C3+x^2*C4))).
+        sx = 1.0 + theta2 * sx;
     }
-  else
-    {
-     /* Here sinf() is calculated using cos Chebyshev polynomial:
-	1.0+x^2*(C0+x^2*(C1+x^2*(C2+x^2*(C3+x^2*C4)))).  */
-      sx = C3 + theta2 * C4;     /* C3+x^2*C4.  */
-      sx = C2 + theta2 * sx;     /* C2+x^2*(C3+x^2*C4).  */
-      sx = C1 + theta2 * sx;     /* C1+x^2*(C2+x^2*(C3+x^2*C4)).  */
-      sx = C0 + theta2 * sx;     /* C0+x^2*(C1+x^2*(C2+x^2*(C3+x^2*C4))).  */
-      sx = 1.0 + theta2 * sx;
-    }
-
-  /* Add in the signbit and assign the result.  */
-  return sign * sx;
+    /* Add in the signbit and assign the result.  */
+    return sign * sx;
 }
 
 double invfreq_wavelength(double frequency) {
     return (double)1 / frequency;
 }
-
-/*int invfreq_samples_per_waveform(double frequency, int samplerate) {
-    double wavelength = invfreq_wavelength(frequency);
-    double samples_d = wavelength * (double) samplerate;
-
-    return (int)samples_d;
-}
-
-int invfreq_samples_per_half_waveform(double frequency, int samplerate) {
-    int samples = invfreq_samples_per_waveform(frequency, samplerate);
-    return samples / 2;
-}*/
 
 // Returns frequency value in hz from inverse-frequency format value
 double invfreq_to_freq(uint16_t invfreq) {
@@ -245,7 +227,7 @@ double sqd(double x, double freq) {
         intensity = 0.1;
     else if (freq >= 2000) 
         intensity = 0.1;
-    else 
+    else
         intensity = 0.001;
 
     return invfreq_sin(x) / invfreq_sqrt((invfreq_sin(x) * invfreq_sin(x)) + intensity);
