@@ -7,6 +7,7 @@
 #include "dave.h"
 #include "bullet.h"
 #include "monster.h"
+#include "plasma.h"
 
 #define RIGHT 50
 #define LEFT  51
@@ -21,6 +22,7 @@
 #define DAVE_WALKING_STATE_RIGHT 5
 #define DAVE_WALKING_STATE_LEFT 6
 #define MAX_MONSTERS 10
+#define MAX_PLASMAS 10
 
 typedef struct keys_state_struct {
     int32_t jump;
@@ -72,6 +74,7 @@ typedef struct game_context_struct {
 
     dave_t *dave;
     bullet_t *bullet;
+    plasma_t *plasmas[MAX_PLASMAS];
     monster_t *monsters[MAX_MONSTERS];
 
     int64_t scroll_offset;

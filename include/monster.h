@@ -22,6 +22,7 @@ typedef struct monster_struct {
     void (*tick)(struct monster_struct *monster);
     int (*is_dead)(struct monster_struct *monster);
     int (*is_alive)(struct monster_struct *monster);
+    int (*is_shooting)(struct monster_struct *monster, int off, int tot);
 } monster_t;
 
 monster_t* monster_create();

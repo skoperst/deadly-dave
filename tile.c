@@ -118,6 +118,49 @@ void tile_create_jetpack(tile_t* t, int sprite, int x, int y, int width, int hei
     t->tick = &tile_tick;
     t->is_inside = &tile_is_inside;
 }
+
+void tile_create_plasma_right(tile_t *t, int x, int y, int width, int height) {
+    t->x = x;
+    t->y = y;
+    t->width = width;
+    t->height = height;
+    t->sprites[0] =  SPRITE_IDX_PLASMA_RIGHT1;
+    t->sprites[1] =  SPRITE_IDX_PLASMA_RIGHT2;
+    t->sprites[2] =  SPRITE_IDX_PLASMA_RIGHT3;
+    t->sprites[3] = 0;
+    t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
+void tile_create_plasma_left(tile_t *t, int x, int y, int width, int height) {
+    t->x = x;
+    t->y = y;
+    t->width = width;
+    t->height = height;
+    t->sprites[0] =  SPRITE_IDX_PLASMA_LEFT1;
+    t->sprites[1] =  SPRITE_IDX_PLASMA_LEFT2;
+    t->sprites[2] =  SPRITE_IDX_PLASMA_LEFT3;
+    t->sprites[3] = 0;
+    t->sprite_idx = 0;
+
+    t->collision_dx = 0;
+    t->collision_dy = 0;
+    t->collision_dw = 0;
+    t->collision_dh = 0;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
 /*
  * Create the flaming banner tile for into screen title
  */

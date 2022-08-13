@@ -28,6 +28,7 @@ int swirl_path[] = {
     11,  6, 15,  2, 14, -2, 11, -3,      9, -8,  4, -7,  1, -7,  1, -8,
      0, -7,  0, -7,  0, -8, -1, -7,     -3, -8, -3, -5,  0, -5, -2, -5
 };
+int swirl_fire_rate = 50;
 
 /*
  * Sun, monster of level5
@@ -173,6 +174,7 @@ static void monster_state_burning_enter(monster_t *monster) {
 }
 
 static void monster_state_active_routine(monster_t *monster) {
+    monster->ticks_in_state++;
     if (monster->on_fire) {
         monster_state_burning_enter(monster);
         return;
@@ -187,6 +189,7 @@ static void monster_state_active_routine(monster_t *monster) {
         monster->tile->y += monster->route[monster->route_idx+1];
         monster->route_idx += 2;
         if (monster->route_idx >= monster->route_sz) {
+            printf("ROUTE RESET ticks_in_state: %d \n", monster->ticks_in_state);
             monster->route_idx = 0;
         }
         monster->tile->sprite_idx++;
@@ -235,11 +238,20 @@ static int monster_get_sprite(tile_t *tile) {
     return sprite;
 }
 
+static int monster_is_shooting(monster_t *monster, int off, int tot) {
+    // This is a hack currently to test different fire rates
+    if ((monster->ticks_in_state+off) % (tot + 50) == 0) {
+        printf("is shooting off: %d, tot: %d \n", off, tot);
+        return 1;
+    }
+
+    return 0;
+}
+
 static int monster_is_alive(monster_t *monster) {
     if (monster->state == MONSTER_STATE_ACTIVE) {
         return 1;
     }
-
     return 0;
 }
 
@@ -253,6 +265,7 @@ monster_t* monster_create() {
     monster->on_fire = 0;
     monster->tick = &monster_tick;
     monster->is_alive = &monster_is_alive;
+    monster->is_shooting = &monster_is_shooting;
 
     monster->tile = malloc(sizeof(tile_t));
     monster->tile->x = 0;

@@ -143,6 +143,12 @@ static const int SPRITE_IDX_MONSTER_PLATE1         = 117;
 static const int SPRITE_IDX_MONSTER_PLATE2         = 118;
 static const int SPRITE_IDX_MONSTER_PLATE3         = 119;
 static const int SPRITE_IDX_MONSTER_PLATE4         = 120;
+static const int SPRITE_IDX_PLASMA_RIGHT1          = 121;
+static const int SPRITE_IDX_PLASMA_RIGHT2          = 122;
+static const int SPRITE_IDX_PLASMA_RIGHT3          = 123;
+static const int SPRITE_IDX_PLASMA_LEFT1           = 124;
+static const int SPRITE_IDX_PLASMA_LEFT2           = 125;
+static const int SPRITE_IDX_PLASMA_LEFT3           = 126;
 static const int SPRITE_IDX_BULLET_RIGHT           = 127;
 static const int SPRITE_IDX_BULLET_LEFT            = 128;
 static const int SPRITE_IDX_EXPLOSION1             = 129;
@@ -226,6 +232,8 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
 void tile_create_intro_fire(tile_t* t, int x, int y);
 void tile_create_intro_banner(tile_t* t, int x, int y);
 
+void tile_create_plasma_right(tile_t *t, int x, int y, int width, int height);
+void tile_create_plasma_left(tile_t *t, int x, int y, int width, int height);
 /*
  * Tiles for special purpose
  */
