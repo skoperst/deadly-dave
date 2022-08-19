@@ -52,7 +52,9 @@ void render_tile_idx(int tile_idx, int x, int y) {
             tile_idx == SPRITE_IDX_MONSTER_BONES3 || tile_idx == SPRITE_IDX_MONSTER_BONES4 ||
             tile_idx == SPRITE_IDX_PLASMA_RIGHT1 || tile_idx == SPRITE_IDX_PLASMA_RIGHT2 ||
             tile_idx == SPRITE_IDX_PLASMA_RIGHT3 || tile_idx == SPRITE_IDX_PLASMA_LEFT1 ||
-            tile_idx == SPRITE_IDX_PLASMA_LEFT2 || tile_idx == SPRITE_IDX_PLASMA_LEFT3) {
+            tile_idx == SPRITE_IDX_PLASMA_LEFT2 || tile_idx == SPRITE_IDX_PLASMA_LEFT3 ||
+            tile_idx == SPRITE_IDX_MONSTER_UFO1 || tile_idx == SPRITE_IDX_MONSTER_UFO2 ||
+            tile_idx == SPRITE_IDX_MONSTER_UFO3 || tile_idx == SPRITE_IDX_MONSTER_UFO4) {
         blend = 1;
     }
 
@@ -1166,6 +1168,11 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         game->monsters[monsters_count] = monster_create_bones();
                         game->monsters[monsters_count]->tile->x = cur_col * 16;
                         game->monsters[monsters_count]->tile->y = (pos * 16) - 2;
+                        monsters_count++;
+                    } else if (strcmp(tag, "UF1") == 0) {
+                        game->monsters[monsters_count] = monster_create_ufo();
+                        game->monsters[monsters_count]->tile->x = cur_col * 16;
+                        game->monsters[monsters_count]->tile->y = (pos * 16);
                         monsters_count++;
                     }
 

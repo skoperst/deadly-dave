@@ -1,11 +1,11 @@
 # Original Dangerous Dave Level 7
 
    ,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK;
-   ,RBK,PIR,   ,   ,   ,   ,   ,   ,  M,DRT;
+   ,RBK,PIR, D ,   ,   ,   ,   ,   ,  M,DRT;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
-   ,RBK,   ,   ,   ,   ,GUN,   ,  M,DRT,DRT;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI2;
+   ,RBK,   ,   ,   ,   ,   ,GUN,  M,DRT,DRT;
+   ,RBK,   ,UF1,   ,   ,   ,   ,   ,   ,VI2;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI4;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
    ,RBK,   ,   ,   ,   ,   ,  M,DRT,DRT,DRT;
@@ -16,7 +16,7 @@
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI4;
    ,RBK,   ,   ,   ,   ,   ,   ,  M,DRT,DRT;
    ,RBK,   ,   ,   ,   ,   ,   ,  M,DRT,DRT;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
+   ,RBK,UF1,   ,   ,   ,   ,   ,   ,   ,VI3;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
    ,RBK,   ,   ,   ,   ,   ,   ,RBK,RBK,RBK;
    ,RBK,   ,   ,   ,   ,   ,   ,RBK,RBK,RBK;
@@ -47,14 +47,14 @@
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT5;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT3;
+   ,RBK,   ,   ,UF1,   ,   ,   ,   ,   ,WT3;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT2;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT4;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
    ,RBK,   ,   ,   ,   ,   , * ,   ,VI2,RBK;
-   ,RBK,   ,   ,   ,   ,   ,   ,   , D ,RBK;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT5;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT2;
+   ,RBK,   ,   ,UF1,   ,   ,   ,   ,   ,WT2;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT3;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT1;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;

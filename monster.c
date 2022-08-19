@@ -52,9 +52,9 @@ int bones_path[] = {
 };
 
 /*
- * Ufos, monster of level7
+ * Ufo, monster of level7
  */
-int ufos_path[] = {
+int ufo_path[] = {
     4,  0,  4,  1,  4,  2,  3,  2,       2,  4,  1,  5,  1,  7,  0,  9,
     0,  8,  0, 10, -2,  8, -5,  8,      -6,  7, -5,  9, -5,  7, -4,  1,
    -4,  0, -3, -1, -3, -3, -3, -6,      -3, -7, -1, -8, -2, -9,  2,-10,
@@ -75,6 +75,29 @@ int plate_path[] = {
 */
 
 
+monster_t* monster_create_ufo() {
+    monster_t *monster = monster_create();
+    monster->tile->width = 18;
+    monster->tile->height = 8;
+
+    memcpy(monster->route, ufo_path, sizeof(ufo_path));
+    monster->route_sz = (sizeof(ufo_path)/sizeof(int));
+
+    monster->tile->sprites[0] = SPRITE_IDX_MONSTER_UFO1;
+    monster->tile->sprites[1] = SPRITE_IDX_MONSTER_UFO1;
+
+    monster->tile->sprites[2] = SPRITE_IDX_MONSTER_UFO2;
+    monster->tile->sprites[3] = SPRITE_IDX_MONSTER_UFO2;
+
+    monster->tile->sprites[4] = SPRITE_IDX_MONSTER_UFO3;
+    monster->tile->sprites[5] = SPRITE_IDX_MONSTER_UFO3;
+
+    monster->tile->sprites[6] = SPRITE_IDX_MONSTER_UFO4;
+    monster->tile->sprites[7] = SPRITE_IDX_MONSTER_UFO4;
+    monster->tile->sprites[8] = 0;
+
+    return monster;
+}
 
 monster_t* monster_create_bones() {
     monster_t *monster = monster_create();

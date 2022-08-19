@@ -2,7 +2,6 @@
 #define MONSTER_H
 
 #include "tile.h"
-#include "soundfx.h"
 
 #define MONSTER_STATE_BLINKING             0
 #define MONSTER_STATE_ACTIVE               1
@@ -30,5 +29,6 @@ monster_t* monster_create_sun();
 monster_t* monster_create_spider();
 monster_t* monster_create_swirl();
 monster_t* monster_create_bones();
+monster_t* monster_create_ufo();
 
 #endif
