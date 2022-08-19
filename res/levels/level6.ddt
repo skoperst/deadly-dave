@@ -72,12 +72,12 @@
    ,RBK,   ,   ,   ,   ,   ,   ,  M,DRB,RBK;
    ,RBK,   ,   , v ,   ,   ,PPK,   ,FR3,RBK;
    ,RBK,   ,  M,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
-   ,RBK,   ,   ,   ,PPK,   ,   ,   ,PPK,WT4;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT2;
-   ,RBK,   ,   ,   , * ,PPK,   ,   ,   ,WT5;
-   ,RBK,   ,   ,PPK,   ,   ,   ,   ,PPK,WT1;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,WT2;
-   ,RBK,   , Y ,   ,   ,PPK,   ,   ,   ,WT3;
+   ,RBK,   ,   ,   ,PPK,   ,   ,PPK,WT2,WT4;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,WT1,WT2;
+   ,RBK,   ,   ,   , * ,PPK,   ,   ,WT3,WT5;
+   ,RBK,   ,   ,PPK,   ,   ,   ,PPK,WT2,WT1;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,WT5,WT2;
+   ,RBK,   , Y ,   ,   ,PPK,   ,   ,WT1,WT3;
    ,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK;
    ,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
