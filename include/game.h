@@ -24,6 +24,21 @@
 #define MAX_MONSTERS 10
 #define MAX_PLASMAS 10
 
+
+#define G_STATE_NONE              0
+#define G_STATE_INTRO             1
+#define G_STATE_LEVEL_START       2
+#define G_STATE_LEVEL             3
+#define G_STATE_LEVEL_POPUP       4
+#define G_STATE_WARP_RIGHT_START  5
+#define G_STATE_WARP_RIGHT        6
+#define G_STATE_WARP_RIGHT_POPUP  7
+#define G_STATE_WARP_DOWN_START   8
+#define G_STATE_WARP_DOWN         9
+#define G_STATE_WARP_POPUP        10
+#define G_STATE_GAMEOVER          11
+#define G_STATE_QUIT_NOW          12
+
 typedef struct keys_state_struct {
     int32_t jump;
     int32_t left;
@@ -49,12 +64,6 @@ typedef struct game_context_struct {
     uint16_t dbullet_px;
     uint16_t dbullet_py;
     int8_t dbullet_dir;
-    uint16_t ebullet_px;
-    uint16_t ebullet_py;
-    int8_t ebullet_dir;
-    int16_t dave_px;
-    int16_t dave_py;
-    uint8_t on_ground;
     int8_t scroll_x;
     int8_t last_dir;
 
@@ -67,7 +76,6 @@ typedef struct game_context_struct {
     uint8_t dave_climb;
     uint8_t dave_jetpack;
     uint8_t jetpack_delay;
-    uint8_t jump_timer;
     uint8_t try_right;
     uint8_t gun;
     uint8_t jetpack;

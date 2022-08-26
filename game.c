@@ -11,32 +11,17 @@
 #include "game.h"
 #include "soundfx.h"
 
-#define DEBUG_INPUT 1
-
-const int G_STATE_NONE              = 0;
-const int G_STATE_INTRO             = 1;
-const int G_STATE_LEVEL_START       = 2;
-const int G_STATE_LEVEL             = 3;
-const int G_STATE_LEVEL_POPUP       = 4;
-const int G_STATE_WARP_RIGHT_START  = 5;
-const int G_STATE_WARP_RIGHT        = 7;
-const int G_STATE_WARP_RIGHT_POPUP  = 8;
-const int G_STATE_WARP_DOWN_START   = 9;
-const int G_STATE_WARP_DOWN         = 10;
-const int G_STATE_WARP_POPUP        = 11;
-const int G_STATE_GAMEOVER          = 12;
-const int G_STATE_QUIT_NOW          = 13;
 
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_Texture *g_texture;
 uint32_t        *g_pixels;
-SDL_Texture* g_render_texture;
 assets_t* g_assets;
 soundfx_t *g_soundfx;
 
 int g_mmm_off = 0;
 int g_mmm_tot = 10;
+
 void render_tile_idx(int tile_idx, int x, int y) {
     SDL_Surface *surface = g_assets->tiles[tile_idx];
 
@@ -83,18 +68,17 @@ void render_tile_idx(int tile_idx, int x, int y) {
     }
 }
 
-void draw_tile_offset(tile_t *tile, struct game_assets *assets, int x_offset) {
+void draw_tile_offset(tile_t *tile, assets_t *assets, int x_offset) {
     render_tile_idx(tile->get_sprite(tile), tile->x - (x_offset * 16), tile->y);
 }
 
-void draw_tile(tile_t *tile, struct game_assets *assets) {
+void draw_tile(tile_t *tile, assets_t *assets) {
     draw_tile_offset(tile, assets, 0);
 }
 
-void draw_char(char c, int x, int y, SDL_Renderer *renderer) {
+void draw_char(char c, int x, int y, SDL_Renderer *renderer, int is_black) {
     int tile_idx;
-    int white_letters_idx = 500;
-    //int black_letters_idx = 600;
+    int letters_start_idx = (is_black) ? 600 : 500;
     int letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 
         'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', \
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', ',', '.', '(', \
@@ -103,7 +87,7 @@ void draw_char(char c, int x, int y, SDL_Renderer *renderer) {
     int idx;
     for (idx = 0; idx < sizeof(letters) / sizeof(int); idx++) {
         if ((int)c == letters[idx]) {
-            tile_idx = white_letters_idx + idx;
+            tile_idx = letters_start_idx + idx;
             render_tile_idx(tile_idx, x, y);
             return;
         }
@@ -113,32 +97,14 @@ void draw_char(char c, int x, int y, SDL_Renderer *renderer) {
 void draw_text_line(const char *line, int x, int y, SDL_Renderer *renderer) {
     int i = 0;
     for (i = 0; i < strlen(line); i++) {
-        draw_char(line[i], x + (i*8), y, renderer);
-    }
-}
-
-void draw_char_black(char c, int x, int y, SDL_Renderer *renderer) {
-    int tile_idx;
-    int black_letters_idx = 600;
-    int letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 
-        'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', \
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', ',', '.', '(', \
-        ')', '!', '?'};
-
-    int idx;
-    for (idx = 0; idx < sizeof(letters) / sizeof(int); idx++) {
-        if ((int)c == letters[idx]) {
-            tile_idx = black_letters_idx + idx;
-            render_tile_idx(tile_idx, x, y);
-            return;
-        }
+        draw_char(line[i], x + (i*8), y, renderer, 0);
     }
 }
 
 void draw_text_line_black(const char *line, int x, int y, SDL_Renderer *renderer) {
     int i = 0;
     for (i = 0; i < strlen(line); i++) {
-        draw_char_black(line[i], x + (i*8), y, renderer);
+        draw_char(line[i], x + (i*8), y, renderer, 1);
     }
 }
 
@@ -169,7 +135,7 @@ void draw_popup_box(int x, int y, int rows, int columns) {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_M1;
                 } else if (col == (columns - 1)) {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_M3;
-                } else { 
+                } else {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_M2;
                 }
             }
@@ -195,24 +161,17 @@ void draw_map_offset(tile_t *map, int offset) {
     }
 }
 
-void draw_bullet_offset(bullet_t *bullet, struct game_assets *assets, int x_offset) {
+void draw_bullet_offset(bullet_t *bullet, assets_t *assets, int x_offset) {
     draw_tile_offset(bullet->tile, assets, x_offset);
 }
 
-void draw_dave_offset(dave_t *dave, struct game_assets *assets, int x_offset) {
+void draw_dave_offset(dave_t *dave, assets_t *assets, int x_offset) {
     if (dave->tile->get_sprite(dave->tile) != 0) {
         draw_tile_offset(dave->tile, assets, x_offset);
     }
 }
 
-void draw_monster_offset(monster_t *monster, struct game_assets *assets, int x_offset) {
-    if (monster->tile->get_sprite(monster->tile) != 0) {
-        render_tile_idx(monster->tile->get_sprite(monster->tile),
-            monster->tile->x - (x_offset * 16), monster->tile->y);
-    }
-}
-
-void draw_monsters_offset(monster_t *monsters[MAX_MONSTERS], struct game_assets *assets, int x_offset) {
+void draw_monsters_offset(monster_t *monsters[MAX_MONSTERS], assets_t *assets, int x_offset) {
     int i = 0;
     for (i = 0; i < MAX_MONSTERS; i++) {
         if (monsters[i] != NULL) {
@@ -300,36 +259,26 @@ void deinit_assets(struct game_assets *assets) {
     }
 }
 
-void init_assets(struct game_assets *assets, SDL_Renderer *renderer) {
+int load_assets() {
     int i;
-    char fname[50];
-    char file_num[4];
+    char fname[64];
     SDL_Surface *surface;
 
+    g_assets = malloc(sizeof(struct game_assets));
+
     for (i = 0; i < 1000; i++) {
-        assets->tiles[i] = NULL;
-    }
+        g_assets->tiles[i] = NULL;
+        memset(fname, '\0', sizeof(fname));
+        snprintf(fname, sizeof(fname), "res/tiles/tile%u.bmp", i);
 
-    for (i=0; i<1000; i++) {
-        fname[0]='\0';
-        strcat(fname, "res/tiles/tile");
-        sprintf(&file_num[0],"%u",i);
-        strcat(fname, file_num);
-        strcat(fname, ".bmp");
-
-        if (access(fname, F_OK) == 0)
-        {
+        if (access(fname, F_OK) == 0) {
             surface = SDL_LoadBMP(fname);
-            assets->tiles[i] = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
+            g_assets->tiles[i] = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
             SDL_FreeSurface(surface);
-
-            // Monster tiles should use black transparency
-/*            if ((i >= 89 && i <= 120 ) || (i >= 129 && i <= 132 )) {
-                SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
-            }*/
-            //assets->graphics_tiles[i] = SDL_CreateTextureFromSurface(renderer, surface);
         }
     }
+
+    return 0;
 }
 
 /*
@@ -351,8 +300,6 @@ void init_game(game_context_t *game) {
     game->dave_jetpack = 0;
     game->jetpack_delay = 0;
     game->last_dir = 0;
-    game->jump_timer = 0;
-    game->on_ground = 1;
 
     game->scroll_offset = 0;
     game->scroll_remaining = 0;
@@ -428,7 +375,6 @@ int start_intro() {
     get_keys(&key_state);
 
     memset(&key_state, 0x00, sizeof(keys_state_t));
-    printf("start_intro E \n");
     /* Initialize game state */
     game = malloc(sizeof(game_context_t));
     init_game(game);
@@ -490,7 +436,6 @@ int start_intro() {
 
         // All next drawings will be done into the texture (as oppose to screen)
         if (key_state.escape) {
-            printf("SDL_QUIT \n");
             exit(0);
         }
         if (key_state.enter || key_state.space) {
@@ -498,28 +443,6 @@ int start_intro() {
             result = 0;
             intro_should_finish = 1;
         }
-        //if (key_state
-        /*while(SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                printf("SDL_QUIT \n");
-                exit(0);
-            }
-            const uint8_t *keystate = SDL_GetKeyboardState(NULL);
-            if (keystate[SDL_SCANCODE_ESCAPE]) {
-                printf("ESC \n");
-                //show_quit_popup();
-            }
-            if ( keystate[SDL_SCANCODE_RIGHT] ||
-                keystate[SDL_SCANCODE_LEFT] ||
-                keystate[SDL_SCANCODE_UP] ||
-                keystate[SDL_SCANCODE_DOWN] ||
-                keystate[SDL_SCANCODE_RETURN] ||
-                keystate[SDL_SCANCODE_SPACE]) {
-                result = 0;
-                intro_should_finish = 1;
-            }
-        }*/
-
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
         SDL_LockTexture(g_texture, NULL, (void*)&g_pixels, &stride);
@@ -726,11 +649,9 @@ void game_do_bullets(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
         if (game->bullet->is_dead(game->bullet)) {
             game->bullet = NULL;
-            printf("BULLET DEAD \n");
         }
     } else {
         if (keys->fire && game->dave->has_gun) {
-            printf("Creating bullet!!\n");
             if (game->dave->face_direction == DAVE_DIRECTION_LEFT ||
                 game->dave->face_direction == DAVE_DIRECTION_FRONTL) {
                 game->bullet = bullet_create_left(game->dave->tile->x - 8, game->dave->tile->y + 8);
@@ -1007,7 +928,6 @@ int game_warp_down(game_context_t *game, tile_t *map, keys_state_t *keys) {
         return G_STATE_NONE;
     }
 
-    printf("GGG DAVE DIR: %d \n", game->dave->face_direction);
     game->dave->tick(game->dave, map, 0, 0, 0,0, 0);
     for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
         if (map[i].sprites[0] != 0) {
@@ -1062,6 +982,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     if (keys->escape) {
         return G_STATE_LEVEL_POPUP;
     }
+
     game->dave->mute = 1;
     if  (game->dave->tile->x > 300) {
         game->level++;
@@ -1144,6 +1065,10 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         game->dave->state = DAVE_STATE_STANDING;
                         game->dave->jump_state = 0;
                         game->dave->step_count = 0;
+                        game->dave->has_trophy = 0;
+                        game->dave->has_gun = 0;
+                        game->dave->jetpack_bars = 0;
+
                     } else if (strcmp(tag, "SU1") == 0) {
                         game->monsters[monsters_count] = monster_create_sun();
                         game->monsters[monsters_count]->tile->x = cur_col * 16;
@@ -1204,7 +1129,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
             }
         }
         i++;
-    } // while
+    }
 
     free(buf);
     return 0;
@@ -1232,7 +1157,6 @@ int gameloop(int starting_level) {
 
     while (1) {
         timer_begin = SDL_GetTicks();
-        // SDL_SetRenderTarget(g_renderer, g_render_texture);
         SDL_SetRenderDrawColor(g_renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(g_renderer);
         SDL_LockTexture(g_texture, NULL, (void*)&g_pixels, &stride);
@@ -1264,11 +1188,6 @@ int gameloop(int starting_level) {
         } else if (g_state == G_STATE_WARP_RIGHT_START) {
             clear_map(map);
             game_level_load(game, map, "res/levels/warp_right.ddt");
-            game->dave->has_trophy = 0;
-            game->dave->step_count = 0;
-            game->dave->state = DAVE_STATE_STANDING;
-            game->dave->has_gun = 0;
-            game->dave->jetpack_bars = 0;
             game->scroll_offset = 0;
             next_state = G_STATE_WARP_RIGHT;
 
@@ -1278,12 +1197,7 @@ int gameloop(int starting_level) {
         } else if (g_state == G_STATE_WARP_DOWN_START) {
             clear_map(map);
             game_level_load(game, map, "res/levels/warp_down.ddt");
-            game->dave->has_trophy = 0;
-            game->dave->step_count = 0;
-            game->dave->state = DAVE_STATE_STANDING;
             game->dave->face_direction = DAVE_DIRECTION_FRONT;
-            game->dave->has_gun = 0;
-            game->dave->jetpack_bars = 0;
             game->scroll_offset = 0;
             next_state = G_STATE_WARP_DOWN;
 
@@ -1300,22 +1214,19 @@ int gameloop(int starting_level) {
             SDL_UnlockTexture(g_texture);
             free(game);
             return 1;
-
-        } else {
-
         }
 
-        //g_prev_state = g_state;
         g_state = next_state;
 
+        // Render screen
         SDL_UnlockTexture(g_texture);
         SDL_RenderCopy(g_renderer, g_texture, NULL, NULL);
         SDL_RenderPresent(g_renderer);
 
+        // Wait for the next 
         timer_end = SDL_GetTicks();
         delay = tick_interval - (timer_end-timer_begin);
         delay = delay > tick_interval ? 0 : delay;
-
         SDL_Delay(delay);
     }
 
@@ -1343,12 +1254,11 @@ int game_main(int is_windowed, int starting_level) {
     }
 
     if (is_windowed) {
-        printf("creating SDL window \n");
         g_window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 600,  0 );
     } else {
         g_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 600,  SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE);
     }
-    printf("creating renderer \n");
+
     g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
     g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 320, 200);
 
@@ -1359,10 +1269,7 @@ int game_main(int is_windowed, int starting_level) {
     SDL_FlushEvent(SDL_MOUSEBUTTONDOWN);
     SDL_FlushEvent(SDL_MOUSEMOTION);
 
-    printf("initializing assets \n");
-    g_assets = malloc(sizeof(struct game_assets));
-    init_assets(g_assets, g_renderer);
-
+    load_assets();
     g_soundfx = soundfx_create();
 
     while (1) {
@@ -1375,9 +1282,8 @@ int game_main(int is_windowed, int starting_level) {
         } else if (ret == 1) {
             printf("bye bye \n");
             soundfx_destroy(g_soundfx);
-            g_soundfx = NULL;
-            SDL_DestroyTexture(g_texture);
             deinit_assets(g_assets);
+            SDL_DestroyTexture(g_texture);
             SDL_Quit();
             return 0;
         } else if (ret == 2) {
@@ -1386,7 +1292,6 @@ int game_main(int is_windowed, int starting_level) {
     }
 
     soundfx_destroy(g_soundfx);
-    g_soundfx = NULL;
     SDL_Quit();
     return 0;
 }
