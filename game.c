@@ -183,7 +183,7 @@ void draw_monsters_offset(monster_t *monsters[MAX_MONSTERS], assets_t *assets, i
     }
 }
 
-void draw_plasmas_offset(plasma_t *plasmas[MAX_PLASMAS], struct game_assets *assets, int x_offset) {
+void draw_plasmas_offset_old(plasma_t *plasmas[MAX_PLASMAS], struct game_assets *assets, int x_offset) {
     int i = 0;
     int sprite;
 
@@ -193,6 +193,24 @@ void draw_plasmas_offset(plasma_t *plasmas[MAX_PLASMAS], struct game_assets *ass
             if (sprite != 0) {
                 render_tile_idx(plasmas[i]->get_sprite(plasmas[i]),
                     plasmas[i]->tile->x - (x_offset * 16), plasmas[i]->tile->y);
+            }
+        }
+    }
+}
+
+void draw_plasmas_offset(monster_t *monsters[MAX_MONSTERS], struct game_assets *assets, int x_offset) {
+    int i = 0;
+    int sprite;
+
+    for (i = 0; i < MAX_MONSTERS; i++) {
+        if (monsters[i] == NULL) {
+            continue;
+        }
+        if (monsters[i]->plasma != NULL) {
+            sprite = monsters[i]->plasma->get_sprite(monsters[i]->plasma);
+            if (sprite != 0) {
+                render_tile_idx(monsters[i]->plasma->get_sprite(monsters[i]->plasma),
+                    monsters[i]->plasma->tile->x - (x_offset * 16), monsters[i]->plasma->tile->y);
             }
         }
     }
@@ -618,6 +636,8 @@ void game_add_plasma_left(game_context_t *game, int x, int y) {
 
 void game_do_plasmas(game_context_t *game, tile_t *map, keys_state_t *keys) {
     int i;
+
+    // These are legacy plasmas handles in game without monster owner. Probably need to be deleted
     for (i = 0; i < MAX_PLASMAS; i++) {
         if (game->plasmas[i] != NULL) {
             if (game->plasmas[i]->is_dead(game->plasmas[i])) {
@@ -630,13 +650,11 @@ void game_do_plasmas(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     for (i = 0; i < MAX_MONSTERS; i++) {
         if (game->monsters[i] != NULL) {
-            if (game->monsters[i]->is_alive(game->monsters[i])) {
-                if (game->monsters[i]->is_shooting(game->monsters[i], g_mmm_off, g_mmm_tot)) {
-                    if (game->dave->tile->x > game->monsters[i]->tile->x) {
-                        game_add_plasma_right(game, game->monsters[i]->tile->x - 8, game->monsters[i]->tile->y + 8);
-                    } else {
-                        game_add_plasma_left(game, game->monsters[i]->tile->x - 8, game->monsters[i]->tile->y + 8);
-                    }
+            if (game->monsters[i]->plasma != NULL) {
+                if (game->monsters[i]->plasma->is_dead(game->monsters[i]->plasma)) {
+                    game->monsters[i]->plasma = NULL;
+                } else {
+                    game->monsters[i]->plasma->tick(game->monsters[i]->plasma, map, (game->scroll_offset * 16) - 80, (game->scroll_offset * 16) + 400);
                 }
             }
         }
@@ -683,7 +701,7 @@ void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
     draw_map_offset(map, game->scroll_offset);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
     draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
-    draw_plasmas_offset(game->plasmas, g_assets, game->scroll_offset);
+    draw_plasmas_offset(game->monsters, g_assets, game->scroll_offset);
 
     if (game->bullet != NULL) {
         draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
@@ -771,7 +789,7 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     for (i = 0; i < MAX_MONSTERS; i++) {
         if (game->monsters[i] != NULL) {
-            game->monsters[i]->tick(game->monsters[i]);
+            game->monsters[i]->tick(game->monsters[i], game->dave->tile->x);
         }
     }
 
@@ -888,6 +906,17 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
             if (collision_detect(game->dave->tile, game->plasmas[idx]->tile)) {
                 game->plasmas[idx] = NULL;
                 game->dave->on_fire = 1;
+            }
+        }
+    }
+
+    for (idx = 0; idx < MAX_MONSTERS; idx++) {
+        if (game->monsters[idx] != NULL) {
+            if (game->monsters[idx]->plasma != NULL) {
+                if (collision_detect(game->dave->tile, game->monsters[idx]->plasma->tile)) {
+                    game->monsters[idx]->plasma = NULL;
+                    game->dave->on_fire = 1;
+                }
             }
         }
     }

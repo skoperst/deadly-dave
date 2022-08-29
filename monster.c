@@ -28,7 +28,6 @@ int swirl_path[] = {
     11,  6, 15,  2, 14, -2, 11, -3,      9, -8,  4, -7,  1, -7,  1, -8,
      0, -7,  0, -7,  0, -8, -1, -7,     -3, -8, -3, -5,  0, -5, -2, -5
 };
-int swirl_fire_rate = 50;
 
 /*
  * Sun, monster of level5
@@ -82,6 +81,7 @@ monster_t* monster_create_ufo() {
 
     memcpy(monster->route, ufo_path, sizeof(ufo_path));
     monster->route_sz = (sizeof(ufo_path)/sizeof(int));
+    monster->fire_rate = 50;
 
     monster->tile->sprites[0] = SPRITE_IDX_MONSTER_UFO1;
     monster->tile->sprites[1] = SPRITE_IDX_MONSTER_UFO1;
@@ -106,6 +106,7 @@ monster_t* monster_create_bones() {
 
     memcpy(monster->route, bones_path, sizeof(bones_path));
     monster->route_sz = (sizeof(bones_path)/sizeof(int));
+    monster->fire_rate = 25;
 
     monster->tile->sprites[0] = SPRITE_IDX_MONSTER_BONES1;
     monster->tile->sprites[1] = SPRITE_IDX_MONSTER_BONES1;
@@ -128,6 +129,7 @@ monster_t* monster_create_swirl() {
 
     memcpy(monster->route, swirl_path, sizeof(swirl_path));
     monster->route_sz = (sizeof(swirl_path)/sizeof(int));
+    monster->fire_rate = 25;
 
     monster->tile->sprites[0] = SPRITE_IDX_MONSTER_SWIRL1;
     monster->tile->sprites[1] = SPRITE_IDX_MONSTER_SWIRL2;
@@ -145,14 +147,17 @@ monster_t* monster_create_sun() {
 
     memcpy(monster->route, sun_path, sizeof(sun_path));
     monster->route_sz = (sizeof(sun_path)/sizeof(int));
+    monster->fire_rate = 50;
 
     monster->tile->sprites[0] = SPRITE_IDX_MONSTER_SUN1;
-    monster->tile->sprites[1] = SPRITE_IDX_MONSTER_SUN2;
-    monster->tile->sprites[2] = SPRITE_IDX_MONSTER_SUN3;
-    monster->tile->sprites[3] = SPRITE_IDX_MONSTER_SUN4;
+    monster->tile->sprites[1] = SPRITE_IDX_MONSTER_SUN1;
+    monster->tile->sprites[2] = SPRITE_IDX_MONSTER_SUN2;
+    monster->tile->sprites[3] = SPRITE_IDX_MONSTER_SUN2;
     monster->tile->sprites[4] = SPRITE_IDX_MONSTER_SUN3;
-    monster->tile->sprites[5] = SPRITE_IDX_MONSTER_SUN2;
-    monster->tile->sprites[6] = 0;
+    monster->tile->sprites[5] = SPRITE_IDX_MONSTER_SUN3;
+    monster->tile->sprites[6] = SPRITE_IDX_MONSTER_SUN4;
+    monster->tile->sprites[7] = SPRITE_IDX_MONSTER_SUN4;
+    monster->tile->sprites[8] = 0;
 
     return monster;
 }
@@ -162,6 +167,7 @@ monster_t* monster_create_spider() {
 
     memcpy(monster->route, spidy_path, sizeof(spidy_path));
     monster->route_sz = (sizeof(spidy_path)/sizeof(int));
+    monster->fire_rate = 25;
 
     monster->tile->sprites[0] = SPRITE_IDX_MONSTER_SPIDER1;
     monster->tile->sprites[1] = SPRITE_IDX_MONSTER_SPIDER2;
@@ -196,7 +202,7 @@ static void monster_state_burning_enter(monster_t *monster) {
     monster->ticks_in_state = 0;
 }
 
-static void monster_state_active_routine(monster_t *monster) {
+static void monster_state_active_routine(monster_t *monster, int dave_x) {
     monster->ticks_in_state++;
     if (monster->on_fire) {
         monster_state_burning_enter(monster);
@@ -222,12 +228,29 @@ static void monster_state_active_routine(monster_t *monster) {
     }
 
     monster->cooldown++;
+
+    // Handle plasma creation
+    printf("TICKS BEFORE SHOOT: %d \n", monster->ticks_before_shoot);
+    if (monster->plasma == NULL) {
+        if (monster->ticks_before_shoot == 0) {
+            if (dave_x > monster->tile->x) {
+                monster->plasma = plasma_create_right(monster->tile->x - 8, monster->tile->y + 8);
+            } else {
+                monster->plasma = plasma_create_left(monster->tile->x - 21, monster->tile->y + 8);
+            }
+        } else {
+            monster->ticks_before_shoot--;
+        }
+    } else {
+        monster->ticks_before_shoot = monster->fire_rate;
+    }
 }
 
-static void monster_tick(monster_t *monster) {
+static void monster_tick(monster_t *monster, int dave_x) {
+
 
     if (monster->state == MONSTER_STATE_ACTIVE) {
-        monster_state_active_routine(monster);
+        monster_state_active_routine(monster, dave_x);
     } else if (monster->state == MONSTER_STATE_BURNING) {
         monster_state_burning_routine(monster);
     } else if (monster->state == MONSTER_STATE_DEAD) {
@@ -261,16 +284,6 @@ static int monster_get_sprite(tile_t *tile) {
     return sprite;
 }
 
-static int monster_is_shooting(monster_t *monster, int off, int tot) {
-    // This is a hack currently to test different fire rates
-    if ((monster->ticks_in_state+off) % (tot + 50) == 0) {
-        printf("is shooting off: %d, tot: %d \n", off, tot);
-        return 1;
-    }
-
-    return 0;
-}
-
 static int monster_is_alive(monster_t *monster) {
     if (monster->state == MONSTER_STATE_ACTIVE) {
         return 1;
@@ -286,9 +299,9 @@ monster_t* monster_create() {
     monster->cooldown = 0;
     monster->ticks_in_state = 0;
     monster->on_fire = 0;
+    monster->ticks_before_shoot = 0;
     monster->tick = &monster_tick;
     monster->is_alive = &monster_is_alive;
-    monster->is_shooting = &monster_is_shooting;
 
     monster->tile = malloc(sizeof(tile_t));
     monster->tile->x = 0;
@@ -305,6 +318,8 @@ monster_t* monster_create() {
     monster->tile->sprite_idx = 0;
     monster->tile->context = monster;
     monster->tile->get_sprite = &monster_get_sprite;
+
+    monster->plasma = NULL;
 
     return monster;
 }
