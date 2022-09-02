@@ -57,22 +57,12 @@ typedef struct keys_state_struct {
 } keys_state_t;
 
 typedef struct game_context_struct {
-    uint8_t quit;
     uint8_t tick;
     uint8_t dave_tick;
     uint8_t dave_dead_timer;
-    uint16_t dbullet_px;
-    uint16_t dbullet_py;
-    int8_t dbullet_dir;
     int8_t scroll_x;
-    int8_t last_dir;
 
-    uint8_t dave_right;
-    uint8_t dave_left;
     uint8_t dave_jump;
-    uint8_t dave_fire;
-    uint8_t dave_down;
-    uint8_t dave_up;
     uint8_t dave_climb;
     uint8_t dave_jetpack;
     uint8_t jetpack_delay;

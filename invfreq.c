@@ -98,25 +98,25 @@ double invfreq_fmod(double x, double y)
 
     /* normalize x and y */
     if (!ex) {
-		for (i = uxi<<12; i>>63 == 0; ex--, i <<= 1);
-		uxi <<= -ex + 1;
-	} else {
-		uxi &= -1ULL >> 12;
-		uxi |= 1ULL << 52;
-	}
-	if (!ey) {
-		for (i = uy.i<<12; i>>63 == 0; ey--, i <<= 1);
-		uy.i <<= -ey + 1;
-	} else {
-		uy.i &= -1ULL >> 12;
-		uy.i |= 1ULL << 52;
-	}
+        for (i = uxi<<12; i>>63 == 0; ex--, i <<= 1);
+        uxi <<= -ex + 1;
+    } else {
+        uxi &= -1ULL >> 12;
+        uxi |= 1ULL << 52;
+    }
+    if (!ey) {
+        for (i = uy.i<<12; i>>63 == 0; ey--, i <<= 1);
+        uy.i <<= -ey + 1;
+    } else {
+        uy.i &= -1ULL >> 12;
+        uy.i |= 1ULL << 52;
+    }
 
-	/* x mod y */
-	for (; ex > ey; ex--) {
-		i = uxi - uy.i;
-		if (i >> 63 == 0) {
-			if (i == 0)
+    /* x mod y */
+    for (; ex > ey; ex--) {
+        i = uxi - uy.i;
+        if (i >> 63 == 0) {
+            if (i == 0)
                 return 0*x;
             uxi = i;
         }
