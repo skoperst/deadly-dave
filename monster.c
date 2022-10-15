@@ -167,7 +167,7 @@ monster_t* monster_create_spider() {
 
     memcpy(monster->route, spidy_path, sizeof(spidy_path));
     monster->route_sz = (sizeof(spidy_path)/sizeof(int));
-    monster->fire_rate = 25;
+    monster->fire_rate = 50;
 
     monster->tile->sprites[0] = SPRITE_IDX_MONSTER_SPIDER1;
     monster->tile->sprites[1] = SPRITE_IDX_MONSTER_SPIDER2;
@@ -229,7 +229,16 @@ static void monster_state_active_routine(monster_t *monster, int dave_x) {
 
     monster->cooldown++;
 
-    // Handle plasma creation
+    /* TODO: Handle plasma creation correctly.
+     * A plasma is created only if plasma doesn't exist or died. 
+     * created always when dave is in same screen, but only within some deadzone when dave is not on screen 
+     *
+     * Sometimes (not sure when), plasma will be fired even though monster never passes to current screen.
+     *
+     * 80% Plasma will not fire if there is a very close obstacle.
+     *
+     * 100% Plasma, once created it will fire until hitting something even if we dave is not seeing it. For example when plasma fired and gets past screen, if dave is quick
+     * enough to go there he will see the plasma. This results a much longer delays of shooting plasma sometimes. */
     printf("TICKS BEFORE SHOOT: %d \n", monster->ticks_before_shoot);
     if (monster->plasma == NULL) {
         if (monster->ticks_before_shoot == 0) {
