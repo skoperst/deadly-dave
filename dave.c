@@ -3,7 +3,6 @@
 
 #include "dave.h"
 
-
 /*
  * Returns 1 if dave tile is collisioned in its right side. 0 otherwise
  */
