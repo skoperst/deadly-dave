@@ -19,8 +19,6 @@ uint32_t        *g_pixels;
 assets_t* g_assets;
 soundfx_t *g_soundfx;
 
-int g_mmm_tot = 10;
-
 void render_tile_idx(int tile_idx, int x, int y) {
     SDL_Surface *surface = g_assets->tiles[tile_idx];
 
@@ -160,6 +158,9 @@ void draw_map_offset(tile_t *map, int offset) {
 }
 
 void draw_bullet_offset(bullet_t *bullet, assets_t *assets, int x_offset) {
+    if (bullet == NULL) {
+        return;
+    }
     draw_tile_offset(bullet->tile, assets, x_offset);
 }
 
@@ -218,7 +219,7 @@ void draw_jetpack(int bars) {
     }
 }
 
-void draw_level(int level) {
+void draw_level_number(int level) {
     render_tile_idx(136, 104, 0);
     render_tile_idx(148, 176, 0);
     render_tile_idx(148 + level + 1, 184, 0);
@@ -341,6 +342,18 @@ void get_keys(keys_state_t* state) {
             state->quit = 1;
         }
     }
+}
+
+/*
+ * Basically this function should return 1 if any keyboard key is pressed, however for now it is only
+ * counting known keys
+ */
+int is_any_key_pressed(keys_state_t* key_state) {
+    if (key_state->right || key_state->left || key_state->space || key_state->down || key_state->jump ||
+            key_state->fire) {
+        return 1;
+    }
+    return 0;
 }
 
 int start_intro() {
@@ -620,7 +633,13 @@ void game_do_bullets(game_context_t *game, tile_t *map, keys_state_t *keys) {
     }
 }
 
-void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
+void clear_screen() {
+    for (int idx = 0; idx < 320 * 200; idx++) {
+        g_pixels[idx] = 0x000000FF;
+    }
+}
+
+void draw_level_frame(game_context_t *game) {
     tile_t bottom_separator;
     tile_t top_separator;
     tile_t grail_banner;
@@ -631,18 +650,6 @@ void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
     tile_create_grail_banner(&grail_banner, 70, 183);
     tile_create_gun_banner(&gun_banner, 240, 170);
 
-    for (int idx = 0; idx < 320 * 200; idx++) {
-        g_pixels[idx] = 0x000000FF;
-    }
-
-    draw_map_offset(map, game->scroll_offset);
-    draw_dave_offset(game->dave, g_assets, game->scroll_offset);
-    draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
-    draw_plasmas_offset(game->monsters, g_assets, game->scroll_offset);
-
-    if (game->bullet != NULL) {
-        draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
-    }
     draw_tile(&bottom_separator, g_assets);
     draw_tile(&top_separator, g_assets);
     if (game->dave->has_trophy) {
@@ -655,8 +662,9 @@ void game_do_draw(game_context_t *game, tile_t *map, keys_state_t *keys) {
         draw_jetpack(game->dave->jetpack_bars);
     }
     draw_score(game->score);
-    draw_level(game->level);
+    draw_level_number(game->level);
     draw_lives(game->lives);
+
 }
 
 /*
@@ -698,6 +706,58 @@ int collision_detect(tile_t *tile1, tile_t *tile2) {
     return 0;
 }
 
+/*
+ * Game loop routing while user didn't press any key after level started,
+ * screen will be same as game_level, however dave will blink and monsters freeze.
+ */
+int game_level_blinking(game_context_t *game, tile_t *map, keys_state_t *keys) {
+    dave_t *dave = game->dave;
+
+    // blinking_timer makes sure:
+    // [1, 10] - blinking (cannot interrupt)
+    // [11,20] - visible
+    // [21,31] - blinking
+    // [32 --> 11] -> ringed to 11
+    game->blinking_timer++;
+    if (game->blinking_timer >= 32) {
+        game->blinking_timer = 11;
+    }
+
+    if (keys->quit) {
+        printf("should quit! \n");
+        return G_STATE_QUIT_NOW;
+    }
+
+    if (keys->escape) {
+        g_soundfx->stop(g_soundfx);
+        return G_STATE_LEVEL_POPUP;
+    }
+
+    // Minimal time for blinking, to avoid releasing dave due to any keys still
+    // pressed from intro menu or previous round
+    if (game->blinking_timer >= 10) {
+        if (is_any_key_pressed(keys)) {
+            return G_STATE_LEVEL;
+        }
+    }
+
+    for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+        if (map[i].sprites[0] != 0) {
+            map[i].tick(&map[i]);
+        }
+    }
+
+    clear_screen();
+    draw_level_frame(game);
+    draw_map_offset(map, game->scroll_offset);
+    draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
+    if (game->blinking_timer >= 11 && game->blinking_timer <= 20) {
+        draw_dave_offset(dave, g_assets, game->scroll_offset);
+    }
+
+    return G_STATE_LEVEL_BLINKING;
+}
+
 int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     dave_t *dave = game->dave;
 
@@ -717,7 +777,13 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     // If we need to adjust screen by scrolling, just draw scene without progressing any
     // game objects.
     if (game_adjust_scroll_to_dave(game, game->dave)) {
-        game_do_draw(game, map, keys);
+        clear_screen();
+        draw_level_frame(game);
+        draw_map_offset(map, game->scroll_offset);
+        draw_dave_offset(game->dave, g_assets, game->scroll_offset);
+        draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
+        draw_plasmas_offset(game->monsters, g_assets, game->scroll_offset);
+        draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
         return G_STATE_LEVEL;
     }
 
@@ -851,7 +917,14 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         }
     }
 
-    game_do_draw(game, map, keys);
+    clear_screen();
+    draw_level_frame(game);
+    draw_map_offset(map, game->scroll_offset);
+    draw_dave_offset(game->dave, g_assets, game->scroll_offset);
+    draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
+    draw_plasmas_offset(game->monsters, g_assets, game->scroll_offset);
+    draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
+
     return G_STATE_LEVEL;
 }
 
@@ -912,7 +985,7 @@ int game_warp_down(game_context_t *game, tile_t *map, keys_state_t *keys) {
         draw_tile(&grail_banner, g_assets);
     }
     draw_score(game->score);
-    draw_level(game->level);
+    draw_level_number(game->level);
     draw_lives(game->lives);
 
     return G_STATE_WARP_DOWN;
@@ -970,7 +1043,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
         draw_tile(&grail_banner, g_assets);
     }
     draw_score(game->score);
-    draw_level(game->level);
+    draw_level_number(game->level);
     draw_lives(game->lives);
 
     return G_STATE_WARP_RIGHT;
@@ -1129,10 +1202,15 @@ int gameloop(int starting_level) {
             game->dave->tile->x = game->dave->default_x;
             game->dave->tile->y = game->dave->default_y;
             game->scroll_offset = 0;
+            game->blinking_timer = 0;
             game_set_scroll_to_dave(game, game->dave);
-            next_state = G_STATE_LEVEL;
+            next_state = G_STATE_LEVEL_BLINKING;
 
-        } else if (g_state == G_STATE_LEVEL) {
+        } else if (g_state == G_STATE_LEVEL_BLINKING) {
+            printf("BLINK \n");
+            next_state = game_level_blinking(game, map, &key_state);
+        }
+        else if (g_state == G_STATE_LEVEL) {
             next_state = game_level(game, map, &key_state);
 
         } else if (g_state == G_STATE_LEVEL_POPUP) {
