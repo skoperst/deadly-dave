@@ -1207,7 +1207,6 @@ int gameloop(int starting_level) {
             next_state = G_STATE_LEVEL_BLINKING;
 
         } else if (g_state == G_STATE_LEVEL_BLINKING) {
-            printf("BLINK \n");
             next_state = game_level_blinking(game, map, &key_state);
         }
         else if (g_state == G_STATE_LEVEL) {
