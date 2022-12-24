@@ -65,7 +65,7 @@
    ,BBK,   ,BBK,   ,   ,   ,   ,   ,   ,BBK;
    ,BBK,   ,BBK,   ,   ,   ,   ,   ,   ,BBK;
    ,BBK,   ,   ,   ,BBK,BBK,   ,BBK,   ,BBK;
-   ,BBK,   ,BBK,   ,   ,BBK,   ,BBK,   ,BBK;
+   ,BBK,   ,BBK,   , v ,BBK,   ,BBK,   ,BBK;
    ,BBK,   ,BBK,   ,   ,BBK,   ,BBK,   ,BBK;
    ,BBK,   ,BBK,   ,   ,BBK,   ,BBK,   ,BBK;
    ,BBK, v ,BBK,   ,   ,BBK,   ,BBK,   ,BBK;
@@ -92,7 +92,7 @@
    ,BBK,   ,   ,BBK,   ,   ,   ,   ,   ,BBK;
    ,BBK,   ,   ,   ,   ,BBK,BBK,   ,   ,BBK;
    ,BBK,   ,   ,BBK,   ,   ,BBK,   ,   ,BBK;
-   ,BBK,   ,   ,BBK,   ,   ,   ,   ,   ,BBK;
+   ,BBK,   , v ,BBK,   ,   ,   ,   ,   ,BBK;
    ,BBK,   ,WT2,BBK,   ,   ,BBK,   ,   ,BBK;
    ,BBK,   ,BBK,   ,   ,BBK,BBK,   ,   ,BBK;
    ,BBK,   ,BBK,   ,JPK,BBK,   ,   ,BBK,BBK;
@@ -104,7 +104,7 @@
    ,BBK, v , v , v , v ,   ,BBK,   ,   ,BBK;
    ,BBK,BBK,BBK,BBK,BBK,   ,BBK,   ,   ,BBK;
    ,BBK,   ,   ,   ,BBK,   ,BBK,BBK,   ,BBK;
-   ,BBK, v ,BBK,   ,BBK,   ,VI1,BBK,   ,BBK;
+   ,BBK, v ,BBK, v ,BBK,   ,VI1,BBK,   ,BBK;
    ,BBK,   ,BBK,   ,BBK,   , ! ,BBK,   ,BBK;
    ,BBK, v ,BBK,   ,BBK,BBK,BBK,BBK,   ,BBK;
    ,BBK,   ,BBK,   , v ,BBK,   ,   ,   ,BBK;

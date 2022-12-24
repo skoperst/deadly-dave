@@ -28,7 +28,7 @@
    ,RBK,   ,   ,PPK,   ,   ,   ,PPK,   ,FR1;
    ,RBK,   ,   ,   ,   ,   ,   ,PPK,   ,FR2;
    ,RBK,   ,   ,   ,   ,   ,   ,PPK,   ,FR2;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,FR1;
+   ,RBK, v ,   ,   ,   ,   ,   ,   ,   ,FR1;
    ,RBK,   ,   ,   ,PPK,   ,   , V ,   ,FR1;
    ,RBK,   ,   ,   ,PPK,RBK,RBK,RBK,RBK,RBK;
    ,RBK,   ,   ,   ,PPK,   ,   ,   , v ,FR1;
