@@ -475,19 +475,19 @@ uint16_t tojetpack[] = {
 };
 
 void soundfx_play(soundfx_t *sfx, int tune) {
-    printf("[soundfx] soundfx_play tune: %d \n", tune);
+    //printf("[soundfx] soundfx_play tune: %d \n", tune);
     sfx->tune_idx = tune;
     sfx->tune_offset = 0;
     SDL_PauseAudioDevice(g_audio_dev, 0);
 }
 
 void soundfx_resume(soundfx_t *sfx) {
-    printf("[soundfx] resume \n");
+    //printf("[soundfx] resume \n");
     SDL_PauseAudioDevice(g_audio_dev, 0);
 }
 
 void soundfx_stop(soundfx_t *sfx) {
-    printf("[soundfx] stop \n");
+    //printf("[soundfx] stop \n");
     SDL_PauseAudioDevice(g_audio_dev, 1);
 }
 
