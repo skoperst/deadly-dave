@@ -59,6 +59,7 @@ static const int SPRITE_IDX_TROPHY4                = 12;
 static const int SPRITE_IDX_TROPHY0                = 13;
 static const int SPRITE_IDX_TROPHY1                = 14;
 static const int SPRITE_IDX_PIPE_RIGHT             = 15;
+static const int SPRITE_IDX_PIPE_DOWN              = 16;
 static const int SPRITE_IDX_RED_BRICK              = 17;
 static const int SPRITE_IDX_DIRT                   = 18;
 static const int SPRITE_IDX_BLUE_COLUMN            = 19;
