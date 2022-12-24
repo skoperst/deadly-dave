@@ -36,7 +36,7 @@
 #define G_STATE_WARP_RIGHT_POPUP  8
 #define G_STATE_WARP_DOWN_START   9
 #define G_STATE_WARP_DOWN         10
-#define G_STATE_WARP_POPUP        11
+#define G_STATE_WARP_DOWN_POPUP   11
 #define G_STATE_GAMEOVER          12
 #define G_STATE_QUIT_NOW          13
 
