@@ -239,7 +239,7 @@ static void monster_state_active_routine(monster_t *monster, int dave_x) {
      *
      * 100% Plasma, once created it will fire until hitting something even if we dave is not seeing it. For example when plasma fired and gets past screen, if dave is quick
      * enough to go there he will see the plasma. This results a much longer delays of shooting plasma sometimes. */
-    printf("TICKS BEFORE SHOOT: %d \n", monster->ticks_before_shoot);
+    //printf("TICKS BEFORE SHOOT: %d \n", monster->ticks_before_shoot);
     if (monster->plasma == NULL) {
         if (monster->ticks_before_shoot == 0) {
             if (dave_x > monster->tile->x) {
