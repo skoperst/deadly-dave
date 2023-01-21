@@ -74,10 +74,12 @@ int plate_path[] = {
 */
 
 
-monster_t* monster_create_ufo() {
-    monster_t *monster = monster_create();
-    monster->tile->width = 18;
+monster_t* monster_create_ufo(int x, int y) {
+    monster_t *monster = monster_create(x, y, 18, 8);
+/*    monster->tile->width = 18;
     monster->tile->height = 8;
+    monster->tile->x = x;
+    monster->tile->y = y;*/
 
     memcpy(monster->route, ufo_path, sizeof(ufo_path));
     monster->route_sz = (sizeof(ufo_path)/sizeof(int));
@@ -99,10 +101,12 @@ monster_t* monster_create_ufo() {
     return monster;
 }
 
-monster_t* monster_create_bones() {
-    monster_t *monster = monster_create();
-    monster->tile->width = 24;
+monster_t* monster_create_bones(int x, int y) {
+    monster_t *monster = monster_create(x, y, 24, 22);
+/*    monster->tile->width = 24;
     monster->tile->height = 22;
+    monster->tile->x = x;
+    monster->tile->y = y;*/
 
     memcpy(monster->route, bones_path, sizeof(bones_path));
     monster->route_sz = (sizeof(bones_path)/sizeof(int));
@@ -124,8 +128,8 @@ monster_t* monster_create_bones() {
     return monster;
 }
 
-monster_t* monster_create_swirl() {
-    monster_t *monster = monster_create();
+monster_t* monster_create_swirl(int x, int y) {
+    monster_t *monster = monster_create(x, y, 24, 21);
 
     memcpy(monster->route, swirl_path, sizeof(swirl_path));
     monster->route_sz = (sizeof(swirl_path)/sizeof(int));
@@ -142,8 +146,8 @@ monster_t* monster_create_swirl() {
     return monster;
 }
 
-monster_t* monster_create_sun() {
-    monster_t *monster = monster_create();
+monster_t* monster_create_sun(int x, int y) {
+    monster_t *monster = monster_create(x, y, 24, 21);
 
     memcpy(monster->route, sun_path, sizeof(sun_path));
     monster->route_sz = (sizeof(sun_path)/sizeof(int));
@@ -162,8 +166,8 @@ monster_t* monster_create_sun() {
     return monster;
 }
 
-monster_t* monster_create_spider() {
-    monster_t *monster = monster_create();
+monster_t* monster_create_spider(int x, int y) {
+    monster_t *monster = monster_create(x, y, 24, 21);
 
     memcpy(monster->route, spidy_path, sizeof(spidy_path));
     monster->route_sz = (sizeof(spidy_path)/sizeof(int));
@@ -300,7 +304,7 @@ static int monster_is_alive(monster_t *monster) {
     return 0;
 }
 
-monster_t* monster_create() {
+monster_t* monster_create(int x, int y, int w, int h) {
     monster_t *monster = malloc(sizeof(monster_t));
 
     monster->state = MONSTER_STATE_ACTIVE;
@@ -313,10 +317,10 @@ monster_t* monster_create() {
     monster->is_alive = &monster_is_alive;
 
     monster->tile = malloc(sizeof(tile_t));
-    monster->tile->x = 0;
-    monster->tile->y = 0;
-    monster->tile->width = 24;
-    monster->tile->height = 21;
+    monster->tile->x = x;
+    monster->tile->y = y;
+    monster->tile->width = w;//24;
+    monster->tile->height = h;//21;
     monster->tile->collision_dx = 0;
     monster->tile->collision_dy = 0;
     monster->tile->collision_dw = 0;

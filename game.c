@@ -65,6 +65,12 @@ void render_tile_idx(int tile_idx, int x, int y) {
     }
 }
 
+void clear_screen() {
+    for (int idx = 0; idx < 320 * 200; idx++) {
+        g_pixels[idx] = 0x000000FF;
+    }
+}
+
 void draw_tile_offset(tile_t *tile, assets_t *assets, int x_offset) {
     render_tile_idx(tile->get_sprite(tile), tile->x - (x_offset * 16), tile->y);
 }
@@ -203,7 +209,6 @@ void draw_x_levels_to_go(int x) {
 }
 
 void draw_jetpack(int bars) {
-    int i = 0;
     if (bars < 0) {
         bars = 0;
     } else if (bars > 600) {
@@ -212,7 +217,7 @@ void draw_jetpack(int bars) {
 
     render_tile_idx(SPRITE_IDX_JETPACK_LABEL, 0, 170);
     render_tile_idx(SPRITE_IDX_JETPACK_BAR_FRAME, 72, 170);
-    for (i = 0; i< (bars/10); i++) {
+    for (int i = 0; i< (bars/10); i++) {
         render_tile_idx(SPRITE_IDX_JETPACK_BAR, 76 + i*2, 174);
     }
 }
@@ -225,11 +230,10 @@ void draw_level_number(int level) {
 
 void draw_lives(int lives) {
     int start_x = 256;
-    int idx = 0;
 
     render_tile_idx(135, 192, 0);
 
-    for (idx = 0; (idx < (lives - 1)) && (idx < 4); idx++) {
+    for (int idx = 0; (idx < (lives - 1)) && (idx < 4); idx++) {
         render_tile_idx(143, start_x + (16 * idx), 0);
     }
 }
@@ -292,10 +296,6 @@ void init_game(game_context_t *game) {
     game->lives = 4;
     game->score = 0;
     game->scroll_x = 0;
-    game->dave_jump = 0;
-    game->dave_climb = 0;
-    game->dave_jetpack = 0;
-    game->jetpack_delay = 0;
 
     game->scroll_offset = 0;
     game->scroll_remaining = 0;
@@ -314,7 +314,6 @@ void get_keys(keys_state_t* state) {
     state->down       = (keystate[SDL_SCANCODE_DOWN]   != 0) ? 1 : 0;
     state->escape     = (keystate[SDL_SCANCODE_ESCAPE] != 0) ? 1 : 0;
     state->fire       = (keystate[SDL_SCANCODE_LCTRL]  != 0) ? 1 : 0;
-//    state->enter     = (keystate[SDL_SCANCODE_RETURN] != 0) ? 1 : 0;
     state->space      = (keystate[SDL_SCANCODE_SPACE]  != 0) ? 1 : 0;
     state->key_y      = (keystate[SDL_SCANCODE_Y] != 0) ? 1 : 0;
     state->key_n      = (keystate[SDL_SCANCODE_N] != 0) ? 1 : 0;
@@ -361,12 +360,11 @@ int is_any_key_pressed(keys_state_t* key_state) {
     return 0;
 }
 
-int start_intro() {
+void start_intro() {
     int32_t intro_should_finish = 0;
     uint32_t timer_begin;
     uint32_t timer_end;
     uint32_t delay;
-    int32_t result = 0;
     int stride;
 
     keys_state_t key_state = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -440,7 +438,6 @@ int start_intro() {
         }
 
         if (key_state.enter || key_state.space) {
-            result = 0;
             intro_should_finish = 1;
         }
 
@@ -448,9 +445,8 @@ int start_intro() {
         SDL_RenderClear(g_renderer);
         SDL_LockTexture(g_texture, NULL, (void*)&g_pixels, &stride);
 
-        for (int idx = 0; idx < 320 * 200; idx++) {
-            g_pixels[idx] = 0x000000FF;
-        }
+        clear_screen();
+
         // Draw all tiles
         for (int idx = 0; idx < 41; idx++) {
             draw_tile(&block[idx], g_assets);
@@ -468,18 +464,9 @@ int start_intro() {
         SDL_RenderPresent(g_renderer);
 
         timer_end = SDL_GetTicks();
-//        printf("timer-end: %d \n", timer_end);
         delay = 14 - (timer_end-timer_begin);
         delay = delay > 14 ? 0 : delay;
         SDL_Delay(delay);
-    }
-
-    return result;
-}
-
-void clear_plasmas(game_context_t *game) {
-    for (int i = 0; i < MAX_PLASMAS; i++) {
-        game->plasmas[i] = NULL;
     }
 }
 
@@ -531,12 +518,7 @@ int game_warp_down_popup(game_context_t *game, tile_t *map,
 
 int game_popup_routine(game_context_t *game, tile_t *map,
     tile_t *flashing_cursor, keys_state_t *keys) {
-    if (keys->quit) {
-        printf("should quit! \n");
-        return G_STATE_QUIT_NOW;
-    }
-
-    if (keys->key_y) {
+    if (keys->quit || keys->key_y) {
         return G_STATE_QUIT_NOW;
     }
 
@@ -608,29 +590,8 @@ void game_set_scroll_to_dave(game_context_t *game, dave_t *dave) {
     while (game_adjust_scroll_to_dave(game, dave) != 0) {};
 }
 
-int game_is_scrolling(game_context_t *game) {
-    if (game->scroll_remaining != 0) {
-        return 1;
-    }
-
-    return 0;
-}
-
 void game_do_plasmas(game_context_t *game, tile_t *map, keys_state_t *keys) {
-    int i;
-
-    // These are legacy plasmas handles in game without monster owner. Probably need to be deleted
-    for (i = 0; i < MAX_PLASMAS; i++) {
-        if (game->plasmas[i] != NULL) {
-            if (game->plasmas[i]->is_dead(game->plasmas[i])) {
-                game->plasmas[i] = NULL;
-            } else {
-                game->plasmas[i]->tick(game->plasmas[i], map, (game->scroll_offset * 16) - 80, (game->scroll_offset * 16) + 400);
-            }
-        }
-    }
-
-    for (i = 0; i < MAX_MONSTERS; i++) {
+    for (int i = 0; i < MAX_MONSTERS; i++) {
         if (game->monsters[i] != NULL) {
             if (game->monsters[i]->plasma != NULL) {
                 if (game->monsters[i]->plasma->is_dead(game->monsters[i]->plasma)) {
@@ -660,12 +621,6 @@ void game_do_bullets(game_context_t *game, tile_t *map, keys_state_t *keys) {
                 game->bullet = bullet_create_right(game->dave->tile->x + 8, game->dave->tile->y + 8);
             }
         }
-    }
-}
-
-void clear_screen() {
-    for (int idx = 0; idx < 320 * 200; idx++) {
-        g_pixels[idx] = 0x000000FF;
     }
 }
 
@@ -925,15 +880,6 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         }
     }
 
-    for (int idx = 0; idx < MAX_PLASMAS; idx++) {
-        if (game->plasmas[idx] != NULL) {
-            if (collision_detect(game->dave->tile, game->plasmas[idx]->tile)) {
-                game->plasmas[idx] = NULL;
-                game->dave->on_fire = 1;
-            }
-        }
-    }
-
     for (int idx = 0; idx < MAX_MONSTERS; idx++) {
         if (game->monsters[idx] != NULL) {
             if (game->monsters[idx]->plasma != NULL) {
@@ -957,22 +903,13 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
 }
 
 int game_warp_down(game_context_t *game, tile_t *map, keys_state_t *keys) {
-    int i = 0;
-
-    tile_t bottom_separator;
-    tile_t top_separator;
-    tile_t grail_banner;
     tile_t warp_label;
     tile_t zone_label;
 
-    tile_create_bottom_separator(&bottom_separator, 0, 166);
-    tile_create_top_separator(&top_separator, 0, 11);
-    tile_create_grail_banner(&grail_banner, 70, 180);
     tile_create_label_warp(&warp_label, 32, 92);
     tile_create_label_zone(&zone_label, 200, 92);
 
     if (keys->quit) {
-        printf("should quit! \n");
         return G_STATE_QUIT_NOW;
     }
 
@@ -980,15 +917,14 @@ int game_warp_down(game_context_t *game, tile_t *map, keys_state_t *keys) {
         return G_STATE_WARP_DOWN_POPUP;
     }
     game->dave->mute = 1;
-    if  (game->dave->tile->y > 200) 
-    {
+    if (game->dave->tile->y > 200) {
         game->level++;
         game->dave->mute = 0;
         return G_STATE_NONE;
     }
 
-    game->dave->tick(game->dave, map, 0, 0, 0,0, 0);
-    for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+    game->dave->tick(game->dave, map, 0, 0, 0, 0, 0);
+    for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
         if (map[i].sprites[0] != 0) {
             map[i].tick(&map[i]);
         }
@@ -997,29 +933,14 @@ int game_warp_down(game_context_t *game, tile_t *map, keys_state_t *keys) {
     clear_screen();
     draw_map_offset(map, game->scroll_offset);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
+    draw_level_frame(game);
     draw_tile(&warp_label, g_assets);
     draw_tile(&zone_label, g_assets);
-    draw_tile(&bottom_separator, g_assets);
-    draw_tile(&top_separator, g_assets);
-    if (game->dave->has_trophy) {
-        draw_tile(&grail_banner, g_assets);
-    }
-    draw_score(game->score);
-    draw_level_number(game->level);
-    draw_lives(game->lives);
 
     return G_STATE_WARP_DOWN;
 }
 
 int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
-    tile_t bottom_separator;
-    tile_t top_separator;
-    tile_t grail_banner;
-
-    tile_create_bottom_separator(&bottom_separator, 0, 166);
-    tile_create_top_separator(&top_separator, 0, 11);
-    tile_create_grail_banner(&grail_banner, 70, 180);
-
     if (keys->quit) {
         printf("should quit! \n");
         return G_STATE_QUIT_NOW;
@@ -1030,13 +951,13 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     }
 
     game->dave->mute = 1;
-    if  (game->dave->tile->x > 300) {
+    if (game->dave->tile->x > 300) {
         game->level++;
         game->dave->mute = 0;
         return G_STATE_NONE;
     }
 
-    game->dave->tick(game->dave, map, 0, 1, 0,0, 0);
+    game->dave->tick(game->dave, map, 0, 1, 0, 0, 0);
     for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
         if (map[i].sprites[0] != 0) {
             map[i].tick(&map[i]);
@@ -1047,14 +968,7 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
     draw_map_offset(map, game->scroll_offset);
     draw_x_levels_to_go(9 - game->level);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
-    draw_tile(&bottom_separator, g_assets);
-    draw_tile(&top_separator, g_assets);
-    if (game->dave->has_trophy) {
-        draw_tile(&grail_banner, g_assets);
-    }
-    draw_score(game->score);
-    draw_level_number(game->level);
-    draw_lives(game->lives);
+    draw_level_frame(game);
 
     return G_STATE_WARP_RIGHT;
 }
@@ -1080,11 +994,8 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
     fclose(f);
 
     buf[fsize] = 0;
-
     map_str = buf;
 
-    clear_monsters(game);
-    clear_plasmas(game);
     while (map_str[i] != 0) {
         if (in_comment) {
             if (map_str[i] == '\n') {
@@ -1106,34 +1017,22 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         game->dave->jetpack_bars = 0;
 
                     } else if (strcmp(tag, "SU1") == 0) {
-                        game->monsters[monsters_count] = monster_create_sun();
-                        game->monsters[monsters_count]->tile->x = cur_col * 16;
-                        game->monsters[monsters_count]->tile->y = pos * 20;
+                        game->monsters[monsters_count] = monster_create_sun(cur_col * 16, pos * 20);
                         monsters_count++;
                     } else if (strcmp(tag, "SU2") == 0) {
-                        game->monsters[monsters_count] = monster_create_sun();
-                        game->monsters[monsters_count]->tile->x = cur_col * 16;
-                        game->monsters[monsters_count]->tile->y = (pos * 20) - 12;
+                        game->monsters[monsters_count] = monster_create_sun(cur_col * 16, (pos * 20) - 12);
                         monsters_count++;
                     } else if (strcmp(tag, "SP1") == 0) {
-                        game->monsters[monsters_count] = monster_create_spider();
-                        game->monsters[monsters_count]->tile->x = cur_col * 16;
-                        game->monsters[monsters_count]->tile->y = (pos * 20) - 12;
+                        game->monsters[monsters_count] = monster_create_spider(cur_col * 16, (pos * 20) - 12);
                         monsters_count++;
                     } else if (strcmp(tag, "SW1") == 0) {
-                        game->monsters[monsters_count] = monster_create_swirl();
-                        game->monsters[monsters_count]->tile->x = cur_col * 16;
-                        game->monsters[monsters_count]->tile->y = (pos * 20) - 12;
+                        game->monsters[monsters_count] = monster_create_swirl(cur_col * 16, (pos * 20) - 12);
                         monsters_count++;
                     } else if (strcmp(tag, "BZ1") == 0) {
-                        game->monsters[monsters_count] = monster_create_bones();
-                        game->monsters[monsters_count]->tile->x = cur_col * 16;
-                        game->monsters[monsters_count]->tile->y = (pos * 16) - 2;
+                        game->monsters[monsters_count] = monster_create_bones(cur_col * 16, (pos * 16) - 2);
                         monsters_count++;
                     } else if (strcmp(tag, "UF1") == 0) {
-                        game->monsters[monsters_count] = monster_create_ufo();
-                        game->monsters[monsters_count]->tile->x = cur_col * 16;
-                        game->monsters[monsters_count]->tile->y = (pos * 16);
+                        game->monsters[monsters_count] = monster_create_ufo(cur_col * 16, pos * 16);
                         monsters_count++;
                     }
 
@@ -1183,7 +1082,6 @@ int gameloop(int starting_level) {
     int stride;
     int next_state;
     int g_state = G_STATE_NONE;
-    //int g_prev_state = G_STATE_NONE;
     int tick_interval = 14;
 
     game = malloc(sizeof(game_context_t));
@@ -1200,9 +1098,8 @@ int gameloop(int starting_level) {
         get_keys(&key_state);
 
         if (g_state == G_STATE_NONE) {
-            clear_monsters(game);
-            clear_plasmas(game);
             clear_map(map);
+            clear_monsters(game);
             snprintf(level_path, 4096, "res/levels/level%ld.ddt", (long)game->level);
 
             game_level_load(game, map, level_path);
@@ -1227,6 +1124,7 @@ int gameloop(int starting_level) {
 
         } else if (g_state == G_STATE_WARP_RIGHT_START) {
             clear_map(map);
+            clear_monsters(game);
             game_level_load(game, map, "res/levels/warp_right.ddt");
             game->scroll_offset = 0;
             next_state = G_STATE_WARP_RIGHT;
@@ -1239,6 +1137,7 @@ int gameloop(int starting_level) {
 
         } else if (g_state == G_STATE_WARP_DOWN_START) {
             clear_map(map);
+            clear_monsters(game);
             game_level_load(game, map, "res/levels/warp_down.ddt");
             game->dave->face_direction = DAVE_DIRECTION_FRONT;
             game->scroll_offset = 0;
@@ -1318,7 +1217,7 @@ int game_main(int is_windowed, int starting_level) {
     g_soundfx = soundfx_create();
 
     while (1) {
-        ret = start_intro();
+        start_intro();
         ret = gameloop(starting_level);
         printf("game-loop finished with ret-code: %d \n", ret);
 

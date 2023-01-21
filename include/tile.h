@@ -247,7 +247,6 @@ void tile_create_label_zone(tile_t *t, int x, int y);
 /*
  * Popup box
  */
-void tile_create_popup_part(tile_t* t, int x, int y);
 void tile_create_flashing_cursor(tile_t* t, int x, int y);
 
 /* Game screen top & bottom bars */

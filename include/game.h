@@ -64,14 +64,6 @@ typedef struct game_context_struct {
     uint8_t blinking_timer;
     int8_t scroll_x;
 
-    uint8_t dave_jump;
-    uint8_t dave_climb;
-    uint8_t dave_jetpack;
-    uint8_t jetpack_delay;
-    uint8_t try_right;
-    uint8_t gun;
-    uint8_t jetpack;
-
     dave_t *dave;
     bullet_t *bullet;
     plasma_t *plasmas[MAX_PLASMAS];

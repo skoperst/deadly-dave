@@ -31,11 +31,11 @@ typedef struct monster_struct {
     int (*is_alive)(struct monster_struct *monster);
 } monster_t;
 
-monster_t* monster_create();
-monster_t* monster_create_sun();
-monster_t* monster_create_spider();
-monster_t* monster_create_swirl();
-monster_t* monster_create_bones();
-monster_t* monster_create_ufo();
+monster_t* monster_create(int x, int y, int w, int h);
+monster_t* monster_create_sun(int x, int y);
+monster_t* monster_create_spider(int x, int y);
+monster_t* monster_create_swirl(int x, int y);
+monster_t* monster_create_bones(int x, int y);
+monster_t* monster_create_ufo(int x, int y);
 
 #endif
