@@ -40,6 +40,11 @@
 #define G_STATE_GAMEOVER          12
 #define G_STATE_QUIT_NOW          13
 
+#define SECRET_LEVEL_NOT_VISITED 0
+#define SECRET_LEVEL_ENTER 1
+#define SECRET_LEVEL_VISITED 2
+
+
 typedef struct keys_state_struct {
     int32_t jump;
     int32_t left;
@@ -73,6 +78,8 @@ typedef struct game_context_struct {
     int64_t scroll_remaining;
 
     uint64_t level;
+
+    uint64_t level_secret_state;
     uint64_t lives;
     uint64_t score;
 } game_context_t;

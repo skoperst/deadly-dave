@@ -302,6 +302,7 @@ void init_game(game_context_t *game) {
 
     game->bullet = NULL;
     game->level = 0;
+    game->level_secret_state = SECRET_LEVEL_NOT_VISITED;
 }
 
 void get_keys(keys_state_t* state) {
@@ -854,7 +855,9 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     // Checking secret level (warp down) condition
     if (game->dave->tile->x < 0) {
         g_soundfx->stop(g_soundfx);
-        return G_STATE_WARP_DOWN_START;
+        if (game->level_secret_state == SECRET_LEVEL_NOT_VISITED) {
+            return G_STATE_WARP_DOWN_START;
+        }
     }
 
     for (int idx = 0; idx < 5; idx++) {
@@ -918,7 +921,7 @@ int game_warp_down(game_context_t *game, tile_t *map, keys_state_t *keys) {
     }
     game->dave->mute = 1;
     if (game->dave->tile->y > 200) {
-        game->level++;
+        game->level_secret_state = SECRET_LEVEL_ENTER;
         game->dave->mute = 0;
         return G_STATE_NONE;
     }
@@ -952,7 +955,12 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     game->dave->mute = 1;
     if (game->dave->tile->x > 300) {
-        game->level++;
+        if (game->level_secret_state == SECRET_LEVEL_ENTER) {
+            game->level_secret_state = SECRET_LEVEL_VISITED;
+        } else {
+            game->level++;
+            game->level_secret_state = SECRET_LEVEL_NOT_VISITED;
+        }
         game->dave->mute = 0;
         return G_STATE_NONE;
     }
@@ -985,6 +993,10 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
 
     int monsters_count = 0;
     FILE* f = fopen(file, "rb");
+    if (f == NULL) {
+        printf("Error loading level file: %s \n", file);
+        exit(0);
+    }
     fseek(f, 0, SEEK_END);
     fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
@@ -1100,7 +1112,11 @@ int gameloop(int starting_level) {
         if (g_state == G_STATE_NONE) {
             clear_map(map);
             clear_monsters(game);
-            snprintf(level_path, 4096, "res/levels/level%ld.ddt", (long)game->level);
+            if (game->level_secret_state == SECRET_LEVEL_ENTER) {
+                snprintf(level_path, 4096, "res/levels/level%ld_secret.ddt", (long)game->level);
+            } else {
+                snprintf(level_path, 4096, "res/levels/level%ld.ddt", (long)game->level);
+            }
 
             game_level_load(game, map, level_path);
             next_state = G_STATE_LEVEL_START;
