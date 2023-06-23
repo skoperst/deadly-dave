@@ -375,79 +375,84 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
             dave_state_walking_enter(dave, map, key_left, key_right, key_up);
             dave->jump_cooldown_count = 5;
             dave->step_count = 0;
-            return;
 
         } else {
             dave->tile->y = dave->tile->y - 2;
             dave_state_freefalling_enter(dave, map, key_left, key_right, key_up);
-            return;
         }
+
+        return;
     }
 
     int deltay = jump_velocity_table[dave->jump_state];
     dave->jump_state++;
-    if (deltay > 0) {
-        while (deltay > 0) {
-            dave->tile->y = dave->tile->y + 1;
 
-            if (dave_on_ground(dave, map)) {
-                deltay = 0;
-            } else  {
-                deltay--;
-            }
-        }
-    } else if (deltay < 0) {
-        while (deltay < 0) {
-            dave->tile->y = dave->tile->y - 1;
+    // Handle Y axis when dave is on the way down
+    while (deltay > 0) {
+        dave->tile->y = dave->tile->y + 1;
+        deltay--;
 
-            if (dave_collision_top(dave, map)) {
-                //dave->state = DAVE_STATE_STANDING;
-                dave->walk_state = DAVE_STATE_STANDING;
-                dave->jump_state = 94;
-                return;
-
-            } else {
-                deltay++;
-            }
+        if (dave_on_ground(dave, map)) {
+            deltay = 0;
         }
     }
+
+    // Handle Y axis when dave is on the way up
+    while (deltay < 0) {
+        dave->tile->y = dave->tile->y - 1;
+        deltay++;
+
+        if (dave_collision_top(dave, map)) {
+            if (key_right) {
+                // TODO: assist right jump
+                //printf("ASSIST RIGHT JUMP \n");
+            } else if (key_left) {
+                // TODO: assist left jump
+                //printf("ASSIST RIGHT JUMP \n");
+            }
+            dave->walk_state = DAVE_STATE_STANDING;
+            dave->jump_state = 94;
+            return;
+        }
+    }
+
+    // Handle X axis with respect of walking state cooldown
+    if (dave->walk_state == DAVE_STATE_STANDING) {
+        if (key_left) {
+            dave->face_direction = DAVE_DIRECTION_LEFT;
+
+            if (dave->jump_state <= 94) {
+                if (!dave_collision_left(dave, map)) {
+                    dave->tile->x-=1;
+                    if (!dave_collision_left(dave, map)) {
+                        dave->tile->x-=1;
+                    }
+                }
+            }
+            dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
+
+        } else if (key_right) {
+            dave->face_direction = DAVE_DIRECTION_RIGHT;
+
+            if (dave->jump_state <= 94) {
+                if (!dave_collision_right(dave, map)){
+                    dave->tile->x+=1;
+                    if (!dave_collision_right(dave, map)) {
+                        dave->tile->x+=1;
+                    }
+                }
+            }
+            dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_RIGHT;
+        }
+
+        return;
+    }
+
     if (dave->walk_state == DAVE_WALKING_STATE_COOLDOWN1_LEFT ||
             dave->walk_state == DAVE_WALKING_STATE_COOLDOWN2_LEFT ||
             dave->walk_state == DAVE_WALKING_STATE_COOLDOWN1_RIGHT ||
             dave->walk_state == DAVE_WALKING_STATE_COOLDOWN2_RIGHT) {
         dave->walk_state = DAVE_STATE_STANDING;
-
-    } else {
-        if (key_left) {
-            if (dave->walk_state == DAVE_STATE_STANDING){
-                dave->face_direction = DAVE_DIRECTION_LEFT;
-
-                if (dave->jump_state <= 94) {
-                    if (!dave_collision_left(dave, map)) {
-                        dave->tile->x-=1;
-                        if (!dave_collision_left(dave, map)) {
-                            dave->tile->x-=1;
-                        }
-                    }
-                }
-                dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
-            }
-        } else if (key_right) {
-            if (dave->walk_state == DAVE_STATE_STANDING) {
-                dave->face_direction = DAVE_DIRECTION_RIGHT;
-
-                if (dave->jump_state <= 94) {
-                    if (!dave_collision_right(dave, map)){
-                        dave->tile->x+=1;
-                        if (!dave_collision_right(dave, map)) {
-                            dave->tile->x+=1;
-                        }
-                    }
-                }
-
-                dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_RIGHT;
-            }
-        }
     }
 }
 
