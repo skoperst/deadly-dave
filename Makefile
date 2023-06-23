@@ -1,17 +1,34 @@
 CC = gcc
-INCS = -I /usr/local/Cellar/sdl2/2.0.12_1/include/SDL2
-INCS += -I /usr/include/SDL2
-INCS += -I include/
-LIBS = -L /usr/local/Cellar/sdl2/2.0.12_1/lib
+BIN = ddave
+
+H_FILES := include/bullet.h
+H_FILES += include/dave.h
+H_FILES += include/game.h
+H_FILES += include/input.h
+H_FILES += include/invfreq.h
+H_FILES += include/monster.h
+H_FILES += include/plasma.h
+H_FILES += include/soundfx.h
+H_FILES += include/tile.h
+
+C_FILES := main.c
+C_FILES += game.c
+C_FILES += tile.c
+C_FILES += dave.c
+C_FILES += bullet.c
+C_FILES += monster.c
+C_FILES += plasma.c
+C_FILES += invfreq.c
+C_FILES += soundfx.c
+
+
 
 CFLAGS = -rdynamic -std=c99 -Wall
-LFLAGS = -lSDL2main -lSDL2
+CFLAGS += $(shell pkg-config --cflags sdl2 SDL2_image)
+LIBS := $(shell pkg-config --libs sdl2 SDL2_image)
 
-SRC = main.c game.c tile.c dave.c bullet.c monster.c plasma.c invfreq.c soundfx.c
-OBJ = ddave
-
-all: $(SRC)
-	$(CC) $(SRC) $(INCS) $(LIBS) $(CFLAGS) $(LFLAGS) -o $(OBJ)
+all: $(C_FILES) $(H_FILES)
+	$(CC) $(C_FILES) $(CFLAGS) -Iinclude $(LIBS) -o $(BIN)
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(BIN)
