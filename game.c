@@ -865,7 +865,6 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
             if (game->bullet != NULL) {
                 if (collision_detect(game->bullet->tile, game->monsters[idx]->tile)) {
                     if (game->monsters[idx]->on_fire != 1) {
-                        printf("HIT \n");
                         game->bullet = NULL;
                         game->monsters[idx]->on_fire = 1;
                         g_soundfx->stop(g_soundfx);
@@ -878,6 +877,8 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
                 if (game->monsters[idx]->is_alive(game->monsters[idx])) {
                     game->dave->on_fire = 1;
                     game->monsters[idx]->on_fire = 1;
+                    g_soundfx->stop(g_soundfx);
+                    g_soundfx->play(g_soundfx, TUNE_EXPLOSION);
                 }
             }
         }
@@ -889,6 +890,8 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
                 if (collision_detect(game->dave->tile, game->monsters[idx]->plasma->tile)) {
                     game->monsters[idx]->plasma = NULL;
                     game->dave->on_fire = 1;
+                    g_soundfx->stop(g_soundfx);
+                    g_soundfx->play(g_soundfx, TUNE_EXPLOSION);
                 }
             }
         }
