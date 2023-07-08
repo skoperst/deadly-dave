@@ -734,11 +734,11 @@ int game_level_blinking(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     clear_screen();
     draw_map_offset(map, game->scroll_offset);
-    draw_level_frame(game);
     draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
     if (game->blinking_timer >= 11 && game->blinking_timer <= 20) {
         draw_dave_offset(dave, g_assets, game->scroll_offset);
     }
+    draw_level_frame(game);
 
     return G_STATE_LEVEL_BLINKING;
 }
@@ -764,11 +764,12 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     if (game_adjust_scroll_to_dave(game, game->dave)) {
         clear_screen();
         draw_map_offset(map, game->scroll_offset);
-        draw_level_frame(game);
         draw_dave_offset(game->dave, g_assets, game->scroll_offset);
         draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
         draw_plasmas_offset(game->monsters, g_assets, game->scroll_offset);
         draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
+        draw_level_frame(game);
+
         return G_STATE_LEVEL;
     }
 
@@ -899,11 +900,11 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
     clear_screen();
     draw_map_offset(map, game->scroll_offset);
-    draw_level_frame(game);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
     draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
     draw_plasmas_offset(game->monsters, g_assets, game->scroll_offset);
     draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
+    draw_level_frame(game);
 
     return G_STATE_LEVEL;
 }
