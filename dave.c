@@ -402,18 +402,31 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         dave->tile->y = dave->tile->y - 1;
         deltay++;
 
-        if (dave_collision_top(dave, map)) {
-            if (key_right) {
-                // TODO: assist right jump
-                //printf("ASSIST RIGHT JUMP \n");
-            } else if (key_left) {
-                // TODO: assist left jump
-                //printf("ASSIST RIGHT JUMP \n");
-            }
-            dave->walk_state = DAVE_STATE_STANDING;
+        // The original game predicts the collision with x axis, even though
+        // it won't move it
+        if (key_left) {
+            dave->tile->x = dave->tile->x - 2;
+        } else if (key_right) {
+            dave->tile->x = dave->tile->x + 2;
+        }
+        int is_collision_top = dave_collision_top(dave, map);
+        if (key_left) {
+            dave->tile->x = dave->tile->x + 2;
+        } else if (key_right) {
+            dave->tile->x = dave->tile->x - 2;
+        }
+
+        if (is_collision_top) {
+            dave->walk_state = DAVE_WALKING_STATE_STANDING;
             dave->jump_state = 94;
             return;
         }
+    }
+
+    // Temporary check
+    if (dave->jump_state > 94) {
+        printf("X94 \n");
+        exit(0);
     }
 
     // Handle X axis with respect of walking state cooldown
@@ -421,12 +434,10 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         if (key_left) {
             dave->face_direction = DAVE_DIRECTION_LEFT;
 
-            if (dave->jump_state <= 94) {
+            if (!dave_collision_left(dave, map)) {
+                dave->tile->x-=1;
                 if (!dave_collision_left(dave, map)) {
                     dave->tile->x-=1;
-                    if (!dave_collision_left(dave, map)) {
-                        dave->tile->x-=1;
-                    }
                 }
             }
             dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
@@ -434,12 +445,10 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         } else if (key_right) {
             dave->face_direction = DAVE_DIRECTION_RIGHT;
 
-            if (dave->jump_state <= 94) {
-                if (!dave_collision_right(dave, map)){
+            if (!dave_collision_right(dave, map)) {
+                dave->tile->x+=1;
+                if (!dave_collision_right(dave, map)) {
                     dave->tile->x+=1;
-                    if (!dave_collision_right(dave, map)) {
-                        dave->tile->x+=1;
-                    }
                 }
             }
             dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_RIGHT;
@@ -454,6 +463,7 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
             dave->walk_state == DAVE_WALKING_STATE_COOLDOWN2_RIGHT) {
         dave->walk_state = DAVE_STATE_STANDING;
     }
+
 }
 
 static void dave_state_freefalling_routine(dave_t *dave,
