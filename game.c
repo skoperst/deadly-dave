@@ -858,6 +858,8 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         g_soundfx->stop(g_soundfx);
         if (game->level_secret_state == SECRET_LEVEL_NOT_VISITED) {
             return G_STATE_WARP_DOWN_START;
+        } else {
+            game->dave->tile->x = 0;
         }
     }
 
