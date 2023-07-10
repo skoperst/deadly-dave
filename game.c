@@ -1038,7 +1038,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         game->monsters[monsters_count] = monster_create_sun(cur_col * 16, pos * 20);
                         monsters_count++;
                     } else if (strcmp(tag, "SU2") == 0) {
-                        game->monsters[monsters_count] = monster_create_sun(cur_col * 16, (pos * 20) - 12);
+                        game->monsters[monsters_count] = monster_create_sun((cur_col * 16) - 8, (pos * 20) - 16);
                         monsters_count++;
                     } else if (strcmp(tag, "SP1") == 0) {
                         game->monsters[monsters_count] = monster_create_spider(cur_col * 16, (pos * 20) - 12);

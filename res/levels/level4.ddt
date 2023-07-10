@@ -59,11 +59,11 @@
    ,STR,MON,   ,   ,   ,   ,   ,DRB,   ,WT1;
    ,   ,   ,   ,   ,   ,   ,   ,   ,   ,WT2;
    ,   ,   ,   ,   ,   ,   ,   ,   ,   ,WT3;
-   ,STR,   ,   ,   ,   , * ,DRB,   ,   ,WT4;
+   ,STR,   ,   ,SU2,   , * ,DRB,   ,   ,WT4;
    ,   ,   ,   ,   ,   ,   ,   ,   ,   ,WT5;
    ,   ,   ,   ,   ,   ,   ,   ,   ,   ,WT1;
    ,STR,   ,   ,   ,   ,   ,DRB,   ,   ,WT2;
-   ,   ,   ,   ,   ,   ,   ,   ,   ,   ,WT3;
+   ,   ,   ,   ,JPK,   ,   ,   ,   ,   ,WT3;
    ,   ,   ,   ,   ,   ,   ,   ,   ,   ,WT4;
    ,   ,STR,   ,   ,   ,DRB,   ,   ,   ,WT5;
    ,STR,   ,   ,   ,   ,   ,   ,   ,   ,WT1;
@@ -76,7 +76,7 @@
    ,STR,   , Y ,   ,   ,   ,   ,   ,  M,DRT;
    ,   ,STR,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,   ,   ,   ,   ,   ,   ,   ,   ,  M,DRT;
-   ,   ,STR,   ,   ,   ,   ,   ,   ,  M,DRT;
+   ,   ,STR,   ,SU2,   ,   ,   ,   ,  M,DRT;
    ,STR,   ,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,   ,   ,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,STR,   ,   ,   ,   ,   ,   ,DRB,  M,DRT;
@@ -104,13 +104,13 @@
    ,DRT,   ,   ,  M,DRT,DRT,DRT,   ,  M,DRT;
    ,DRT,   ,   ,   ,   ,   , v ,   ,VI4,DRT;
    ,DRT, * ,   ,   ,   ,   ,   ,   ,  M,DRT;
-   ,DRT,PIR,   ,   ,   ,   ,   ,   ,  M,DRT;
+   ,DRT,PID,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,DRT, * ,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,DRT,   ,TR4,TR1,TR6, * ,   ,   ,  M,DRT;
    ,DRT,   ,TR1,TR1,TR1,TRK,TRK,TRK,TRK,DRT;
    ,DRT,   ,TR3,TR1,TR5, * ,   ,   ,  M,DRT;
    ,DRT, * ,   ,   ,   ,   ,   ,   ,  M,DRT;
-   ,DRT,PIR,   ,   ,   ,   ,   ,   ,  M,DRT;
+   ,DRT,PID,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,DRT, * ,   ,   ,   ,   ,   ,DRB,  M,DRT;
    ,DRT,   ,   ,   ,   ,   ,   ,   ,  M,DRT;
    ,DRT,   ,DRB,   ,   ,   ,DRB,   ,  M,DRT;
