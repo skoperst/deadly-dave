@@ -404,16 +404,19 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
 
         // The original game predicts the collision with x axis, even though
         // it won't move it
-        if (key_left) {
-            dave->tile->x = dave->tile->x - 2;
-        } else if (key_right) {
-            dave->tile->x = dave->tile->x + 2;
-        }
-        int is_collision_top = dave_collision_top(dave, map);
-        if (key_left) {
-            dave->tile->x = dave->tile->x + 2;
-        } else if (key_right) {
-            dave->tile->x = dave->tile->x - 2;
+        int is_collision_top = 0;
+        if (dave_collision_top(dave, map)) {
+            if (key_left) {
+                dave->tile->x = dave->tile->x - 2;
+            } else if (key_right) {
+                dave->tile->x = dave->tile->x + 2;
+            }
+            is_collision_top = dave_collision_top(dave, map);
+            if (key_left) {
+                dave->tile->x = dave->tile->x + 2;
+            } else if (key_right) {
+                dave->tile->x = dave->tile->x - 2;
+            }
         }
 
         if (is_collision_top) {
