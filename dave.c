@@ -228,6 +228,7 @@ void dave_state_jetpacking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMA
 
 static void dave_state_climbing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int key_left, int key_right, int key_up, int key_jetpack) {
+    dave->sfx->stop(dave->sfx);
     dave->state = DAVE_STATE_CLIMBING;
     if (key_up && key_right) {
         dave->climb_state = DAVE_CLIMBING_STATE_JUMP_RIGHT;
