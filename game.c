@@ -743,6 +743,15 @@ int game_level_blinking(game_context_t *game, tile_t *map, keys_state_t *keys) {
     return G_STATE_LEVEL_BLINKING;
 }
 
+
+int game_level_has_secret(int level)
+{
+    if (level == 4) {
+        return 1;
+    }
+    return 0;
+}
+
 int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     dave_t *dave = game->dave;
 
@@ -853,13 +862,25 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         }
     }
 
-    // Checking secret level (warp down) condition
+    // Checking secret level (warp down) condition (left side)
     if (game->dave->tile->x < 0) {
-        g_soundfx->stop(g_soundfx);
-        if (game->level_secret_state == SECRET_LEVEL_NOT_VISITED) {
+        if (game->level_secret_state == SECRET_LEVEL_NOT_VISITED &&
+            game_level_has_secret(game->level)) {
+            g_soundfx->stop(g_soundfx);
             return G_STATE_WARP_DOWN_START;
         } else {
             game->dave->tile->x = 0;
+        }
+    }
+
+    // Checking secret level (warp down) condition (right side)
+    if (game->dave->tile->x > (16 * 99)) {
+        if (game->level_secret_state == SECRET_LEVEL_NOT_VISITED &&
+            game_level_has_secret(game->level)) {
+            g_soundfx->stop(g_soundfx);
+            return G_STATE_WARP_DOWN_START;
+        } else {
+            game->dave->tile->x = (16 * 99);
         }
     }
 
