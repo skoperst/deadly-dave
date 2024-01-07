@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <unistd.h>
 #include <math.h>
 
 #define SDL_MAIN_HANDLED
@@ -277,8 +276,7 @@ int load_assets() {
         g_assets->tiles[i] = NULL;
         memset(fname, '\0', sizeof(fname));
         snprintf(fname, sizeof(fname), "res/tiles/tile%u.bmp", i);
-
-        if (access(fname, F_OK) == 0) {
+        if (access(fname, 0) == 0) {
             surface = SDL_LoadBMP(fname);
             g_assets->tiles[i] = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
             SDL_FreeSurface(surface);
@@ -1037,7 +1035,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
 
     while (map_str[i] != 0) {
         if (in_comment) {
-            if (map_str[i] == '\n') {
+            if (map_str[i] == '\n' || map_str[i] == '\r') {
                 in_comment = 0;
             }
         } else {
@@ -1091,7 +1089,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                     free(buf);
                     return -2;
                 }
-            } else if (map_str[i] == '\n') {
+            } else if (map_str[i] == '\n' || map_str[i] == '\r') {
                 //just ignore
             } else {
                 if (collected_count >= 3) {

@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#define SDL_MAIN_HANDLED
+
+#if defined LINUX || __linux__ || _LINUX
 #include <execinfo.h>
 #include <unistd.h>
+#endif
 
 #include "game.h"
 
-
+#if defined LINUX || __linux__ || _LINUX
 void sigseg_handler(int sig) {
     void *array[10];
     size_t size;
@@ -19,6 +23,7 @@ void sigseg_handler(int sig) {
     backtrace_symbols_fd(array, size, STDERR_FILENO);
     exit(1);
 }
+#endif
 
 void usage() {
     printf("-w             start windowed \n");
@@ -29,7 +34,9 @@ int main(int argc, char **argv) {
     int is_windowed = 0;
     int level = 0;
 
+#if defined LINUX || __linux__ || _LINUX
     signal(SIGSEGV, sigseg_handler);
+#endif
 
     argc--;
     argv++;

@@ -35,7 +35,8 @@ double invfreq_log(double x) {
     double euler_c = 2.718281828459045235;
     // Trap illegal values
     if (x <= 0) {
-        return 0.0/0.0;  // NaN
+        // Windows doesn't like return 0.0 / 0.0; So just return 0
+        return  ~(1LL << 52);
     }
 
     // Confine x to a sensible range
