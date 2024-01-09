@@ -1063,7 +1063,8 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         game->monsters[monsters_count] = monster_create_spider(cur_col * 16, (pos * 20) - 12);
                         monsters_count++;
                     } else if (strcmp(tag, "SW1") == 0) {
-                        game->monsters[monsters_count] = monster_create_swirl(cur_col * 16, (pos * 20) - 12);
+                        // Tested vs original and its +3, -14 exactly
+                        game->monsters[monsters_count] = monster_create_swirl((cur_col * 16) + 3, (pos * 20) - 14);
                         monsters_count++;
                     } else if (strcmp(tag, "BZ1") == 0) {
                         game->monsters[monsters_count] = monster_create_bones(cur_col * 16, (pos * 16) - 2);
@@ -1232,6 +1233,9 @@ int game_main(int is_windowed, int starting_level) {
         printf("Failed to initialize SDL video. Error: (%s) \n", SDL_GetError());
         return -1;
     }
+
+    // This will enable (crappy) audio in windows under Intel Display Audio Driver
+    // SDL_setenv("SDL_AUDIODRIVER", "directsound", 1);
 
     if (SDL_Init(SDL_INIT_AUDIO)) {
         printf("Failed to initialize SDL audio. Error: (%s) \n", SDL_GetError());

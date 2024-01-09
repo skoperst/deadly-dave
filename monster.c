@@ -133,7 +133,7 @@ monster_t* monster_create_swirl(int x, int y) {
 
     memcpy(monster->route, swirl_path, sizeof(swirl_path));
     monster->route_sz = (sizeof(swirl_path)/sizeof(int));
-    monster->fire_rate = 25;
+    monster->fire_rate = 5;
 
     monster->tile->sprites[0] = SPRITE_IDX_MONSTER_SWIRL1;
     monster->tile->sprites[1] = SPRITE_IDX_MONSTER_SWIRL2;
