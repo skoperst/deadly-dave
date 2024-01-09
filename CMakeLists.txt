@@ -10,7 +10,7 @@ include_directories(${SDL2}/${SDL2_ARCH}/include)
 link_directories(${SDL2}/lib/x64)
 if (WIN32)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")# Add source to this project's executable.
-  add_executable (deadly-dave WIN32 "main.c" "game.c" "invfreq.c" "monster.c" "plasma.c" "tile.c" "dave.c" "soundfx.c" "bullet.c")
+  add_executable (deadly-dave WIN32 "main.c" "game.c" "logz.c" "invfreq.c" "monster.c" "plasma.c" "tile.c" "dave.c" "soundfx.c" "bullet.c")
 endif()
 
 
