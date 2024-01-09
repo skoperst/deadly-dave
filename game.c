@@ -110,9 +110,10 @@ void draw_text_line_black(const char *line, int x, int y, SDL_Renderer *renderer
 }
 
 void draw_popup_box(int x, int y, int rows, int columns) {
-    tile_t popup_box[40][40];
     int cur_sprite;
     int col, row;
+    tile_t ppp;
+
     for (row = 0; row < rows; row++) {
         for (col = 0; col < columns; col++) {
             if (row == 0) {
@@ -140,16 +141,11 @@ void draw_popup_box(int x, int y, int rows, int columns) {
                     cur_sprite = SPRITE_IDX_POPUP_BOX_M2;
                 }
             }
-            tile_create_block(&popup_box[row][col], cur_sprite, x + (col * 8), y + (row * 8), 8, 8);
+            tile_create_block(&ppp, cur_sprite, x + (col * 8), y + (row * 8), 8, 8);
+            draw_tile(&ppp, g_assets);
         }
     }
 
-    // Actual draw
-    for (row = 0; row < rows; row++) {
-        for (col = 0; col < columns; col++) {
-            draw_tile(&popup_box[row][col], g_assets);
-        }
-    }
 }
 
 void draw_map_offset(tile_t *map, int offset) {
