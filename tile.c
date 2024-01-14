@@ -92,6 +92,7 @@ void tile_create_gun(tile_t* t, int sprite, int x, int y, int width, int height)
     t->collision_dh = 0;
 
     t->mod = GUN;
+    t->score_value = 100;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
