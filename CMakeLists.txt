@@ -3,6 +3,7 @@
 # One should find their SDL installation path of SDL2 library
 set(SDL2 "C:\users\nuc1\library\SDL2-2.28.5")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${deadly-dave_SOURCE_DIR}/")
+set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
 
 include_directories(include)
 include_directories(${SDL2}/${SDL2_ARCH}/include)
