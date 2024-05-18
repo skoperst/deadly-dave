@@ -879,6 +879,11 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         }
     }
 
+    // In game mechanics when dave falls under the screen he will appear on top like a loop
+    if (game->dave->tile->y > 200) {
+        game->dave->tile->y = -20;
+    }
+
     for (int idx = 0; idx < 5; idx++) {
         if (game->monsters[idx] != NULL) {
             if (game->bullet != NULL) {

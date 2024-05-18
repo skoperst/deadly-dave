@@ -429,7 +429,6 @@ void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
 
     // Temporary check
     if (dave->jump_state > 94) {
-        printf("X94 \n");
         exit(0);
     }
 
