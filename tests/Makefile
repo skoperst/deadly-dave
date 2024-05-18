@@ -9,5 +9,5 @@ all: test_invfreq test_monster
 test_invfreq: test_invfreq.c ../invfreq.c
 	$(CC) test_invfreq.c ../invfreq.c $(INCS) $(CFLAGS) -o test_invfreq $(LDFLAGS)
 
-test_monster: test_monster.c ../tile.c ../monster.c
-	$(CC) test_monster.c ../tile.c ../monster.c $(INCS) $(CFLAGS) -o test_monster $(LDFLAGS)
+test_monster: test_monster.c ../tile.c ../plasma.c ../monster.c 
+	$(CC) test_monster.c ../tile.c ../plasma.c ../monster.c $(INCS) $(CFLAGS) -o test_monster $(LDFLAGS)

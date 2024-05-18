@@ -192,9 +192,7 @@ int test_monster() {
 
     tile_create_bottom_separator(&bottom_separator, 0, 166);
 
-    monster_t *mtt = monster_create_swirl();
-    mtt->tile->x = 200;
-    mtt->tile->y = 50;
+    monster_t *mtt = monster_create_swirl(200, 50);
 
     while (!intro_should_finish) {
         timer_begin = SDL_GetTicks();
@@ -229,7 +227,7 @@ int test_monster() {
         for (idx = 0; idx < (sizeof(blockz) / sizeof(blockz[0])); idx++) {
             blockz[idx].tick(&blockz[idx]);
         }
-        mtt->tick(mtt);
+        mtt->tick(mtt, 0);
 
 
         // Refresh screen
