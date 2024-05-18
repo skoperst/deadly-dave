@@ -74,6 +74,7 @@ static const int SPRITE_IDX_VINES3                 = 27;
 static const int SPRITE_IDX_VINES4                 = 28;
 static const int SPRITE_IDX_PURPLE_COLUMN          = 29;
 static const int SPRITE_IDX_PURPLE_PLATFORM        = 30;
+static const int SPRITE_IDX_PURPLE_FAKE            = 31;
 static const int SPRITE_IDX_MOSS                   = 32;
 static const int SPRITE_IDX_TRUNK                  = 33;
 static const int SPRITE_IDX_TREE1                  = 34;

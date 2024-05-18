@@ -56,6 +56,25 @@ void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int heigh
     t->is_inside = &tile_is_inside;
 }
 
+/*
+ * An infirm block which dave can't stand on nor interact with
+ */
+void tile_create_frail(tile_t *t, int sprite, int x, int y, int width, int height) {
+    t->x = x;
+    t->y = y;
+    t->width = width;
+    t->height = height;
+    t->sprites[0] = sprite;
+    t->sprites[1] = 0;
+    t->sprite_idx = 0;
+
+    t->mod = MOSS;
+
+    t->get_sprite = &tile_get_sprite;
+    t->tick = &tile_tick;
+    t->is_inside = &tile_is_inside;
+}
+
 void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height) {
     t->x = x;
     t->y = y;
@@ -268,20 +287,6 @@ void tile_create_stars_moon(tile_t *t, int x, int y) {
     t->is_inside = &tile_is_inside;
 }
 
-void tile_create_moss(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
-    t->width = 16;
-    t->height = 16;
-    t->sprites[0] = SPRITE_IDX_MOSS;
-    t->sprites[1] = 0;
-    t->sprite_idx = 0;
-    t->mod = MOSS;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
-}
 
 void tile_create_trunk(tile_t *t, int x, int y) {
     t->x = x;
@@ -744,6 +749,8 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
         tile_create_block(t, SPRITE_IDX_BLUE_BRICK, x, y, 16, 16);
     } else if (strcmp(tag, "PPK") == 0) {
         tile_create_block(t, SPRITE_IDX_PURPLE_PLATFORM, x, y, 16, 16);
+    } else if (strcmp(tag, "PPF") == 0) {
+        tile_create_frail(t, SPRITE_IDX_PURPLE_FAKE, x, y, 16, 16);
     } else if (strcmp(tag, "PCK") == 0) {
         tile_create_block(t, SPRITE_IDX_PURPLE_COLUMN, x, y, 16, 16);
     } else if (strcmp(tag, "DRT") == 0) {
@@ -813,7 +820,7 @@ void tile_create(tile_t* t, char tag[4], int x, int y) {
     } else if (strcmp(tag, "DR4") == 0) {
         tile_create_block(t, SPRITE_IDX_DIRT_TOP_LEFT, x, y, 16, 16);
     } else if ((strcmp(tag, "  M") == 0) || (strcmp(tag, "D+M") == 0)) {
-        tile_create_moss(t, x, y);
+        tile_create_frail(t, SPRITE_IDX_MOSS, x, y, 16, 16);
     } else if (strcmp(tag, "TRK") == 0) {
         tile_create_trunk(t, x, y);
     } else if (strcmp(tag, "TR1") == 0) {

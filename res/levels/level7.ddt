@@ -11,10 +11,10 @@
    ,PPK,   ,   ,PPK,   ,   ,  M,DRT,  M,DRB;
    ,PPK,   ,   ,PPK,   ,BBK,   ,   ,  M,DRB;
    ,PPK,   ,   ,PPK,   ,   ,   ,   ,   ,WT3;
-   ,PPK,   ,   ,PPK,   ,   ,   ,   ,   ,WT4;
+   ,PPK,   ,   ,PPF,   ,   ,   ,   ,   ,WT4;
    ,PPK,   ,   ,PPK,   ,   ,   ,   ,   ,WT2;
    ,PPK,   , O ,PPK,   ,   ,   ,   ,  M,DRB;
-   ,PCK,PCK,PCK,PCK,PCK,PCK,PCK,DRT,D+M,DRB;
+   ,PCK,PCK,PCK,PCK,PCK,PCK,PCK,DRT,  M,DRB;
    ,PPK,   ,   ,GUN,   ,   , * ,   ,  M,DRT;
    ,PPK,   ,   ,   ,   ,   ,   ,   ,   ,WT1;
    ,PPK, * ,   ,   ,   ,   ,   ,   ,  M,DRB;
@@ -64,7 +64,7 @@
    ,BBK,   ,   ,   ,VI1,DR3,DRT,DRT,   ,DRT;
    ,BBK,   ,   ,   ,   ,VI3,VI2,DRT,   ,BBK;
    ,BBK,   ,   ,   ,   ,   ,   ,DRT,   ,BBK;
-   ,BBK,   ,   ,   ,   ,BIM,   ,DRT, D ,BBK;
+   ,BBK,   ,   ,   ,   ,BIM,   ,DRT,   ,BBK;
    ,BBK,   ,   ,   ,   ,BIM,   ,   ,   ,BBK;
    ,BBK,   ,   ,   ,   ,BIM,   ,   ,   ,FR1;
    ,BBK,   ,   ,   ,   ,BIM,   ,   ,   ,FR2;
