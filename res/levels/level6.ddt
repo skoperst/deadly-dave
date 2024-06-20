@@ -10,7 +10,7 @@
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
    ,RBK,   ,   ,   ,   ,   ,  M,DRT,DRT,DRT;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
-   ,RBK,   ,   ,   ,  M,DRT,DRT,DRT,DRT,DRT;
+   ,RBK,   ,   , O ,  M,DRT,DRT,DRT,DRT,DRT;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI2;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI4;
@@ -70,11 +70,11 @@
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,RBK;
    ,RBK,   ,   ,   ,PPK,   ,   ,   ,   ,RBK;
    ,RBK,   ,   ,   ,   ,   ,   ,  M,DRB,RBK;
-   ,RBK,   ,   , v ,   ,   ,PPK,   ,FR3,RBK;
+   ,RBK,   ,   , v ,   ,   ,PPF,   ,FR3,RBK;
    ,RBK,   ,  M,DRT,DRT,DRT,DRT,DRT,DRT,DRT;
    ,RBK,   ,   ,   ,PPK,   ,   ,PPK,WT2,WT4;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,WT1,WT2;
-   ,RBK,   ,   ,   , * ,PPK,   ,   ,WT3,WT5;
+   ,RBK,   ,   ,   , * ,PPF,   ,   ,WT3,WT5;
    ,RBK,   ,   ,PPK,   ,   ,   ,PPK,WT2,WT1;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,WT5,WT2;
    ,RBK,   , Y ,   ,   ,PPK,   ,   ,WT1,WT3;

@@ -59,11 +59,15 @@ int ufo_path[] = {
    -4,  0, -3, -1, -3, -3, -3, -6,      -3, -7, -1, -8, -2, -9,  2,-10,
     1,-10,  3, -9,  5, -9,  4, -6,       5, -5,  3, -3,  4, -2
 };
-/*
-int guards_path[] = {
-    -6, 1, -4, 2, -4, 3, -3, 4, -1, 3, -4, 3, -3, 2, -5, 2, -2, 3, 0, 4, 4, 2, 5, 2, 4, 1, 3, 3, 2, 5, 5, 3, 4, 2, 6, 1, 5, 0, 5, -1, 4, -2, 2, -3, 1, -3, 1, -3, 3, -3, 5, -1, 3, -1, 3, -2, 2, -3, 0, -3, -3, -2, -5, -2, -7, -1, -3, -2, -2, -3, -1, -3, -2, -3, -3, -3, -4, -2, -5, 0, 
-};
 
+int guard_path[] = {
+   -6,  1, -4,  2, -4,  3, -3,  4,      -1,  3, -4,  3, -3,  2, -5,  2,
+   -2,  3,  0,  4,  4,  2,  5,  2,       4,  1,  3,  3,  2,  5,  5,  3,
+    4,  2,  6,  1,  5,  0,  5, -1,       4, -2,  2, -3,  1, -3,  1, -3,
+    3, -3,  5, -1,  3, -1,  3, -2,       2, -3,  0, -3, -3, -2, -5, -2,
+   -7, -1, -3, -2, -2, -3, -1, -3,      -2, -3, -3, -3, -4, -2, -5, 0
+};
+/*
 int envy_path[] = {
     7, 1, 7, -1, 8, 2, 6, -2, 7, 2, 7, -2, 8, 2, 7, -2, -7, -1, -8, 3, -7, -2, -7, 2, -6, -2, -8, 2, -7, -2, -7, 0, 
 };
@@ -74,12 +78,32 @@ int plate_path[] = {
 */
 
 
+monster_t* monster_create_guard(int x, int y) {
+
+    monster_t *monster = monster_create(x, y, 16, 12);
+
+    memcpy(monster->route, guard_path, sizeof(guard_path));
+    monster->route_sz = (sizeof(guard_path)/sizeof(int));
+    monster->fire_rate = 50;
+
+    monster->tile->sprites[0] = SPRITE_IDX_MONSTER_GUARD1;
+    monster->tile->sprites[1] = SPRITE_IDX_MONSTER_GUARD1;
+
+    monster->tile->sprites[2] = SPRITE_IDX_MONSTER_GUARD2;
+    monster->tile->sprites[3] = SPRITE_IDX_MONSTER_GUARD2;
+
+    monster->tile->sprites[4] = SPRITE_IDX_MONSTER_GUARD3;
+    monster->tile->sprites[5] = SPRITE_IDX_MONSTER_GUARD3;
+
+    monster->tile->sprites[6] = SPRITE_IDX_MONSTER_GUARD4;
+    monster->tile->sprites[7] = SPRITE_IDX_MONSTER_GUARD4;
+    monster->tile->sprites[8] = 0;
+
+    return monster;
+}
+
 monster_t* monster_create_ufo(int x, int y) {
     monster_t *monster = monster_create(x, y, 18, 8);
-/*    monster->tile->width = 18;
-    monster->tile->height = 8;
-    monster->tile->x = x;
-    monster->tile->y = y;*/
 
     memcpy(monster->route, ufo_path, sizeof(ufo_path));
     monster->route_sz = (sizeof(ufo_path)/sizeof(int));

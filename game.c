@@ -1074,6 +1074,9 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                     } else if (strcmp(tag, "UF1") == 0) {
                         game->monsters[monsters_count] = monster_create_ufo(cur_col * 16, pos * 16);
                         monsters_count++;
+                    } else if (strcmp(tag, "GD1") == 0) {
+                        game->monsters[monsters_count] = monster_create_guard(cur_col * 16, pos * 16);
+                        monsters_count++;
                     }
 
                     tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
