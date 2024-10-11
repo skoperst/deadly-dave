@@ -221,7 +221,7 @@ void draw_jetpack(int bars) {
 void draw_level_number(int level) {
     render_tile_idx(136, 104, 0);
     render_tile_idx(148, 176, 0);
-    render_tile_idx(148 + level + 1, 184, 0);
+    render_tile_idx(148 + level, 184, 0);
 }
 
 void draw_lives(int lives) {
@@ -296,7 +296,7 @@ void init_game(game_context_t *game) {
     game->scroll_remaining = 0;
 
     game->bullet = NULL;
-    game->level = 0;
+    game->level = 1;
     game->level_secret_state = SECRET_LEVEL_NOT_VISITED;
 }
 
@@ -741,7 +741,7 @@ int game_level_blinking(game_context_t *game, tile_t *map, keys_state_t *keys) {
 
 int game_level_has_secret(int level)
 {
-    if (level == 4) {
+    if (level == 5) {
         return 1;
     }
     return 0;

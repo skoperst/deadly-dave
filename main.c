@@ -32,7 +32,7 @@ void usage() {
 
 int main(int argc, char **argv) {
     int is_windowed = 0;
-    int level = 0;
+    int level = 1;
 
 #if defined LINUX || __linux__ || _LINUX
     signal(SIGSEGV, sigseg_handler);
