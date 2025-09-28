@@ -12,11 +12,11 @@
 #include "soundfx.h"
 
 
-SDL_Window* g_window;
-SDL_Renderer* g_renderer;
+SDL_Window *g_window;
+SDL_Renderer *g_renderer;
 SDL_Texture *g_texture;
-uint32_t        *g_pixels;
-assets_t* g_assets;
+uint32_t *g_pixels;
+assets_t *g_assets;
 soundfx_t *g_soundfx;
 
 void render_tile_idx(int tile_idx, int x, int y) {
@@ -40,9 +40,8 @@ void render_tile_idx(int tile_idx, int x, int y) {
         blend = 1;
     }
 
-    int column_idx, line_idx;
-    for (line_idx = 0; line_idx < surface->h; line_idx++) {
-        for (column_idx = 0; column_idx < surface->w; column_idx++) {
+    for (int line_idx = 0; line_idx < surface->h; line_idx++) {
+        for (int column_idx = 0; column_idx < surface->w; column_idx++) {
             uint32_t pixel = ((uint32_t*)surface->pixels)[line_idx * surface->w + column_idx];
 
             if ( (pixel & 0x000000FF) == 0) { // is a pixel totally transperant dont draw it
@@ -82,7 +81,7 @@ void draw_tile(tile_t *tile, assets_t *assets) {
 void draw_char(char c, int x, int y, SDL_Renderer *renderer, int is_black) {
     int tile_idx;
     int letters_start_idx = (is_black) ? 600 : 500;
-    int letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 
+    int letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
         'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', \
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', ',', '.', '(', \
         ')', '!', '?'};
@@ -97,62 +96,48 @@ void draw_char(char c, int x, int y, SDL_Renderer *renderer, int is_black) {
 }
 
 void draw_text_line(const char *line, int x, int y, SDL_Renderer *renderer) {
-    int i = 0;
-    for (i = 0; i < strlen(line); i++) {
+    for (int i = 0; i < strlen(line); i++) {
         draw_char(line[i], x + (i*8), y, renderer, 0);
     }
 }
 
 void draw_text_line_black(const char *line, int x, int y, SDL_Renderer *renderer) {
-    int i = 0;
-    for (i = 0; i < strlen(line); i++) {
+    for (int i = 0; i < strlen(line); i++) {
         draw_char(line[i], x + (i*8), y, renderer, 1);
     }
 }
 
 void draw_popup_box(int x, int y, int rows, int columns) {
-    int cur_sprite;
-    int col, row;
-    tile_t ppp;
+    // Four corners
+    render_tile_idx(SPRITE_IDX_POPUP_BOX_T1, x, y);
+    render_tile_idx(SPRITE_IDX_POPUP_BOX_T3, x + ((columns-1) * 8), y);
+    render_tile_idx(SPRITE_IDX_POPUP_BOX_B1, x, y + ((rows-1) * 8));
+    render_tile_idx(SPRITE_IDX_POPUP_BOX_B3, x + ((columns-1) * 8), y + ((rows-1) * 8));
 
-    for (row = 0; row < rows; row++) {
-        for (col = 0; col < columns; col++) {
-            if (row == 0) {
-                if (col == 0) {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_T1;
-                } else if (col == (columns - 1)) {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_T3;
-                } else {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_T2;
-                }
-            } else if (row == (rows - 1)) {
-                if (col == 0) {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_B1;
-                } else if (col == (columns-1)) {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_B3;
-                } else {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_B2;
-                }
-            } else {
-                if (col == 0) {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_M1;
-                } else if (col == (columns - 1)) {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_M3;
-                } else {
-                    cur_sprite = SPRITE_IDX_POPUP_BOX_M2;
-                }
-            }
-            tile_create_block(&ppp, cur_sprite, x + (col * 8), y + (row * 8), 8, 8);
-            draw_tile(&ppp, g_assets);
-        }
+    // Left & Right panels
+    for (int i = 1; i < rows - 1; i++) {
+        render_tile_idx(SPRITE_IDX_POPUP_BOX_M1, x, y + (i * 8));
+        render_tile_idx(SPRITE_IDX_POPUP_BOX_M3, x + ((columns-1) * 8), y + (i * 8));
     }
 
+    // Top & Bottom panels
+    for (int i = 1; i < columns - 1; i++) {
+        render_tile_idx(SPRITE_IDX_POPUP_BOX_T2, x + (i * 8), y);
+        render_tile_idx(SPRITE_IDX_POPUP_BOX_B2, x + (i * 8), y + ((rows-1) * 8));
+    }
+
+    // Center
+    for (int i = 1; i < rows - 1; i++) {
+        for (int j = 1; j < columns - 1; j++) {
+            render_tile_idx(SPRITE_IDX_POPUP_BOX_M2, x + (j*8), y + (i*8));
+        }
+    }
 }
 
-void draw_map_offset(tile_t *map, int offset) {
+void draw_map(game_context_t *game, tile_t *map) {
     for (int i = 0; i < (TILEMAP_SCENE_WIDTH * TILEMAP_SCENE_HEIGHT); i++) {
-        if (map[i + (offset * 12)].sprites[0] != 0) {
-            draw_tile_offset(&map[i + (offset*12)], g_assets, offset);
+        if (map[i + (game->scroll_offset * 12)].sprites[0] != 0) {
+            draw_tile_offset(&map[i + (game->scroll_offset*12)], g_assets, game->scroll_offset);
         }
     }
 }
@@ -172,24 +157,15 @@ void draw_dave_offset(dave_t *dave, assets_t *assets, int x_offset) {
 
 void draw_monsters_offset(monster_t *monsters[MAX_MONSTERS], assets_t *assets, int x_offset) {
     for (int i = 0; i < MAX_MONSTERS; i++) {
-        if (monsters[i] != NULL) {
-            if  (monsters[i]->tile->get_sprite(monsters[i]->tile) != 0) {
-                render_tile_idx(monsters[i]->tile->get_sprite(monsters[i]->tile),
-                    monsters[i]->tile->x - (x_offset * 16), monsters[i]->tile->y);
-            }
-        }
-    }
-}
-
-void draw_plasmas_offset(monster_t *monsters[MAX_MONSTERS], assets_t *assets, int x_offset) {
-    int sprite;
-
-    for (int i = 0; i < MAX_MONSTERS; i++) {
         if (monsters[i] == NULL) {
             continue;
         }
+        if  (monsters[i]->tile->get_sprite(monsters[i]->tile) != 0) {
+                render_tile_idx(monsters[i]->tile->get_sprite(monsters[i]->tile),
+                    monsters[i]->tile->x - (x_offset * 16), monsters[i]->tile->y);
+        }
         if (monsters[i]->plasma != NULL) {
-            sprite = monsters[i]->plasma->get_sprite(monsters[i]->plasma);
+            int sprite = monsters[i]->plasma->get_sprite(monsters[i]->plasma);
             if (sprite != 0) {
                 render_tile_idx(monsters[i]->plasma->get_sprite(monsters[i]->plasma),
                     monsters[i]->plasma->tile->x - (x_offset * 16), monsters[i]->plasma->tile->y);
@@ -234,9 +210,6 @@ void draw_lives(int lives) {
     }
 }
 
-/*
- * Draws score on top left corner. Score is limited to 5 digits.
- */
 void draw_score(int score) {
     render_tile_idx(137, 0, 0);
     for (int i = 0; i < 5; i++) {
@@ -290,12 +263,12 @@ void init_game(game_context_t *game) {
     game->tick = 0;
     game->lives = 4;
     game->score = 0;
-    game->scroll_x = 0;
 
     game->scroll_offset = 0;
     game->scroll_remaining = 0;
 
     game->bullet = NULL;
+    game->in_warp = WARP_NONE;
     game->level = 1;
     game->level_secret_state = SECRET_LEVEL_NOT_VISITED;
 }
@@ -482,7 +455,7 @@ void clear_map(tile_t *map) {
     }
 }
 
-int game_warp_right_popup(game_context_t *game, tile_t *map,
+int game_warp_popup(game_context_t *game, tile_t *map,
     tile_t *flashing_cursor, keys_state_t *keys) {
     if (keys->quit || keys->key_y) {
         return G_STATE_QUIT_NOW;
@@ -490,26 +463,11 @@ int game_warp_right_popup(game_context_t *game, tile_t *map,
 
     if (keys->key_n) {
         g_soundfx->resume(g_soundfx);
-        return G_STATE_WARP_RIGHT;
+        return G_STATE_WARP;
     }
 
     draw_quit_popup(flashing_cursor);
-    return G_STATE_WARP_RIGHT_POPUP;
-}
-
-int game_warp_down_popup(game_context_t *game, tile_t *map,
-    tile_t *flashing_cursor, keys_state_t *keys) {
-    if (keys->quit || keys->key_y) {
-        return G_STATE_QUIT_NOW;
-    }
-
-    if (keys->key_n) {
-        g_soundfx->resume(g_soundfx);
-        return G_STATE_WARP_DOWN;
-    }
-
-    draw_quit_popup(flashing_cursor);
-    return G_STATE_WARP_DOWN_POPUP;
+    return G_STATE_WARP_POPUP;
 }
 
 int game_popup_routine(game_context_t *game, tile_t *map,
@@ -584,6 +542,14 @@ int game_adjust_scroll_to_dave(game_context_t *game, dave_t *dave) {
 
 void game_set_scroll_to_dave(game_context_t *game, dave_t *dave) {
     while (game_adjust_scroll_to_dave(game, dave) != 0) {};
+}
+
+void game_do_map(tile_t *map) {
+    for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
+        if (map[i].sprites[0] != 0) {
+            map[i].tick(&map[i]);
+        }
+    }
 }
 
 void game_do_plasmas(game_context_t *game, tile_t *map, keys_state_t *keys) {
@@ -721,14 +687,10 @@ int game_level_blinking(game_context_t *game, tile_t *map, keys_state_t *keys) {
         }
     }
 
-    for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-        if (map[i].sprites[0] != 0) {
-            map[i].tick(&map[i]);
-        }
-    }
+    game_do_map(map);
 
     clear_screen();
-    draw_map_offset(map, game->scroll_offset);
+    draw_map(game, map);
     draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
     if (game->blinking_timer >= 11 && game->blinking_timer <= 20) {
         draw_dave_offset(dave, g_assets, game->scroll_offset);
@@ -739,8 +701,7 @@ int game_level_blinking(game_context_t *game, tile_t *map, keys_state_t *keys) {
 }
 
 
-int game_level_has_secret(int level)
-{
+int game_level_has_secret(int level) {
     if (level == 5) {
         return 1;
     }
@@ -749,9 +710,6 @@ int game_level_has_secret(int level)
 
 int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     dave_t *dave = game->dave;
-
-    int i = 0;
-
     if (keys->quit) {
         printf("should quit! \n");
         return G_STATE_QUIT_NOW;
@@ -767,10 +725,9 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     // game objects.
     if (game_adjust_scroll_to_dave(game, game->dave)) {
         clear_screen();
-        draw_map_offset(map, game->scroll_offset);
+        draw_map(game, map);
         draw_dave_offset(game->dave, g_assets, game->scroll_offset);
         draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
-        draw_plasmas_offset(game->monsters, g_assets, game->scroll_offset);
         draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
         draw_level_frame(game);
 
@@ -780,18 +737,13 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     // Tick dave, monsters, and all block tiles in map
     game->dave->tick(game->dave, map, keys->left, keys->right, keys->jump, keys->down, keys->jetpack);
 
-    for (i = 0; i < MAX_MONSTERS; i++) {
+    for (int i = 0; i < MAX_MONSTERS; i++) {
         if (game->monsters[i] != NULL) {
             game->monsters[i]->tick(game->monsters[i], game->dave->tile->x);
         }
     }
 
-    for (i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-        if (map[i].sprites[0] != 0) {
-            map[i].tick(&map[i]);
-        }
-    }
-
+    game_do_map(map);
     game_do_plasmas(game, map, keys);
     game_do_bullets(game, map, keys);
 
@@ -842,7 +794,8 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
             } else if (map[idx].mod == DOOR) {
                 if (game->dave->has_trophy) {
                     g_soundfx->play(g_soundfx, TUNE_NEXTLEVEL);
-                    return G_STATE_WARP_RIGHT_START;
+                    game->in_warp = WARP_RIGHT;
+                    return G_STATE_WARP_START;
                 }
 
             } else if (map[idx].mod == FIRE) {
@@ -862,7 +815,8 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         if (game->level_secret_state == SECRET_LEVEL_NOT_VISITED &&
             game_level_has_secret(game->level)) {
             g_soundfx->stop(g_soundfx);
-            return G_STATE_WARP_DOWN_START;
+            game->in_warp = WARP_DOWN;
+            return G_STATE_WARP_START;
         } else {
             game->dave->tile->x = 0;
         }
@@ -873,7 +827,8 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
         if (game->level_secret_state == SECRET_LEVEL_NOT_VISITED &&
             game_level_has_secret(game->level)) {
             g_soundfx->stop(g_soundfx);
-            return G_STATE_WARP_DOWN_START;
+            game->in_warp = WARP_DOWN;
+            return G_STATE_WARP_START;
         } else {
             game->dave->tile->x = (16 * 99);
         }
@@ -922,30 +877,25 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     }
 
     clear_screen();
-    draw_map_offset(map, game->scroll_offset);
+    draw_map(game, map);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
     draw_monsters_offset(game->monsters, g_assets, game->scroll_offset);
-    draw_plasmas_offset(game->monsters, g_assets, game->scroll_offset);
     draw_bullet_offset(game->bullet, g_assets, game->scroll_offset);
     draw_level_frame(game);
 
     return G_STATE_LEVEL;
 }
 
-int game_warp_down(game_context_t *game, tile_t *map, keys_state_t *keys) {
-    tile_t warp_label;
-    tile_t zone_label;
 
-    tile_create_label_warp(&warp_label, 32, 92);
-    tile_create_label_zone(&zone_label, 200, 92);
-
+int game_warp(game_context_t *game, tile_t *map, keys_state_t *keys) {
     if (keys->quit) {
         return G_STATE_QUIT_NOW;
     }
 
     if (keys->escape) {
-        return G_STATE_WARP_DOWN_POPUP;
+        return G_STATE_WARP_POPUP;
     }
+
     game->dave->mute = 1;
     if (game->dave->tile->y > 200) {
         game->level_secret_state = SECRET_LEVEL_ENTER;
@@ -953,34 +903,6 @@ int game_warp_down(game_context_t *game, tile_t *map, keys_state_t *keys) {
         return G_STATE_NONE;
     }
 
-    game->dave->tick(game->dave, map, 0, 0, 0, 0, 0);
-    for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-        if (map[i].sprites[0] != 0) {
-            map[i].tick(&map[i]);
-        }
-    }
-
-    clear_screen();
-    draw_map_offset(map, game->scroll_offset);
-    draw_dave_offset(game->dave, g_assets, game->scroll_offset);
-    draw_level_frame(game);
-    draw_tile(&warp_label, g_assets);
-    draw_tile(&zone_label, g_assets);
-
-    return G_STATE_WARP_DOWN;
-}
-
-int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
-    if (keys->quit) {
-        printf("should quit! \n");
-        return G_STATE_QUIT_NOW;
-    }
-
-    if (keys->escape) {
-        return G_STATE_WARP_RIGHT_POPUP;
-    }
-
-    game->dave->mute = 1;
     if (game->dave->tile->x > 300) {
         if (game->level_secret_state == SECRET_LEVEL_ENTER) {
             game->level_secret_state = SECRET_LEVEL_VISITED;
@@ -992,29 +914,40 @@ int game_warp_right(game_context_t *game, tile_t *map, keys_state_t *keys) {
         return G_STATE_NONE;
     }
 
-    game->dave->tick(game->dave, map, 0, 1, 0, 0, 0);
-    for (int i = 0; i < TILEMAP_WIDTH * TILEMAP_HEIGHT; i++) {
-        if (map[i].sprites[0] != 0) {
-            map[i].tick(&map[i]);
-        }
+    if (game->in_warp == WARP_RIGHT) {
+        game->dave->tick(game->dave, map, 0, 1, 0, 0, 0);
+    } else {
+        game->dave->tick(game->dave, map, 0, 0, 0, 0, 0);
     }
+    game_do_map(map);
 
     clear_screen();
-    draw_map_offset(map, game->scroll_offset);
-    draw_x_levels_to_go(9 - game->level);
+    draw_map(game, map);
     draw_dave_offset(game->dave, g_assets, game->scroll_offset);
     draw_level_frame(game);
 
-    return G_STATE_WARP_RIGHT;
+    if (game->in_warp == WARP_DOWN) {
+        tile_t warp_label;
+        tile_t zone_label;
+
+        tile_create_label_warp(&warp_label, 32, 92);
+        tile_create_label_zone(&zone_label, 200, 92);
+        draw_tile(&warp_label, g_assets);
+        draw_tile(&zone_label, g_assets);
+    } else {
+        draw_x_levels_to_go(9 - game->level);
+    }
+
+    return G_STATE_WARP;
 }
 
 int game_level_load(game_context_t *game, tile_t *map, char *file) {
     int i = 0;
     long fsize;
     char *buf;
+    int collected_count = 0;
     int pos = 0, cur_col = 0;
     int in_comment = 0;
-    int collected_count = 0;
     char tag[4] = {0, 0, 0, 0};
     char *map_str = NULL;
 
@@ -1048,13 +981,6 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                     collected_count = 0;
                     if ((strcmp(tag, " D ") == 0) || (strcmp(tag, "D+M") == 0)) {
                         game->dave = dave_create(g_soundfx, cur_col * 16, pos * 16);
-                        game->dave->state = DAVE_STATE_STANDING;
-                        game->dave->jump_state = 0;
-                        game->dave->step_count = 0;
-                        game->dave->has_trophy = 0;
-                        game->dave->has_gun = 0;
-                        game->dave->jetpack_bars = 0;
-
                     } else if (strcmp(tag, "SU1") == 0) {
                         game->monsters[monsters_count] = monster_create_sun(cur_col * 16, pos * 20);
                         monsters_count++;
@@ -1141,8 +1067,11 @@ int gameloop(int starting_level) {
         get_keys(&key_state);
 
         if (g_state == G_STATE_NONE) {
+            next_state = G_STATE_LEVEL_START;
+
             clear_map(map);
             clear_monsters(game);
+
             if (game->level_secret_state == SECRET_LEVEL_ENTER) {
                 snprintf(level_path, 4096, "res/levels/level%ld_secret.ddt", (long)game->level);
             } else {
@@ -1150,7 +1079,6 @@ int gameloop(int starting_level) {
             }
 
             game_level_load(game, map, level_path);
-            next_state = G_STATE_LEVEL_START;
 
         } else if (g_state == G_STATE_LEVEL_START) {
             game->dave->tile->x = game->dave->default_x;
@@ -1169,32 +1097,25 @@ int gameloop(int starting_level) {
         } else if (g_state == G_STATE_LEVEL_POPUP) {
             next_state = game_popup_routine(game, map, &flashing_cursor, &key_state);
 
-        } else if (g_state == G_STATE_WARP_RIGHT_START) {
+        } else if (g_state == G_STATE_WARP_START) {
             clear_map(map);
             clear_monsters(game);
-            game_level_load(game, map, "res/levels/warp_right.ddt");
+
             game->scroll_offset = 0;
-            next_state = G_STATE_WARP_RIGHT;
 
-        } else if (g_state == G_STATE_WARP_RIGHT) {
-            next_state = game_warp_right(game, map, &key_state);
+            if (game->in_warp == WARP_RIGHT) {
+                game_level_load(game, map, "res/levels/warp_right.ddt");
+            } else {
+                game_level_load(game, map, "res/levels/warp_down.ddt");
+                game->dave->face_direction = DAVE_DIRECTION_FRONT;
+            }
+            next_state = G_STATE_WARP;
 
-        } else if (g_state == G_STATE_WARP_RIGHT_POPUP) {
-            next_state = game_warp_right_popup(game, map, &flashing_cursor, &key_state);
+        } else if (g_state == G_STATE_WARP) {
+            next_state = game_warp(game, map, &key_state);
 
-        } else if (g_state == G_STATE_WARP_DOWN_START) {
-            clear_map(map);
-            clear_monsters(game);
-            game_level_load(game, map, "res/levels/warp_down.ddt");
-            game->dave->face_direction = DAVE_DIRECTION_FRONT;
-            game->scroll_offset = 0;
-            next_state = G_STATE_WARP_DOWN;
-
-        } else if (g_state == G_STATE_WARP_DOWN) {
-            next_state = game_warp_down(game, map, &key_state);
-
-        } else if (g_state == G_STATE_WARP_DOWN_POPUP) {
-            next_state = game_warp_down_popup(game, map, &flashing_cursor, &key_state);
+        } else if (g_state == G_STATE_WARP_POPUP) {
+            next_state = game_warp_popup(game, map, &flashing_cursor, &key_state);
 
         } else if (g_state == G_STATE_GAMEOVER) {
             SDL_UnlockTexture(g_texture);
@@ -1214,7 +1135,7 @@ int gameloop(int starting_level) {
         SDL_RenderCopy(g_renderer, g_texture, NULL, NULL);
         SDL_RenderPresent(g_renderer);
 
-        // Wait for the next 
+        // Wait for the next tick
         timer_end = SDL_GetTicks();
         delay = tick_interval - (timer_end-timer_begin);
         delay = delay > tick_interval ? 0 : delay;
@@ -1232,14 +1153,13 @@ int game_main(int is_windowed, int starting_level) {
     SDL_zero(audio_spec_want);
     SDL_zero(audio_spec);
 
-    // Initialize SDL
     SDL_SetMainReady();
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
         printf("Failed to initialize SDL video. Error: (%s) \n", SDL_GetError());
         return -1;
     }
 
-    // This will enable (crappy) audio in windows under Intel Display Audio Driver
+    // This might start audio for some Intel Display Audio Drivers in Windows
     // SDL_setenv("SDL_AUDIODRIVER", "directsound", 1);
 
     if (SDL_Init(SDL_INIT_AUDIO)) {

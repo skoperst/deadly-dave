@@ -777,10 +777,12 @@ dave_t* dave_create(soundfx_t *sfx, int x, int y) {
     dave->sfx = sfx;
     dave->mute = 0;
     dave->step_count = 0;
+    dave->state = DAVE_STATE_STANDING;
     dave->walk_state = DAVE_STATE_STANDING;
     dave->climb_state = 0;
     dave->face_direction = DAVE_DIRECTION_FRONTR;
     dave->jump_cooldown_count = 0;
+    dave->jump_state = 0;
     dave->has_trophy = 0;
     dave->has_gun = 0;
     dave->jetpack_bars = 0;

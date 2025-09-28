@@ -31,19 +31,19 @@
 #define G_STATE_LEVEL_BLINKING    3
 #define G_STATE_LEVEL             4
 #define G_STATE_LEVEL_POPUP       5
-#define G_STATE_WARP_RIGHT_START  6
-#define G_STATE_WARP_RIGHT        7
-#define G_STATE_WARP_RIGHT_POPUP  8
-#define G_STATE_WARP_DOWN_START   9
-#define G_STATE_WARP_DOWN         10
-#define G_STATE_WARP_DOWN_POPUP   11
-#define G_STATE_GAMEOVER          12
-#define G_STATE_QUIT_NOW          13
+#define G_STATE_WARP_START        6
+#define G_STATE_WARP              7
+#define G_STATE_WARP_POPUP        8
+#define G_STATE_GAMEOVER          9
+#define G_STATE_QUIT_NOW          10
 
 #define SECRET_LEVEL_NOT_VISITED 0
 #define SECRET_LEVEL_ENTER 1
 #define SECRET_LEVEL_VISITED 2
 
+#define WARP_NONE  0
+#define WARP_RIGHT 1
+#define WARP_DOWN  2
 
 typedef struct keys_state_struct {
     int32_t jump;
@@ -67,7 +67,6 @@ typedef struct game_context_struct {
     uint8_t dave_tick;
     uint8_t dave_dead_timer;
     uint8_t blinking_timer;
-    int8_t scroll_x;
 
     dave_t *dave;
     bullet_t *bullet;
@@ -82,6 +81,8 @@ typedef struct game_context_struct {
     uint64_t level_secret_state;
     uint64_t lives;
     uint64_t score;
+
+    int32_t in_warp;
 } game_context_t;
 
 

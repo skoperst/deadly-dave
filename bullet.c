@@ -37,7 +37,6 @@ static int bullet_collision_left(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TI
 
 static void bullet_tick(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
         int deadzone_left, int deadzone_right) {
-    printf("bullet-tick x=%d, y=%d \n", bullet->tile->x, bullet->tile->y);
     if (bullet->state == BULLET_STATE_DEAD) {
         return;
     }
@@ -63,22 +62,17 @@ static int bullet_is_dead(bullet_t *bullet) {
 static int bullet_get_sprite(tile_t *tile) {
     bullet_t *bullet = (bullet_t *)tile->context;
 
-    if (bullet->state == BULLET_STATE_FLYING_LEFT) {
+    if (bullet->speed_x < 0) {
         return SPRITE_IDX_BULLET_LEFT;
     } else {
         return SPRITE_IDX_BULLET_RIGHT;
     }
 }
 
-/* Create a bullet that flys left */
-bullet_t* bullet_create_left(int x, int y) {
+bullet_t* bullet_create_internal(int x, int y, int speed) {
     bullet_t *bullet = malloc(sizeof(bullet_t));
-
-    // According to measurements a bullet moves 2 pixels per tick
-    bullet->speed_x = -2;
-    bullet->state = BULLET_STATE_FLYING_LEFT;
+    bullet->speed_x = speed;
     bullet->steps = 0;
-
     bullet->tick = &bullet_tick;
     bullet->is_dead = &bullet_is_dead;
 
@@ -91,7 +85,6 @@ bullet_t* bullet_create_left(int x, int y) {
     bullet->tile->collision_dy = 0;
     bullet->tile->collision_dw = 0;
     bullet->tile->collision_dh = 0;
-
     bullet->tile->tick = NULL;
     bullet->tile->is_inside = NULL;
     bullet->tile->context = bullet;
@@ -100,31 +93,12 @@ bullet_t* bullet_create_left(int x, int y) {
     return bullet;
 }
 
+/* Create a bullet that flys left */
+bullet_t* bullet_create_left(int x, int y) {
+    return bullet_create_internal(x, y, -2);
+}
+
 /* Create a bullet that flys right */
 bullet_t* bullet_create_right(int x, int y) {
-    bullet_t *bullet = malloc(sizeof(bullet_t));
-
-    // According to measurements a bullet moves 2 pixels per tick
-    bullet->speed_x = 2;
-    bullet->state = BULLET_STATE_FLYING_RIGHT;
-    bullet->steps = 0;
-
-    bullet->tick = &bullet_tick;
-    bullet->is_dead = &bullet_is_dead;
-
-    bullet->tile = malloc(sizeof(tile_t));
-    bullet->tile->x = x;
-    bullet->tile->y = y;
-    bullet->tile->width = 2;
-    bullet->tile->height = 2;
-    bullet->tile->collision_dx = 0;
-    bullet->tile->collision_dy = 0;
-    bullet->tile->collision_dw = 0;
-    bullet->tile->collision_dh = 0;
-    bullet->tile->tick = NULL;
-    bullet->tile->is_inside = NULL;
-    bullet->tile->context = bullet;
-    bullet->tile->get_sprite = &bullet_get_sprite;
-
-    return bullet;
+    return bullet_create_internal(x, y, 2);
 }
