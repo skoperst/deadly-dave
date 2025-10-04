@@ -183,13 +183,13 @@ void draw_x_levels_to_go(int x) {
 void draw_jetpack(int bars) {
     if (bars < 0) {
         bars = 0;
-    } else if (bars > 600) {
-        bars = 600;
+    } else if (bars > 900) {
+        bars = 900;
     }
 
     render_tile_idx(SPRITE_IDX_JETPACK_LABEL, 0, 170);
     render_tile_idx(SPRITE_IDX_JETPACK_BAR_FRAME, 72, 170);
-    for (int i = 0; i< (bars/10); i++) {
+    for (int i = 0; i < (bars/15); i++) {
         render_tile_idx(SPRITE_IDX_JETPACK_BAR, 76 + i*2, 174);
     }
 }
@@ -786,7 +786,7 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
                 g_soundfx->play(g_soundfx, TUNE_GOT_SOMETHING);
 
             } else if (map[idx].mod == JETPACK) {
-                game->dave->jetpack_bars = 600;
+                game->dave->jetpack_bars = 900;
                 map[idx].mod = 0;
                 map[idx].sprites[0] = 0;
                 g_soundfx->play(g_soundfx, TUNE_GOT_SOMETHING);
