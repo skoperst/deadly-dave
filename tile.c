@@ -357,11 +357,11 @@ void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
     t->sprites[18] = t->sprites[19] = SPRITE_IDX_FIRE2;
 
     t->sprites[20] = t->sprites[21] = t->sprites[22] = t->sprites[23] =
-    t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] = 
+    t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] =
     t->sprites[28] = t->sprites[29] = SPRITE_IDX_FIRE3;
 
     t->sprites[30] = t->sprites[31] = t->sprites[32] = t->sprites[33] =
-    t->sprites[34] = t->sprites[35] = t->sprites[36] = t->sprites[37] = 
+    t->sprites[34] = t->sprites[35] = t->sprites[36] = t->sprites[37] =
     t->sprites[38] = t->sprites[39] = SPRITE_IDX_FIRE4;
 
     t->sprites[40] = 0;
@@ -394,20 +394,20 @@ void tile_create_vines(tile_t* t, int x, int y, int idx_offset) {
     t->sprites[18] = t->sprites[19] = SPRITE_IDX_VINES2;
 
     t->sprites[20] = t->sprites[21] = t->sprites[22] = t->sprites[23] =
-    t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] = 
+    t->sprites[24] = t->sprites[25] = t->sprites[26] = t->sprites[27] =
     t->sprites[28] = t->sprites[29] = SPRITE_IDX_VINES3;
 
     t->sprites[30] = t->sprites[31] = t->sprites[32] = t->sprites[33] =
-    t->sprites[34] = t->sprites[35] = t->sprites[36] = t->sprites[37] = 
+    t->sprites[34] = t->sprites[35] = t->sprites[36] = t->sprites[37] =
     t->sprites[38] = t->sprites[39] = SPRITE_IDX_VINES4;
 
     t->sprites[40] = 0;
     t->sprite_idx = idx_offset;
 
     t->mod = FIRE;
-    t->collision_dx = 6;
+    t->collision_dx = 4;
     t->collision_dy = 0;
-    t->collision_dw = -12;
+    t->collision_dw = -8;
     t->collision_dh = 0;
 
     t->get_sprite = &tile_get_sprite;
@@ -611,7 +611,7 @@ void tile_create_teal_gem(tile_t *t, int x, int y) {
 
     t->collision_dx = 0;
     t->collision_dy = 0;
-    t->collision_dw = 1;
+    t->collision_dw = 0;
     t->collision_dh = 0;
 
     t->mod = LOOT;

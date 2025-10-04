@@ -528,6 +528,8 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
     }
 
     if (key_up && (key_left == 0) && (key_right == 0) && (key_down == 0)) {
+        if (dave->mute == 0)
+            dave->sfx->play(dave->sfx, TUNE_CLIMBING);
         if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
             dave->tile->y = dave->tile->y - 2;
             dave->step_count++;
@@ -537,6 +539,8 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
         }
 
     } else if (key_down && (key_left == 0) && (key_right == 0) && (key_up == 0)) {
+        if (dave->mute == 0)
+            dave->sfx->play(dave->sfx, TUNE_CLIMBING);
         if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
             dave->tile->y = dave->tile->y + 1;
             if (!dave_on_ground(dave, map)) {
@@ -553,6 +557,8 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
             return;
         }
     } else if (key_left && (key_up == 0) && (key_right == 0)) {
+        if (dave->mute == 0)
+            dave->sfx->play(dave->sfx, TUNE_CLIMBING);
         if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
             dave->tile->x = dave->tile->x - 2;
             dave->step_count++;
@@ -562,6 +568,8 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
         }
 
     } else if (key_right && (key_up == 0) && (key_left==0)) {
+        if (dave->mute == 0)
+            dave->sfx->play(dave->sfx, TUNE_CLIMBING);
         if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
             dave->tile->x = dave->tile->x + 2;
             dave->step_count++;

@@ -567,6 +567,10 @@ soundfx_t* soundfx_create() {
     memset(sfx->tunes[11].raw, 0x00, 4096 * 512);
     sfx->tunes[11].sz = invfreq_decode_soundfx(tojetpack, sfx->tunes[11].raw, 240);
 
+    strcpy(sfx->tunes[12].name, "climbing");
+    sfx->tunes[12].raw = malloc(4096 * 512);
+    sfx->tunes[12].sz = invfreq_decode_soundfx(walking, sfx->tunes[12].raw, 440);
+
     sfx->tune_idx = 0;
     sfx->tune_offset = 0;
     sfx->play = &soundfx_play;
@@ -606,6 +610,7 @@ void soundfx_destroy(soundfx_t *sfx)
     free(sfx->tunes[9].raw);
     free(sfx->tunes[10].raw);
     free(sfx->tunes[11].raw);
+    free(sfx->tunes[12].raw);
     free(sfx);
     SDL_CloseAudioDevice(g_audio_dev);
 }
