@@ -72,6 +72,11 @@ typedef struct game_context_struct {
     bullet_t *bullet;
     plasma_t *plasmas[MAX_PLASMAS];
     monster_t *monsters[MAX_MONSTERS];
+    tile_t flashing_cursor;
+    tile_t bottom_separator;
+    tile_t top_separator;
+    tile_t grail_banner;
+    tile_t gun_banner;
 
     int64_t scroll_offset;
     int64_t scroll_remaining;
@@ -87,7 +92,7 @@ typedef struct game_context_struct {
 
 
 typedef struct game_assets {
-    SDL_Surface *tiles[1000];
+    SDL_Surface *imgdata[1000];
 } assets_t;
 
 int game_main(int is_windowed, int starting_level);

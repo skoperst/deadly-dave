@@ -8,8 +8,7 @@
  * Returns 1 if dave tile is collisioned in its right side. 0 otherwise
  */
 static int dave_collision_right(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
-    int idx = 0;
-    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
+    for (int idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
             if (map[idx].is_inside(&map[idx], dave->tile->x + 12, dave->tile->y + 2)) {
                 return 1;
@@ -26,8 +25,7 @@ static int dave_collision_right(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
  *  Returns 1 if dave tile is collisioned in its top side. 0 otherwise
  */
 static int dave_collision_top(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
-    int idx = 0;
-    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
+    for (int idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
             if (map[idx].is_inside(&map[idx], dave->tile->x + 4, dave->tile->y + 1)) {
                 return 1;
@@ -44,8 +42,7 @@ static int dave_collision_top(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
  * Returns 1 if dave tile is collisioned in its left side. 0 otherwise
  */
 static int dave_collision_left(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
-    int idx = 0;
-    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
+    for (int idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
             if (map[idx].is_inside(&map[idx], dave->tile->x + 1, dave->tile->y + 2)) {
                 return 1;
@@ -63,8 +60,7 @@ static int dave_collision_left(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_
  * Returns 1 if dave tile is on solid ground. 0 otherwise
  */
 static int dave_on_ground(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
-    int idx = 0;
-    for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
+    for (int idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
 
             /* This will allow climbing on right walls (original game's feature/bug)
@@ -304,7 +300,6 @@ void dave_state_walking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP
         dave->walk_state = DAVE_WALKING_STATE_COOLDOWN1_LEFT;
 
     } else if (dave->walk_state == DAVE_WALKING_STATE_COOLDOWN1_RIGHT) {
-
         dave->walk_state = DAVE_WALKING_STATE_STANDING;
         dave_state_standing_enter(dave, map, key_left, key_right, key_up);
 

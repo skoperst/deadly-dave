@@ -284,8 +284,6 @@ static void monster_state_active_routine(monster_t *monster, int dave_x) {
 }
 
 static void monster_tick(monster_t *monster, int dave_x) {
-
-
     if (monster->state == MONSTER_STATE_ACTIVE) {
         monster_state_active_routine(monster, dave_x);
     } else if (monster->state == MONSTER_STATE_BURNING) {
@@ -293,7 +291,6 @@ static void monster_tick(monster_t *monster, int dave_x) {
     } else if (monster->state == MONSTER_STATE_DEAD) {
         monster_state_dead_routine(monster);
     }
-
 }
 
 static int monster_get_sprite(tile_t *tile) {
