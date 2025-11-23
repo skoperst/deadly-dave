@@ -12,9 +12,6 @@ static int bullet_collision_right(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * T
             if(map[idx].is_inside(&map[idx], bullet->tile->x+10, bullet->tile->y+1)) {
                 return 1;
             }
-            if (map[idx].is_inside(&map[idx], bullet->tile->x+10, bullet->tile->y+1)) {
-                return 1;
-            }
         }
     }
     return 0;
@@ -24,9 +21,6 @@ static int bullet_collision_left(bullet_t *bullet, tile_t map[TILEMAP_WIDTH * TI
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
-            if (map[idx].is_inside(&map[idx], bullet->tile->x - 2, bullet->tile->y + 1)) {
-                return 1;
-            }
             if (map[idx].is_inside(&map[idx], bullet->tile->x - 2, bullet->tile->y + 1)) {
                 return 1;
             }
