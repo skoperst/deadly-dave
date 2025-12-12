@@ -721,6 +721,7 @@ int game_level(game_context_t *game, tile_t *map, keys_state_t *keys) {
     // If we need to adjust screen by scrolling, just draw scene without progressing any game objects.
     if (game_adjust_scroll_to_dave(game, game->dave)) {
         clear_screen();
+        draw_scrollable_area(game, map);
         draw_level_frame(game);
 
         return G_STATE_LEVEL;
