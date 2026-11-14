@@ -1,5 +1,5 @@
 CC = gcc
-BIN = ddave
+BIN = deadly-dave
 
 H_FILES := include/bullet.h
 H_FILES += include/dave.h
