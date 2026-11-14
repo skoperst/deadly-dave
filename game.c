@@ -935,7 +935,7 @@ int game_warp(game_context_t *game, tile_t *map, keys_state_t *keys) {
         draw_tile(&warp_label);
         draw_tile(&zone_label);
     } else {
-        draw_x_levels_to_go(9 - game->level);
+        draw_x_levels_to_go(10 - game->level);
     }
 
     return G_STATE_WARP;
