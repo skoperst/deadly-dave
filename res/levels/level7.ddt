@@ -16,24 +16,23 @@
 #
 # Special:
 # [ D ]: dave            [ X ]: door
-
    ,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK,RBK;
-   ,RBK,PIR, D ,   ,   ,   ,   ,   ,  M,DRT;
+   ,RBK,PID, D ,   ,   ,   ,   ,   ,  M,DRT;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
    ,RBK,   ,   ,   ,   ,   ,GUN,  M,DRT,DRT;
-   ,RBK,   ,UF1,   ,   ,   ,   ,   ,   ,VI2;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI4;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
+   ,RBK,   ,UF1,   ,   ,   ,   ,   ,   ,VI1;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
    ,RBK,   ,   ,   ,   ,   ,  M,DRT,DRT,DRT;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
    ,RBK,   ,   , O ,  M,DRT,DRT,DRT,DRT,DRT;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI2;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI3;
-   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI4;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
+   ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
    ,RBK,   ,   ,   ,   ,   ,   ,  M,DRT,DRT;
    ,RBK,   ,   ,   ,   ,   ,   ,  M,DRT,DRT;
-   ,RBK,UF1,   ,   ,   ,   ,   ,   ,   ,VI3;
+   ,RBK,UF1,   ,   ,   ,   ,   ,   ,   ,VI1;
    ,RBK,   ,   ,   ,   ,   ,   ,   ,   ,VI1;
    ,RBK,   ,   ,   ,   ,   ,   ,RBK,RBK,RBK;
    ,RBK,   ,   ,   ,   ,   ,   ,RBK,RBK,RBK;

@@ -4,14 +4,13 @@
 #include "tile.h"
 #include "plasma.h"
 
-#define MONSTER_STATE_BLINKING             0
 #define MONSTER_STATE_ACTIVE               1
 #define MONSTER_STATE_BURNING              2
 #define MONSTER_STATE_DEAD                 3
 
 typedef struct monster_struct {
     int state;
-    int route[256];
+    int route[128];
     int route_sz;
     int route_idx;
     int cooldown;
@@ -39,5 +38,7 @@ monster_t* monster_create_swirl(int x, int y);
 monster_t* monster_create_bones(int x, int y);
 monster_t* monster_create_ufo(int x, int y);
 monster_t* monster_create_guard(int x, int y);
+monster_t* monster_create_envy(int x, int y);
+monster_t* monster_create_plate(int x, int y);
 
 #endif

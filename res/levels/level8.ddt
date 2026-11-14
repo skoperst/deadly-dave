@@ -32,10 +32,10 @@
    ,PPK,   ,   ,PPK,   ,   ,   ,   ,   ,WT2;
    ,PPK,   , O ,PPK,   ,   ,   ,   ,  M,DRB;
    ,PCK,PCK,PCK,PCK,PCK,PCK,PCK,DRT,  M,DRB;
-   ,PPK,   ,   ,GUN,   ,   , * ,   ,  M,DRT;
+   ,PPK,   ,   ,GUN,   ,   , * ,   ,  M,DRB;
    ,PPK,   ,   ,   ,   ,   ,   ,   ,   ,WT1;
    ,PPK, * ,   ,   ,   ,   ,   ,   ,  M,DRB;
-   ,PPK,   ,   ,PPK,   ,   ,   ,DRT,DRT,DRB;
+   ,PPK,   ,   ,PPF,   ,   ,   ,DRT,DRT,DRB;
    ,PPK,   ,   ,PPK,   ,   ,   ,DRT,DRT,DRB;
    ,PPK,   ,   ,   ,   ,   ,DRT,DR4,   ,FR1;
    ,PPK,   ,PPK,   ,   ,   ,DRT,   ,   ,FR2;
@@ -70,7 +70,7 @@
    ,BBK,   ,   ,BBK,DRT,DR4,   ,   ,VI1,DRT;
    ,BBK,   ,   ,BBK,DRT,   ,   ,   ,   ,DRT;
    ,BBK,   ,   ,   ,DRT,   ,   ,   ,   ,DRT;
-   ,BBK,VI2,   ,   ,DRT,   ,   ,   ,   ,DRT;
+   ,BBK,VI2,   ,   ,DRT,GD1,   ,   ,   ,DRT;
    ,BBK,   ,   ,   ,DRT,   ,   ,   ,   ,DRT;
    ,BBK,   ,   ,VI3,DRT,   ,   ,   ,   ,DRT;
    ,BBK,   ,   ,   ,DRT,DR1,   ,   ,JPK,DRT;
@@ -110,7 +110,7 @@
    ,BBK,   ,   ,   ,   ,   ,   ,   ,   ,FR4;
    ,BBK,   ,   ,   ,   ,   ,   ,   ,   ,FR1;
    ,BBK,   ,TR4,TR6,   ,   ,   ,   ,   ,BBK;
-   ,BBK,   ,TR1,TR1,TRK,TRK,TRK,TRK,TRK,BBK;
+   ,BBK,   ,TR2,TR2,TRK,TRK,TRK,TRK,TRK,BBK;
    ,BBK,   ,TR3,TR5,   ,   ,   ,   ,   ,BBK;
    ,BBK,   ,   ,   ,   ,   ,   ,   ,   ,BBK;
    ,BBK,   ,   ,BBK,   ,   ,   ,   ,   ,BBK;

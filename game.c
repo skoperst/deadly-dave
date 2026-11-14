@@ -36,7 +36,9 @@ void render_tile_idx(int tile_idx, int x, int y) {
             tile_idx == SPRITE_IDX_PLASMA_RIGHT3 || tile_idx == SPRITE_IDX_PLASMA_LEFT1 ||
             tile_idx == SPRITE_IDX_PLASMA_LEFT2 || tile_idx == SPRITE_IDX_PLASMA_LEFT3 ||
             tile_idx == SPRITE_IDX_MONSTER_UFO1 || tile_idx == SPRITE_IDX_MONSTER_UFO2 ||
-            tile_idx == SPRITE_IDX_MONSTER_UFO3 || tile_idx == SPRITE_IDX_MONSTER_UFO4) {
+            tile_idx == SPRITE_IDX_MONSTER_UFO3 || tile_idx == SPRITE_IDX_MONSTER_UFO4 ||
+            tile_idx == SPRITE_IDX_MONSTER_ENVY1 || tile_idx == SPRITE_IDX_MONSTER_ENVY2 ||
+            tile_idx == SPRITE_IDX_MONSTER_ENVY3 || tile_idx == SPRITE_IDX_MONSTER_ENVY4) {
         blend = 1;
     }
 
@@ -1001,6 +1003,12 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                     } else if (strcmp(tag, "GD1") == 0) {
                         game->monsters[monsters_count] = monster_create_guard(cur_col * 16, pos * 16);
                         monsters_count++;
+                    } else if (strcmp(tag, "GRD") == 0) {
+                        game->monsters[monsters_count] = monster_create_envy(cur_col * 16, pos * 16);
+                        monsters_count++;
+                    } else if (strcmp(tag, "SLV") == 0) {
+                        game->monsters[monsters_count] = monster_create_plate(cur_col * 16, pos * 16);
+                        monsters_count++;
                     }
 
                     tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
@@ -1179,6 +1187,11 @@ int game_main(int is_windowed, int starting_level) {
     }
 
     g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
+    if (g_renderer == NULL) {
+        printf("Failed to create the renderer. Error: (%s) \n", SDL_GetError());
+        return -5;
+    }
+
     g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 320, 200);
 
     SDL_RenderSetScale(g_renderer, DISPLAY_SCALE, DISPLAY_SCALE);

@@ -67,15 +67,69 @@ int guard_path[] = {
     3, -3,  5, -1,  3, -1,  3, -2,       2, -3,  0, -3, -3, -2, -5, -2,
    -7, -1, -3, -2, -2, -3, -1, -3,      -2, -3, -3, -3, -4, -2, -5, 0
 };
+
 /*
+ * Envy, monster of level9
+ */
 int envy_path[] = {
-    7, 1, 7, -1, 8, 2, 6, -2, 7, 2, 7, -2, 8, 2, 7, -2, -7, -1, -8, 3, -7, -2, -7, 2, -6, -2, -8, 2, -7, -2, -7, 0, 
+    7,  1,  7, -1,  8,  2,  6, -2,       7,  2,  7, -2,  8,  2,  7, -2,
+   -7, -1, -8,  3, -7, -2, -7,  2,      -6, -2, -8,  2, -7, -2, -7,  0
 };
 
+/*
+ * Plate, monster of level10
+ */
 int plate_path[] = {
-    -5, 0, -6, 0, -13, 0, -21, 0, -30, 0, -29, 0, -17, 0, 3, 0, 5, 0, 4, 0, 15, 0, 8, 0, 20, 0, 19, 0, 17, 0, 12, 0, 18, 0
+   -5,  0, -6,  0,-13,  0,-21,  0,     -30,  0,-29,  0,-17,  0,  3,  0,
+    5,  0,  4,  0, 15,  0,  8,  0,      20,  0, 19,  0, 17,  0, 12,  0,
+   18,  0
 };
-*/
+
+monster_t* monster_create_envy(int x, int y) {
+    monster_t *monster = monster_create(x, y, 16, 16);
+
+    memcpy(monster->route, envy_path, sizeof(envy_path));
+    monster->route_sz = (sizeof(envy_path)/sizeof(int));
+    monster->fire_rate = 50;
+
+    monster->tile->sprites[0] = SPRITE_IDX_MONSTER_ENVY1;
+    monster->tile->sprites[1] = SPRITE_IDX_MONSTER_ENVY1;
+
+    monster->tile->sprites[2] = SPRITE_IDX_MONSTER_ENVY2;
+    monster->tile->sprites[3] = SPRITE_IDX_MONSTER_ENVY2;
+
+    monster->tile->sprites[4] = SPRITE_IDX_MONSTER_ENVY3;
+    monster->tile->sprites[5] = SPRITE_IDX_MONSTER_ENVY3;
+
+    monster->tile->sprites[6] = SPRITE_IDX_MONSTER_ENVY4;
+    monster->tile->sprites[7] = SPRITE_IDX_MONSTER_ENVY4;
+    monster->tile->sprites[8] = 0;
+
+    return monster;
+}
+
+monster_t* monster_create_plate(int x, int y) {
+    monster_t *monster = monster_create(x, y, 16, 20);
+
+    memcpy(monster->route, plate_path, sizeof(plate_path));
+    monster->route_sz = (sizeof(plate_path)/sizeof(int));
+    monster->fire_rate = 50;
+
+    monster->tile->sprites[0] = SPRITE_IDX_MONSTER_PLATE1;
+    monster->tile->sprites[1] = SPRITE_IDX_MONSTER_PLATE1;
+
+    monster->tile->sprites[2] = SPRITE_IDX_MONSTER_PLATE2;
+    monster->tile->sprites[3] = SPRITE_IDX_MONSTER_PLATE2;
+
+    monster->tile->sprites[4] = SPRITE_IDX_MONSTER_PLATE3;
+    monster->tile->sprites[5] = SPRITE_IDX_MONSTER_PLATE3;
+
+    monster->tile->sprites[6] = SPRITE_IDX_MONSTER_PLATE4;
+    monster->tile->sprites[7] = SPRITE_IDX_MONSTER_PLATE4;
+    monster->tile->sprites[8] = 0;
+
+    return monster;
+}
 
 
 monster_t* monster_create_guard(int x, int y) {
@@ -246,7 +300,6 @@ static void monster_state_active_routine(monster_t *monster, int dave_x) {
         monster->tile->y += monster->route[monster->route_idx+1];
         monster->route_idx += 2;
         if (monster->route_idx >= monster->route_sz) {
-            printf("ROUTE RESET ticks_in_state: %d \n", monster->ticks_in_state);
             monster->route_idx = 0;
         }
         monster->tile->sprite_idx++;

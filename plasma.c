@@ -12,9 +12,6 @@ static int plasma_collision_right(plasma_t *plasma, tile_t map[TILEMAP_WIDTH * T
             if(map[idx].is_inside(&map[idx], plasma->tile->x+20, plasma->tile->y+1)) {
                 return 1;
             }
-            if (map[idx].is_inside(&map[idx], plasma->tile->x+20, plasma->tile->y+1)) {
-                return 1;
-            }
         }
     }
     return 0;
@@ -24,9 +21,6 @@ static int plasma_collision_left(plasma_t *plasma, tile_t map[TILEMAP_WIDTH * TI
     int idx = 0;
     for (idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
-            if (map[idx].is_inside(&map[idx], plasma->tile->x - 2, plasma->tile->y + 1)) {
-                return 1;
-            }
             if (map[idx].is_inside(&map[idx], plasma->tile->x - 2, plasma->tile->y + 1)) {
                 return 1;
             }
