@@ -476,9 +476,21 @@ uint16_t tojetpack[] = {
 
 void soundfx_play(soundfx_t *sfx, int tune) {
     //printf("[soundfx] soundfx_play tune: %d \n", tune);
+    SDL_LockAudioDevice(g_audio_dev);
     sfx->tune_idx = tune;
     sfx->tune_offset = 0;
+    SDL_UnlockAudioDevice(g_audio_dev);
     SDL_PauseAudioDevice(g_audio_dev, 0);
+}
+
+int soundfx_is_playing(soundfx_t *sfx) {
+    int playing;
+
+    SDL_LockAudioDevice(g_audio_dev);
+    playing = (sfx->tune_idx != 0);
+    SDL_UnlockAudioDevice(g_audio_dev);
+
+    return playing;
 }
 
 void soundfx_resume(soundfx_t *sfx) {
@@ -489,22 +501,41 @@ void soundfx_resume(soundfx_t *sfx) {
 void soundfx_stop(soundfx_t *sfx) {
     //printf("[soundfx] stop \n");
     SDL_PauseAudioDevice(g_audio_dev, 1);
+    SDL_LockAudioDevice(g_audio_dev);
+    sfx->tune_idx = 0;
+    sfx->tune_offset = 0;
+    SDL_UnlockAudioDevice(g_audio_dev);
 }
 
 void game_audio_callback(void *data, uint8_t* stream, int len) {
     soundfx_t *sfx = (soundfx_t *)data;
+    soundfx_tune_t *tune = &sfx->tunes[sfx->tune_idx];
+    int chunk;
 
     //printf("audio callback len: %d , tune: %d \n", len, sfx->tune_idx);
-    if (sfx->tune_offset <= sfx->tunes[sfx->tune_idx].sz) {
+    if (sfx->tune_offset < tune->sz) {
         //printf("Playing tune: %d, offset: %d out of %lu \n", sfx->tune_idx, sfx->tune_offset,
         //        sfx->tunes[sfx->tune_idx].sz);
-        memcpy(stream, &sfx->tunes[sfx->tune_idx].raw[sfx->tune_offset], len);
-        sfx->tune_offset += len;
+        while (len > 0 && sfx->tune_offset < tune->sz) {
+            chunk = len;
+            if ((uint64_t)chunk > tune->sz - sfx->tune_offset)
+                chunk = (int)(tune->sz - sfx->tune_offset);
+            memcpy(stream, &tune->raw[sfx->tune_offset], chunk);
+            stream += chunk;
+            len -= chunk;
+            sfx->tune_offset += chunk;
+
+            // Looping tunes wrap around so the buffer is filled without gaps
+            if (tune->loop && sfx->tune_offset >= tune->sz)
+                sfx->tune_offset = 0;
+        }
+        memset(stream, 0, len);
     }
     else {
+        memset(stream, 0, len);
+        SDL_PauseAudioDevice(g_audio_dev, 1);
         sfx->tune_idx = 0;
         sfx->tune_offset = 0;
-        SDL_PauseAudioDevice(g_audio_dev, 1);
     }
     return;
 }
@@ -513,6 +544,8 @@ soundfx_t* soundfx_create() {
     soundfx_t *sfx = malloc(sizeof(soundfx_t));
     SDL_AudioSpec audio_spec_want, audio_spec;
 
+    memset(sfx, 0, sizeof(soundfx_t));
+
     strcpy(sfx->tunes[0].name, "silence");
     sfx->tunes[0].raw = malloc(4096 * 512);
     memset(sfx->tunes[0].raw, 0x00, 4096 * 512);
@@ -520,7 +553,8 @@ soundfx_t* soundfx_create() {
 
     strcpy(sfx->tunes[1].name, "got_trophy");
     sfx->tunes[1].raw = malloc(4096 * 512);
-    sfx->tunes[1].sz = invfreq_decode_soundfx(got_trophy, sfx->tunes[1].raw, 162);
+    memset(sfx->tunes[1].raw, 0x00, 4096 * 512);
+    sfx->tunes[1].sz = invfreq_decode_soundfx(got_trophy, sfx->tunes[1].raw, 150);
 
     strcpy(sfx->tunes[2].name, "treasure");
     sfx->tunes[2].raw = malloc(4096 * 512);
@@ -532,30 +566,34 @@ soundfx_t* soundfx_create() {
 
     strcpy(sfx->tunes[4].name, "walking");
     sfx->tunes[4].raw = malloc(4096 * 512);
-    sfx->tunes[4].sz = invfreq_decode_soundfx(walking, sfx->tunes[4].raw, 440);
+    memset(sfx->tunes[4].raw, 0x00, 4096 * 512);
+    sfx->tunes[4].sz = invfreq_decode_soundfx(walking, sfx->tunes[4].raw, 484);
 
     strcpy(sfx->tunes[5].name, "jumping");
     sfx->tunes[5].raw = malloc(4096 * 512);
+    memset(sfx->tunes[5].raw, 0x00, 4096 * 512);
     sfx->tunes[5].sz = invfreq_decode_soundfx(jumping, sfx->tunes[5].raw, 345);
 
     strcpy(sfx->tunes[6].name, "got_something");
     sfx->tunes[6].raw = malloc(4096 * 512);
-    sfx->tunes[6].sz = invfreq_decode_soundfx(got_something, sfx->tunes[6].raw, 162);
+    memset(sfx->tunes[6].raw, 0x00, 4096 * 512);
+    sfx->tunes[6].sz = invfreq_decode_soundfx(got_something, sfx->tunes[6].raw, 97);
 
     strcpy(sfx->tunes[7].name, "explosion");
     sfx->tunes[7].raw = malloc(4096 * 512);
     memset(sfx->tunes[7].raw, 0x00, 4096 * 512);
-    sfx->tunes[7].sz = invfreq_decode_soundfx(explosion, sfx->tunes[7].raw, 240);
+    sfx->tunes[7].sz = invfreq_decode_soundfx(explosion, sfx->tunes[7].raw, 151);
 
     strcpy(sfx->tunes[8].name, "ouch");
     sfx->tunes[8].raw = malloc(4096 * 512);
     memset(sfx->tunes[8].raw, 0x00, 4096 * 512);
-    sfx->tunes[8].sz = invfreq_decode_soundfx(ouch, sfx->tunes[8].raw, 240);
+    sfx->tunes[8].sz = invfreq_decode_soundfx(ouch, sfx->tunes[8].raw, 202);
 
     strcpy(sfx->tunes[9].name, "flying");
     sfx->tunes[9].raw = malloc(4096 * 512);
     memset(sfx->tunes[9].raw, 0x00, 4096 * 512);
-    sfx->tunes[9].sz = invfreq_decode_soundfx(flying, sfx->tunes[9].raw, 240);
+    sfx->tunes[9].sz = invfreq_decode_soundfx(flying, sfx->tunes[9].raw,440);
+    sfx->tunes[9].loop = 1;
 
     strcpy(sfx->tunes[10].name, "falling");
     sfx->tunes[10].raw = malloc(4096 * 512);
@@ -569,13 +607,14 @@ soundfx_t* soundfx_create() {
 
     strcpy(sfx->tunes[12].name, "climbing");
     sfx->tunes[12].raw = malloc(4096 * 512);
-    sfx->tunes[12].sz = invfreq_decode_soundfx(walking, sfx->tunes[12].raw, 440);
+    sfx->tunes[12].sz = invfreq_decode_soundfx(walking, sfx->tunes[12].raw, 484);
 
     sfx->tune_idx = 0;
     sfx->tune_offset = 0;
     sfx->play = &soundfx_play;
     sfx->stop = &soundfx_stop;
     sfx->resume = &soundfx_resume;
+    sfx->is_playing = &soundfx_is_playing;
 
     // Init SDL
     audio_spec_want.freq = 44100;
@@ -585,8 +624,9 @@ soundfx_t* soundfx_create() {
     audio_spec_want.callback = &game_audio_callback;
     audio_spec_want.userdata = (void*)sfx;
 
+    // Tunes are pre-rendered as 44100Hz S16 mono, so let SDL convert to whatever the device uses
     g_audio_dev = SDL_OpenAudioDevice(NULL, 0,
-            &audio_spec_want, &audio_spec, SDL_AUDIO_ALLOW_ANY_CHANGE);
+            &audio_spec_want, &audio_spec, 0);
     if (g_audio_dev == 0) {
         printf("Failed to open audio device \n");
         return NULL;

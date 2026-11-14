@@ -23,6 +23,7 @@ typedef struct soundfx_tune_struct {
     char name[64];
     uint8_t *raw;
     uint64_t sz;
+    int loop;
 
 } soundfx_tune_t;
 
@@ -34,6 +35,7 @@ typedef struct soundfx_struct {
     void (*play)(struct soundfx_struct *sfx, int tune);
     void (*stop)(struct soundfx_struct *sfx);
     void (*resume)(struct soundfx_struct *sfx);
+    int (*is_playing)(struct soundfx_struct *sfx);
 } soundfx_t;
 
 soundfx_t* soundfx_create();

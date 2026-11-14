@@ -249,6 +249,8 @@ size_t invfreq_decode_soundfx(uint16_t *data, uint8_t *out, int samples_per_symb
             freq = invfreq_to_freq(data[idx]);
             d_phase = 2 * pi * freq / fs;
 
+            m_phase = 0;
+
             for (i = 0; i < samples_per_symbol; i++) {
                 sigval = ((sqd(m_phase, freq) * 5000) + 5000);
                 m_phase = m_phase + d_phase;

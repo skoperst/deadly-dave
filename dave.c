@@ -102,8 +102,7 @@ static void dave_state_standing_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * T
     int key_left, int key_right, int key_up) {
     dave->state = DAVE_STATE_STANDING;
     dave->ticks_in_state = 0;
-    if (dave->mute == 0)
-        dave->sfx->stop(dave->sfx);
+    //dave->sfx->stop(dave->sfx);
 }
 
 static void dave_state_jumping_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
@@ -115,8 +114,7 @@ static void dave_state_jumping_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TI
         dave->face_direction = DAVE_DIRECTION_FRONTR;
     }
 
-    if (dave->mute == 0)
-        dave->sfx->play(dave->sfx, TUNE_JUMPING);
+    dave->sfx->play(dave->sfx, TUNE_JUMPING);
 
     dave->state = DAVE_STATE_JUMPING;
     dave->walk_state = DAVE_STATE_STANDING;
@@ -135,8 +133,9 @@ void dave_state_walking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
         } else {
             dave->tile->x-=1;
             if (dave->jump_cooldown_count == 0 && !key_up) {
-                if (dave->mute == 0)
+                if (!dave->sfx->is_playing(dave->sfx)) {
                     dave->sfx->play(dave->sfx, TUNE_WALKING);
+                }
             }
             dave->face_direction = DAVE_DIRECTION_LEFT;
             dave->walk_state = DAVE_WALKING_STATE_COOLDOWN2_LEFT;
@@ -152,8 +151,9 @@ void dave_state_walking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_H
             return;
         } else {
             if (dave->jump_cooldown_count == 0 && !key_up) {
-                if (dave->mute == 0)
+                if (!dave->sfx->is_playing(dave->sfx)) {
                     dave->sfx->play(dave->sfx, TUNE_WALKING);
+                }
             }
             dave->tile->x+=1;
             dave->face_direction = DAVE_DIRECTION_RIGHT;
@@ -175,11 +175,13 @@ static void dave_state_jetpacking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH
 
     // Pressing jetpack key (alt) while in 'jetpack-state' will turn it off
     if (key_jetpack) {
+        dave->sfx->stop(dave->sfx);
         dave_state_standing_enter(dave, map, key_left, key_right, key_up);
         return;
     }
 
     if (dave->on_fire) {
+        dave->sfx->stop(dave->sfx);
         dave_state_burning_enter(dave, map, key_left, key_right, key_up);
         return;
     }
@@ -208,11 +210,15 @@ static void dave_state_jetpacking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH
     dave->jetpack_bars--;
     if (dave->jetpack_bars <= 0) {
         dave->jetpack_bars = 0;
+        dave->sfx->stop(dave->sfx);
         dave_state_standing_enter(dave, map, key_left, key_right, key_up);
+        return;
     }
 
-    if (dave->sfx->tune_idx == 0)
+    if (!dave->sfx->is_playing(dave->sfx))
+    {
         dave->sfx->play(dave->sfx, TUNE_FLYING);
+    }
 }
 
 static void dave_state_jetpacking_enter(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT],
@@ -289,6 +295,7 @@ static void dave_state_walking_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * 
     }
     if (key_up) {
         if (dave->jump_cooldown_count <= 0) {
+            dave->sfx->stop(dave->sfx);
             dave_state_jumping_enter(dave, map, key_left, key_right, key_up);
             return;
         }
@@ -341,6 +348,7 @@ static void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * 
     }
 
     if (dave->jump_state >= 40 && dave_on_ground(dave, map)) {
+        dave->sfx->stop(dave->sfx);
         dave_state_standing_enter(dave, map, key_left, key_right, key_up);
         dave->jump_cooldown_count = 4;
         dave->step_count = 0;
@@ -365,9 +373,7 @@ static void dave_state_jumping_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH * 
         dave->tile->y = dave->tile->y + 2;
 
         if (dave_on_ground(dave, map)) {
-            if (dave->mute == 0) {
-                dave->sfx->stop(dave->sfx);
-            }
+            dave->sfx->stop(dave->sfx);
             dave_state_walking_enter(dave, map, key_left, key_right, key_up);
             dave->jump_cooldown_count = 4;
             dave->step_count = 0;
@@ -479,6 +485,7 @@ static void dave_state_freefalling_routine(dave_t *dave,
     }
 
     if (dave_on_ground(dave, map)) {
+        dave->sfx->stop(dave->sfx);
         dave_state_standing_enter(dave, map, key_left, key_right, key_up);
         dave->jump_cooldown_count = 4;
         dave->step_count = 0;
@@ -520,8 +527,9 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
     }
 
     if (key_up && (key_left == 0) && (key_right == 0) && (key_down == 0)) {
-        if (dave->mute == 0)
+        if (!dave->sfx->is_playing(dave->sfx)) {
             dave->sfx->play(dave->sfx, TUNE_CLIMBING);
+        }
         if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
             dave->tile->y = dave->tile->y - 2;
             dave->step_count++;
@@ -531,8 +539,9 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
         }
 
     } else if (key_down && (key_left == 0) && (key_right == 0) && (key_up == 0)) {
-        if (dave->mute == 0)
+        if (!dave->sfx->is_playing(dave->sfx)) {
             dave->sfx->play(dave->sfx, TUNE_CLIMBING);
+        }
         if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
             dave->tile->y = dave->tile->y + 1;
             if (!dave_on_ground(dave, map)) {
@@ -549,8 +558,9 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
             return;
         }
     } else if (key_left && (key_up == 0) && (key_right == 0)) {
-        if (dave->mute == 0)
+        if (!dave->sfx->is_playing(dave->sfx)) {
             dave->sfx->play(dave->sfx, TUNE_CLIMBING);
+        }
         if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
             dave->tile->x = dave->tile->x - 2;
             dave->step_count++;
@@ -560,8 +570,9 @@ static void dave_state_climbing_routine(dave_t *dave, tile_t map[TILEMAP_WIDTH *
         }
 
     } else if (key_right && (key_up == 0) && (key_left==0)) {
-        if (dave->mute == 0)
+        if (!dave->sfx->is_playing(dave->sfx)) {
             dave->sfx->play(dave->sfx, TUNE_CLIMBING);
+        }
         if (dave->climb_state == DAVE_CLIMBING_STATE_READY) {
             dave->tile->x = dave->tile->x + 2;
             dave->step_count++;
