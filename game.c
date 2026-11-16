@@ -11,7 +11,6 @@
 #include "game.h"
 #include "soundfx.h"
 
-
 SDL_Window *g_window;
 SDL_Renderer *g_renderer;
 SDL_Texture *g_texture;
@@ -19,28 +18,8 @@ uint32_t *g_pixels;
 assets_t *g_assets;
 soundfx_t *g_soundfx;
 
-void render_tile_idx(int tile_idx, int x, int y) {
+void render_tile_idx(int tile_idx, int x, int y, int blend) {
     SDL_Surface *surface = g_assets->imgdata[tile_idx];
-
-    int blend = 0;
-    if (tile_idx == SPRITE_IDX_BULLET_RIGHT || tile_idx == SPRITE_IDX_BULLET_LEFT ||
-            tile_idx == SPRITE_IDX_MONSTER_SUN1 || tile_idx == SPRITE_IDX_MONSTER_SUN2 ||
-            tile_idx == SPRITE_IDX_MONSTER_SUN3 || tile_idx == SPRITE_IDX_MONSTER_SUN4 ||
-            tile_idx == SPRITE_IDX_MONSTER_SPIDER1 || tile_idx == SPRITE_IDX_MONSTER_SPIDER2 ||
-            tile_idx == SPRITE_IDX_MONSTER_SPIDER3 || tile_idx == SPRITE_IDX_MONSTER_SPIDER4 ||
-            tile_idx == SPRITE_IDX_MONSTER_SWIRL1 || tile_idx == SPRITE_IDX_MONSTER_SWIRL2 ||
-            tile_idx == SPRITE_IDX_MONSTER_SWIRL3 || tile_idx == SPRITE_IDX_MONSTER_SWIRL4 ||
-            tile_idx == SPRITE_IDX_MONSTER_BONES1 || tile_idx == SPRITE_IDX_MONSTER_BONES2 ||
-            tile_idx == SPRITE_IDX_MONSTER_BONES3 || tile_idx == SPRITE_IDX_MONSTER_BONES4 ||
-            tile_idx == SPRITE_IDX_PLASMA_RIGHT1 || tile_idx == SPRITE_IDX_PLASMA_RIGHT2 ||
-            tile_idx == SPRITE_IDX_PLASMA_RIGHT3 || tile_idx == SPRITE_IDX_PLASMA_LEFT1 ||
-            tile_idx == SPRITE_IDX_PLASMA_LEFT2 || tile_idx == SPRITE_IDX_PLASMA_LEFT3 ||
-            tile_idx == SPRITE_IDX_MONSTER_UFO1 || tile_idx == SPRITE_IDX_MONSTER_UFO2 ||
-            tile_idx == SPRITE_IDX_MONSTER_UFO3 || tile_idx == SPRITE_IDX_MONSTER_UFO4 ||
-            tile_idx == SPRITE_IDX_MONSTER_ENVY1 || tile_idx == SPRITE_IDX_MONSTER_ENVY2 ||
-            tile_idx == SPRITE_IDX_MONSTER_ENVY3 || tile_idx == SPRITE_IDX_MONSTER_ENVY4) {
-        blend = 1;
-    }
 
     for (int line_idx = 0; line_idx < surface->h; line_idx++) {
         for (int column_idx = 0; column_idx < surface->w; column_idx++) {
@@ -82,7 +61,7 @@ static void create_tile_copy(tile_t *dst, char tag[4], int x, int y) {
 }
 
 void draw_tile_offset(tile_t *tile, int x_offset) {
-    render_tile_idx(tile->get_sprite(tile), tile->x - (x_offset * 16), tile->y);
+    render_tile_idx(tile->get_sprite(tile), tile->x - (x_offset * 16), tile->y, tile->blendable);
 }
 
 void draw_tile(tile_t *tile) {
@@ -100,7 +79,7 @@ void draw_char(char c, int x, int y, int is_black) {
     for (int idx = 0; idx < sizeof(letters) / sizeof(int); idx++) {
         if ((int)c == letters[idx]) {
             tile_idx = letters_start_idx + idx;
-            render_tile_idx(tile_idx, x, y);
+            render_tile_idx(tile_idx, x, y, 0);
             return;
         }
     }
@@ -120,27 +99,27 @@ void draw_text_line_black(const char *line, int x, int y) {
 
 void draw_popup_box(int x, int y, int rows, int columns) {
     // Four corners
-    render_tile_idx(SPRITE_IDX_POPUP_BOX_T1, x, y);
-    render_tile_idx(SPRITE_IDX_POPUP_BOX_T3, x + ((columns-1) * 8), y);
-    render_tile_idx(SPRITE_IDX_POPUP_BOX_B1, x, y + ((rows-1) * 8));
-    render_tile_idx(SPRITE_IDX_POPUP_BOX_B3, x + ((columns-1) * 8), y + ((rows-1) * 8));
+    render_tile_idx(SPRITE_IDX_POPUP_BOX_T1, x, y, 0);
+    render_tile_idx(SPRITE_IDX_POPUP_BOX_T3, x + ((columns-1) * 8), y, 0);
+    render_tile_idx(SPRITE_IDX_POPUP_BOX_B1, x, y + ((rows-1) * 8), 0);
+    render_tile_idx(SPRITE_IDX_POPUP_BOX_B3, x + ((columns-1) * 8), y + ((rows-1) * 8), 0);
 
     // Left & Right panels
     for (int i = 1; i < rows - 1; i++) {
-        render_tile_idx(SPRITE_IDX_POPUP_BOX_M1, x, y + (i * 8));
-        render_tile_idx(SPRITE_IDX_POPUP_BOX_M3, x + ((columns-1) * 8), y + (i * 8));
+        render_tile_idx(SPRITE_IDX_POPUP_BOX_M1, x, y + (i * 8), 0);
+        render_tile_idx(SPRITE_IDX_POPUP_BOX_M3, x + ((columns-1) * 8), y + (i * 8), 0);
     }
 
     // Top & Bottom panels
     for (int i = 1; i < columns - 1; i++) {
-        render_tile_idx(SPRITE_IDX_POPUP_BOX_T2, x + (i * 8), y);
-        render_tile_idx(SPRITE_IDX_POPUP_BOX_B2, x + (i * 8), y + ((rows-1) * 8));
+        render_tile_idx(SPRITE_IDX_POPUP_BOX_T2, x + (i * 8), y, 0);
+        render_tile_idx(SPRITE_IDX_POPUP_BOX_B2, x + (i * 8), y + ((rows-1) * 8), 0);
     }
 
     // Center
     for (int i = 1; i < rows - 1; i++) {
         for (int j = 1; j < columns - 1; j++) {
-            render_tile_idx(SPRITE_IDX_POPUP_BOX_M2, x + (j*8), y + (i*8));
+            render_tile_idx(SPRITE_IDX_POPUP_BOX_M2, x + (j*8), y + (i*8), 0);
         }
     }
 }
@@ -174,13 +153,15 @@ void draw_monsters_offset(monster_t *monsters[MAX_MONSTERS], assets_t *assets, i
         }
         if  (monsters[i]->tile->get_sprite(monsters[i]->tile) != 0) {
                 render_tile_idx(monsters[i]->tile->get_sprite(monsters[i]->tile),
-                    monsters[i]->tile->x - (x_offset * 16), monsters[i]->tile->y);
+                    monsters[i]->tile->x - (x_offset * 16), monsters[i]->tile->y,
+                    monsters[i]->tile->blendable);
         }
         if (monsters[i]->plasma != NULL) {
             int sprite = monsters[i]->plasma->get_sprite(monsters[i]->plasma);
             if (sprite != 0) {
                 render_tile_idx(monsters[i]->plasma->get_sprite(monsters[i]->plasma),
-                    monsters[i]->plasma->tile->x - (x_offset * 16), monsters[i]->plasma->tile->y);
+                    monsters[i]->plasma->tile->x - (x_offset * 16), monsters[i]->plasma->tile->y,
+                    monsters[i]->plasma->tile->blendable);
             }
         }
     }
@@ -206,35 +187,35 @@ void draw_jetpack(int bars) {
         bars = 900;
     }
 
-    render_tile_idx(SPRITE_IDX_JETPACK_LABEL, 0, 170);
-    render_tile_idx(SPRITE_IDX_JETPACK_BAR_FRAME, 72, 170);
+    render_tile_idx(SPRITE_IDX_JETPACK_LABEL, 0, 170, 0);
+    render_tile_idx(SPRITE_IDX_JETPACK_BAR_FRAME, 72, 170, 0);
     for (int i = 0; i < (bars/15); i++) {
-        render_tile_idx(SPRITE_IDX_JETPACK_BAR, 76 + i*2, 174);
+        render_tile_idx(SPRITE_IDX_JETPACK_BAR, 76 + i*2, 174, 0);
     }
 }
 
 void draw_level_number(int level) {
-    render_tile_idx(136, 104, 0);
-    render_tile_idx(148, 176, 0);
-    render_tile_idx(148 + level, 184, 0);
+    render_tile_idx(136, 104, 0, 0);
+    render_tile_idx(148, 176, 0, 0);
+    render_tile_idx(148 + level, 184, 0, 0);
 }
 
 void draw_lives(int lives) {
     int start_x = 256;
 
-    render_tile_idx(135, 192, 0);
+    render_tile_idx(135, 192, 0, 0);
 
     for (int idx = 0; (idx < (lives - 1)) && (idx < 4); idx++) {
-        render_tile_idx(143, start_x + (16 * idx), 0);
+        render_tile_idx(143, start_x + (16 * idx), 0, 0);
     }
 }
 
 void draw_score(int score) {
-    render_tile_idx(137, 0, 0);
+    render_tile_idx(137, 0, 0, 0);
     for (int i = 0; i < 5; i++) {
         int mod = score % 10;
         score = score / 10;
-        render_tile_idx(148 + mod, 96 - (8 * i), 0);
+        render_tile_idx(148 + mod, 96 - (8 * i), 0, 0);
     }
 }
 

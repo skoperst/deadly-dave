@@ -114,6 +114,7 @@ void tile_create_plasma_right(tile_t *t, int x, int y, int width, int height) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 1;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -135,6 +136,7 @@ void tile_create_plasma_left(tile_t *t, int x, int y, int width, int height) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 1;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -168,6 +170,7 @@ void tile_create_intro_banner(tile_t* t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -201,6 +204,7 @@ void tile_create_intro_fire(tile_t* t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -375,6 +379,7 @@ void tile_create_flashing_cursor(tile_t* t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
 
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
@@ -392,6 +397,7 @@ void tile_create_top_separator(tile_t* t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -408,6 +414,7 @@ void tile_create_bottom_separator(tile_t* t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -424,6 +431,7 @@ void tile_create_grail_banner(tile_t* t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -440,6 +448,7 @@ void tile_create_label_warp(tile_t *t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -456,6 +465,7 @@ void tile_create_label_zone(tile_t *t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }
@@ -472,6 +482,7 @@ void tile_create_gun_banner(tile_t *t, int x, int y) {
     t->collision_dy = 0;
     t->collision_dw = 0;
     t->collision_dh = 0;
+    t->blendable = 0;
     t->get_sprite = &tile_get_sprite;
     t->tick = &tile_tick;
 }

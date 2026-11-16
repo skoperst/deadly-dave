@@ -218,6 +218,9 @@ typedef struct tile_struct {
     int sprite_idx;
     int score_value;
 
+    /* When set, sprite pixels are XOR'ed with what's already drawn underneath instead of overwriting it */
+    int blendable;
+
     /* A tick is a function owner of a tile calls so the tile can 'do its thing', whatever it might be. */
     void (*tick)(struct tile_struct *tile);
 

@@ -408,6 +408,7 @@ monster_t* monster_create(int x, int y, int w, int h) {
     monster->tile->collision_dy = 0;
     monster->tile->collision_dw = 0;
     monster->tile->collision_dh = 0;
+    monster->tile->blendable = 1;
 
     monster->tile->mod = MONSTER;
     monster->tile->sprites[0] = 0;

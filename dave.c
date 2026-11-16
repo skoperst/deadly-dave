@@ -62,7 +62,6 @@ static int dave_collision_left(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_
 static int dave_on_ground(dave_t *dave, tile_t map[TILEMAP_WIDTH * TILEMAP_HEIGHT]) {
     for (int idx = 0; idx < TILEMAP_WIDTH * TILEMAP_HEIGHT; idx++) {
         if (map[idx].sprites[0] != 0 && map[idx].mod == BRICK) {
-
             /* This will allow climbing on right walls (original game's feature/bug)
              * if(map[idx].is_inside(&map[idx], dave->tile->x + 10, dave->tile->y+16)) {
              *   return 1;
