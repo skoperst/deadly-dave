@@ -72,6 +72,15 @@ void clear_screen() {
     }
 }
 
+/*
+ * Create a tile by tag and copy it into caller owned storage
+ */
+static void create_tile_copy(tile_t *dst, char tag[4], int x, int y) {
+    tile_t *tile = tile_create(tag, x, y);
+    *dst = *tile;
+    tile_destroy(tile);
+}
+
 void draw_tile_offset(tile_t *tile, int x_offset) {
     render_tile_idx(tile->get_sprite(tile), tile->x - (x_offset * 16), tile->y);
 }
@@ -367,52 +376,52 @@ void start_intro() {
     tile_t block[41];
 
     tile_create_intro_banner(&block[0], 103, 0);
-    tile_create_block(&block[1], SPRITE_IDX_DIRT, 88, 64, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[2], SPRITE_IDX_DIRT, 120, 64, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[3], SPRITE_IDX_DIRT, 136, 64, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[4], SPRITE_IDX_DIRT, 152, 64, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[5], SPRITE_IDX_DIRT, 168, 64, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[6], SPRITE_IDX_DIRT, 200, 64, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[7], SPRITE_IDX_DIRT, 232, 64, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[1], "DRT", 88, 64);
+    create_tile_copy(&block[2], "DRT", 120, 64);
+    create_tile_copy(&block[3], "DRT", 136, 64);
+    create_tile_copy(&block[4], "DRT", 152, 64);
+    create_tile_copy(&block[5], "DRT", 168, 64);
+    create_tile_copy(&block[6], "DRT", 200, 64);
+    create_tile_copy(&block[7], "DRT", 232, 64);
 
-    tile_create_block(&block[8], SPRITE_IDX_DIRT, 88, 80, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[9], SPRITE_IDX_DIRT, 120, 80, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[10], SPRITE_IDX_CROWN, 136, 80, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[11], SPRITE_IDX_DIRT, 232, 80, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[8], "DRT", 88, 80);
+    create_tile_copy(&block[9], "DRT", 120, 80);
+    create_tile_copy(&block[10], " W ", 136, 80);
+    create_tile_copy(&block[11], "DRT", 232, 80);
 
-    tile_create_block(&block[12], SPRITE_IDX_DIRT, 88, 96, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[13], SPRITE_IDX_DIRT, 120, 96, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[14], SPRITE_IDX_DIRT, 168, 96, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[15], SPRITE_IDX_DIRT, 184, 96, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[16], SPRITE_IDX_DIRT, 200, 96, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[17], SPRITE_IDX_DIRT, 232, 96, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[12], "DRT", 88, 96);
+    create_tile_copy(&block[13], "DRT", 120, 96);
+    create_tile_copy(&block[14], "DRT", 168, 96);
+    create_tile_copy(&block[15], "DRT", 184, 96);
+    create_tile_copy(&block[16], "DRT", 200, 96);
+    create_tile_copy(&block[17], "DRT", 232, 96);
 
-    tile_create_block(&block[18], SPRITE_IDX_DIRT, 88, 112, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[19], SPRITE_IDX_DIRT, 120, 112, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[20], SPRITE_IDX_CROWN, 216, 112, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[21], SPRITE_IDX_DIRT, 232, 112, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[18], "DRT", 88, 112);
+    create_tile_copy(&block[19], "DRT", 120, 112);
+    create_tile_copy(&block[20], " W ", 216, 112);
+    create_tile_copy(&block[21], "DRT", 232, 112);
 
-    tile_create_block(&block[22], SPRITE_IDX_DIRT, 88, 128, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[23], SPRITE_IDX_DIRT, 120, 128, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[22], "DRT", 88, 128);
+    create_tile_copy(&block[23], "DRT", 120, 128);
     tile_create_intro_fire(&block[24], 136, 128);
-    tile_create_block(&block[25], SPRITE_IDX_DIRT, 152, 128, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[26], SPRITE_IDX_DIRT, 168, 128, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[27], SPRITE_IDX_DIRT, 184, 128, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[28], SPRITE_IDX_DIRT, 232, 128, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[25], "DRT", 152, 128);
+    create_tile_copy(&block[26], "DRT", 168, 128);
+    create_tile_copy(&block[27], "DRT", 184, 128);
+    create_tile_copy(&block[28], "DRT", 232, 128);
 
-    tile_create_block(&block[29], SPRITE_IDX_DIRT, 88, 144, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[30], SPRITE_IDX_DIRT, 232, 144, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[29], "DRT", 88, 144);
+    create_tile_copy(&block[30], "DRT", 232, 144);
 
-    tile_create_block(&block[31], SPRITE_IDX_DIRT, 88, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[32], SPRITE_IDX_DIRT, 104, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[33], SPRITE_IDX_DIRT, 120, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[34], SPRITE_IDX_DIRT, 136, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[35], SPRITE_IDX_DIRT, 152, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[36], SPRITE_IDX_DIRT, 168, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[37], SPRITE_IDX_DIRT, 184, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&block[38], SPRITE_IDX_DIRT, 200, 160, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[31], "DRT", 88, 160);
+    create_tile_copy(&block[32], "DRT", 104, 160);
+    create_tile_copy(&block[33], "DRT", 120, 160);
+    create_tile_copy(&block[34], "DRT", 136, 160);
+    create_tile_copy(&block[35], "DRT", 152, 160);
+    create_tile_copy(&block[36], "DRT", 168, 160);
+    create_tile_copy(&block[37], "DRT", 184, 160);
+    create_tile_copy(&block[38], "DRT", 200, 160);
     tile_create_intro_fire(&block[39], 216, 160);
-    tile_create_block(&block[40], SPRITE_IDX_DIRT, 232, 160, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&block[40], "DRT", 232, 160);
 
     while (!intro_should_finish) {
         timer_begin = SDL_GetTicks();
@@ -1011,7 +1020,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
                         monsters_count++;
                     }
 
-                    tile_create(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
+                    create_tile_copy(&map[cur_col*12 + pos], tag, cur_col * 16, pos*16);
                     pos++;
                 } else {
                     free(buf);
@@ -1020,7 +1029,7 @@ int game_level_load(game_context_t *game, tile_t *map, char *file) {
             } else if (map_str[i] == ';') {
                 if (collected_count == 3) {
                     collected_count = 0;
-                    tile_create(&map[cur_col*12 + pos], tag, cur_col*16, pos*16);
+                    create_tile_copy(&map[cur_col*12 + pos], tag, cur_col*16, pos*16);
                     cur_col++;
                     pos = 0;
                 } else {

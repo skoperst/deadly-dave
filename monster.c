@@ -181,10 +181,6 @@ monster_t* monster_create_ufo(int x, int y) {
 
 monster_t* monster_create_bones(int x, int y) {
     monster_t *monster = monster_create(x, y, 24, 22);
-/*    monster->tile->width = 24;
-    monster->tile->height = 22;
-    monster->tile->x = x;
-    monster->tile->y = y;*/
 
     memcpy(monster->route, bones_path, sizeof(bones_path));
     monster->route_sz = (sizeof(bones_path)/sizeof(int));

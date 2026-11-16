@@ -228,9 +228,6 @@ typedef struct tile_struct {
     int (*is_inside)(struct tile_struct *tile, int x, int y);
 } tile_t;
 
-/* Create simple non-interacting block */
-void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height);
-
 /* Intro related */
 void tile_create_intro_fire(tile_t* t, int x, int y);
 void tile_create_intro_banner(tile_t* t, int x, int y);
@@ -254,9 +251,7 @@ void tile_create_flashing_cursor(tile_t* t, int x, int y);
 void tile_create_bottom_separator(tile_t* t, int x, int y);
 void tile_create_top_separator(tile_t* t, int x, int y);
 
-void tile_create(tile_t* t, char tag[4], int x, int y);
-
-int tile_file_parse(tile_t* map, int *x, int *y, const char* path);
-int tile_map_parse(tile_t* map, int *x, int *y, char* map_str);
-
+/* Map tiles, by level file tag */
+tile_t *tile_create(char tag[4], int x, int y);
+void tile_destroy(tile_t *tile);
 #endif

@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "tile.h"
-
 
 /*
  * This should be called every tick (game minimal 'clock' beat) to let the tile do
@@ -34,109 +34,69 @@ int tile_is_inside(tile_t* tile, int x, int y) {
 /*
  * Create a simple block tile (one sprite, doesn't animate)
  */
-void tile_create_block(tile_t* t, int sprite, int x, int y, int width, int height) {
-    t->x = x;
-    t->y = y;
+static void tile_create_block(tile_t* t, int sprite, int width, int height) {
     t->width = width;
     t->height = height;
 
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
-
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
 
     t->mod = BRICK;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
 /*
  * An infirm block which dave can't stand on nor interact with
  */
-void tile_create_frail(tile_t *t, int sprite, int x, int y, int width, int height) {
-    t->x = x;
-    t->y = y;
+static void tile_create_frail(tile_t* t, int sprite, int width, int height) {
     t->width = width;
     t->height = height;
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
 
     t->mod = MOSS;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create_door(tile_t* t, int sprite, int x, int y, int width, int height) {
-    t->x = x;
-    t->y = y;
+static void tile_create_door(tile_t* t, int sprite, int width, int height) {
     t->width = width;
     t->height = height;
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
 
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
     t->collision_dh = 4;
 
     t->mod = DOOR;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create_gun(tile_t* t, int sprite, int x, int y, int width, int height) {
-    t->x = x;
-    t->y = y;
+static void tile_create_gun(tile_t* t, int sprite, int width, int height) {
     t->width = width;
     t->height = height;
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
-
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
 
     t->mod = GUN;
     t->score_value = 100;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create_jetpack(tile_t* t, int sprite, int x, int y, int width, int height) {
-    t->x = x;
-    t->y = y;
+static void tile_create_jetpack(tile_t* t, int sprite, int width, int height) {
     t->width = width;
     t->height = height;
     t->sprites[0] = sprite;
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
-
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
 
     t->mod = JETPACK;
+}
 
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
+/*
+ * Collectible item that just adds to the score
+ */
+static void tile_create_loot(tile_t *t, int sprite, int score_value) {
+    t->width = 16;
+    t->height = 16;
+    t->sprites[0] = sprite;
+    t->sprites[1] = 0;
+
+    t->mod = LOOT;
+    t->score_value = score_value;
 }
 
 void tile_create_plasma_right(tile_t *t, int x, int y, int width, int height) {
@@ -247,70 +207,38 @@ void tile_create_intro_fire(tile_t* t, int x, int y) {
     t->is_inside = &tile_is_inside;
 }
 
-void tile_create_stars(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
+static void tile_create_stars(tile_t *t) {
     t->width = 16;
     t->height = 16;
     t->sprites[0] = SPRITE_IDX_STARS;
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
     t->mod = CLIMB;
 
     t->collision_dx = 7;
     t->collision_dy = 7;
     t->collision_dw = -14;
     t->collision_dh = -4;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create_stars_moon(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
+static void tile_create_stars_moon(tile_t *t) {
     t->width = 16;
     t->height = 16;
     t->sprites[0] = SPRITE_IDX_STARS_MOON;
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
     t->mod = CLIMB;
 
-    t->collision_dx = 0;
     t->collision_dy = 3;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-
-void tile_create_trunk(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
+static void tile_create_trunk(tile_t *t) {
     t->width = 16;
     t->height = 16;
     t->sprites[0] = SPRITE_IDX_TRUNK;
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
     t->mod = CLIMB;
-
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create_tree(tile_t* t, int x, int y, int type) {
-    t->x = x;
-    t->y = y;
+static void tile_create_tree(tile_t* t, int type) {
     t->width = 16;
     t->height = 16;
     if (type == 0) {
@@ -328,22 +256,10 @@ void tile_create_tree(tile_t* t, int x, int y, int type) {
     }
 
     t->sprites[1] = 0;
-    t->sprite_idx = 0;
     t->mod = CLIMB;
-
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
-    t->x = x;
-    t->y = y;
+static void tile_create_fire(tile_t* t, int idx_offset) {
     t->width = 16;
     t->height = 16;
     idx_offset = idx_offset * 10;
@@ -369,18 +285,10 @@ void tile_create_fire(tile_t* t, int x, int y, int idx_offset) {
     t->mod = FIRE;
 
     t->collision_dx = 6;
-    t->collision_dy = 0;
     t->collision_dw = -12;
-    t->collision_dh = 0;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create_vines(tile_t* t, int x, int y, int idx_offset) {
-    t->x = x;
-    t->y = y;
+static void tile_create_vines(tile_t* t, int idx_offset) {
     t->width = 16;
     t->height = 16;
     idx_offset = idx_offset * 10;
@@ -406,18 +314,10 @@ void tile_create_vines(tile_t* t, int x, int y, int idx_offset) {
 
     t->mod = FIRE;
     t->collision_dx = 4;
-    t->collision_dy = 0;
     t->collision_dw = -8;
-    t->collision_dh = 0;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create_water(tile_t* t, int x, int y, int idx_offset) {
-    t->x = x;
-    t->y = y;
+static void tile_create_water(tile_t* t, int idx_offset) {
     t->width = 16;
     t->height = 16;
     idx_offset = idx_offset * 10;
@@ -449,10 +349,6 @@ void tile_create_water(tile_t* t, int x, int y, int idx_offset) {
     t->collision_dy = 4;
     t->collision_dw = -12;
     t->collision_dh = -8;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
 void tile_create_flashing_cursor(tile_t* t, int x, int y) {
@@ -580,131 +476,7 @@ void tile_create_gun_banner(tile_t *t, int x, int y) {
     t->tick = &tile_tick;
 }
 
-void tile_create_purple_gem(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
-    t->width = 16;
-    t->height = 16;
-    t->sprites[0] = SPRITE_IDX_PURPLE_GEM;
-    t->sprites[1] = 0;
-    t->sprite_idx = 0;
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-    t->mod = LOOT;
-    t->score_value = 50;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
-}
-
-void tile_create_teal_gem(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
-    t->width = 16;
-    t->height = 16;
-    t->sprites[0] = SPRITE_IDX_TEAL_GEM;
-    t->sprites[1] = 0;
-    t->sprite_idx = 0;
-
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-
-    t->mod = LOOT;
-    t->score_value = 100;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
-}
-
-void tile_create_red_gem(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
-    t->width = 16;
-    t->height = 16;
-    t->sprites[0] = SPRITE_IDX_RED_GEM;
-    t->sprites[1] = 0;
-    t->sprite_idx = 0;
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-    t->mod = LOOT;
-    t->score_value = 150;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
-}
-
-void tile_create_ring(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
-    t->width = 16;
-    t->height = 16;
-    t->sprites[0] = SPRITE_IDX_RING;
-    t->sprites[1] = 0;
-    t->sprite_idx = 0;
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-    t->mod = LOOT;
-    t->score_value = 550;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
-}
-
-void tile_create_crown(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
-    t->width = 16;
-    t->height = 16;
-    t->sprites[0] = SPRITE_IDX_CROWN;
-    t->sprites[1] = 0;
-    t->sprite_idx = 0;
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-    t->mod = LOOT;
-    t->score_value = 800;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
-}
-
-void tile_create_scepter(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
-    t->width = 16;
-    t->height = 16;
-    t->sprites[0] = SPRITE_IDX_SCEPTER;
-    t->sprites[1] = 0;
-    t->sprite_idx = 0;
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
-    t->mod = LOOT;
-    t->score_value = 400;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
-}
-
-void tile_create_grail(tile_t *t, int x, int y) {
-    t->x = x;
-    t->y = y;
+static void tile_create_grail(tile_t *t) {
     t->width = 16;
     t->height = 16;
 
@@ -729,116 +501,128 @@ void tile_create_grail(tile_t *t, int x, int y) {
     t->sprites[48] = t->sprites[49] = SPRITE_IDX_TROPHY4;
 
     t->sprites[50] = 0;
-    t->sprite_idx = 0;
-    t->collision_dx = 0;
-    t->collision_dy = 0;
-    t->collision_dw = 0;
-    t->collision_dh = 0;
     t->mod = TROPHY;
     t->score_value = 1000;
-
-    t->get_sprite = &tile_get_sprite;
-    t->tick = &tile_tick;
-    t->is_inside = &tile_is_inside;
 }
 
-void tile_create(tile_t* t, char tag[4], int x, int y) {
+/*
+ * Create a map tile by its level file tag. Unknown tags yield an empty tile
+ * (sprites[0] == 0). Free with tile_destroy().
+ */
+tile_t *tile_create(char tag[4], int x, int y)
+{
+    tile_t *tile = calloc(1, sizeof(tile_t));
+
+    tile->x = x;
+    tile->y = y;
+
+    tile->get_sprite = &tile_get_sprite;
+    tile->tick = &tile_tick;
+    tile->is_inside = &tile_is_inside;
+
     if (strcmp(tag, "RBK") == 0) {
-        tile_create_block(t, SPRITE_IDX_RED_BRICK, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_RED_BRICK, 16, 16);
     } else if (strcmp(tag, "BBK") == 0) {
-        tile_create_block(t, SPRITE_IDX_BLUE_BRICK, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_BLUE_BRICK, 16, 16);
     } else if (strcmp(tag, "PPK") == 0) {
-        tile_create_block(t, SPRITE_IDX_PURPLE_PLATFORM, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_PURPLE_PLATFORM, 16, 16);
     } else if (strcmp(tag, "PPF") == 0) {
-        tile_create_frail(t, SPRITE_IDX_PURPLE_FAKE, x, y, 16, 16);
+        tile_create_frail(tile, SPRITE_IDX_PURPLE_FAKE, 16, 16);
     } else if (strcmp(tag, "PCK") == 0) {
-        tile_create_block(t, SPRITE_IDX_PURPLE_COLUMN, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_PURPLE_COLUMN, 16, 16);
     } else if (strcmp(tag, "DRT") == 0) {
-        tile_create_block(t, SPRITE_IDX_DIRT, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_DIRT, 16, 16);
     } else if (strcmp(tag, "BIM") == 0) {
-        tile_create_block(t, SPRITE_IDX_METAL_BEAM, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_METAL_BEAM, 16, 16);
     } else if (strcmp(tag, "DRB") == 0) {
-        tile_create_block(t, SPRITE_IDX_DIRT_BLOOD, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_DIRT_BLOOD, 16, 16);
     } else if (strcmp(tag, "BCM") == 0) {
-        tile_create_block(t, SPRITE_IDX_BLUE_COLUMN, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_BLUE_COLUMN, 16, 16);
     } else if (strcmp(tag, "PIR") == 0) {
-        tile_create_block(t, SPRITE_IDX_PIPE_RIGHT, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_PIPE_RIGHT, 16, 16);
     } else if (strcmp(tag, "PID") == 0) {
-        tile_create_block(t, SPRITE_IDX_PIPE_DOWN, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_PIPE_DOWN, 16, 16);
     } else if (strcmp(tag, " X ") == 0) {
-        tile_create_door(t, SPRITE_IDX_DOOR, x, y, 16, 16);
+        tile_create_door(tile, SPRITE_IDX_DOOR, 16, 16);
     } else if (strcmp(tag, "GUN") == 0) {
-        tile_create_gun(t, SPRITE_IDX_GUN, x, y, 16, 16);
+        tile_create_gun(tile, SPRITE_IDX_GUN, 16, 16);
     } else if (strcmp(tag, "JPK") == 0) {
-        tile_create_jetpack(t, SPRITE_IDX_JETPACK, x, y, 16, 16);
+        tile_create_jetpack(tile, SPRITE_IDX_JETPACK, 16, 16);
     } else if (strcmp(tag, " * ") == 0) {
-        tile_create_purple_gem(t, x, y);
+        tile_create_loot(tile, SPRITE_IDX_PURPLE_GEM, 50);
     } else if (strcmp(tag, " v ") == 0) {
-        tile_create_teal_gem(t, x, y);
+        tile_create_loot(tile, SPRITE_IDX_TEAL_GEM, 100);
     } else if (strcmp(tag, " V ") == 0) {
-        tile_create_red_gem(t, x, y);
+        tile_create_loot(tile, SPRITE_IDX_RED_GEM, 150);
     } else if (strcmp(tag, " O ") == 0) {
-        tile_create_ring(t, x, y);
+        tile_create_loot(tile, SPRITE_IDX_RING, 550);
     } else if (strcmp(tag, " W ") == 0) {
-        tile_create_crown(t, x, y);
+        tile_create_loot(tile, SPRITE_IDX_CROWN, 800);
     } else if (strcmp(tag, " ! ") == 0) {
-        tile_create_scepter(t, x, y);
+        tile_create_loot(tile, SPRITE_IDX_SCEPTER, 400);
     } else if (strcmp(tag, " Y ") == 0) {
-        tile_create_grail(t, x, y);
+        tile_create_grail(tile);
     } else if (strcmp(tag, "FR1") == 0) {
-        tile_create_fire(t, x, y, 0);
+        tile_create_fire(tile, 0);
     } else if (strcmp(tag, "FR2") == 0) {
-        tile_create_fire(t, x, y, 1);
+        tile_create_fire(tile, 1);
     } else if (strcmp(tag, "FR3") == 0) {
-        tile_create_fire(t, x, y, 2);
+        tile_create_fire(tile, 2);
     } else if (strcmp(tag, "FR4") == 0) {
-        tile_create_fire(t, x, y, 3);
+        tile_create_fire(tile, 3);
     } else if (strcmp(tag, "WT1") == 0) {
-        tile_create_water(t, x, y, 0);
+        tile_create_water(tile, 0);
     } else if (strcmp(tag, "WT2") == 0) {
-        tile_create_water(t, x, y, 1);
+        tile_create_water(tile, 1);
     } else if (strcmp(tag, "WT3") == 0) {
-        tile_create_water(t, x, y, 2);
+        tile_create_water(tile, 2);
     } else if (strcmp(tag, "WT4") == 0) {
-        tile_create_water(t, x, y, 3);
+        tile_create_water(tile, 3);
     } else if (strcmp(tag, "WT5") == 0) {
-        tile_create_water(t, x, y, 4);
+        tile_create_water(tile, 4);
     } else if (strcmp(tag, "VI1") == 0) {
-        tile_create_vines(t, x, y, 0);
+        tile_create_vines(tile, 0);
     } else if (strcmp(tag, "VI2") == 0) {
-        tile_create_vines(t, x, y, 1);
+        tile_create_vines(tile, 1);
     } else if (strcmp(tag, "VI3") == 0) {
-        tile_create_vines(t, x, y, 2);
+        tile_create_vines(tile, 2);
     } else if (strcmp(tag, "VI4") == 0) {
-        tile_create_vines(t, x, y, 3);
+        tile_create_vines(tile, 3);
     } else if (strcmp(tag, "DR1") == 0) {
-        tile_create_block(t, SPRITE_IDX_DIRT_TOP_RIGHT, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_DIRT_TOP_RIGHT, 16, 16);
     } else if (strcmp(tag, "DR2") == 0) {
-        tile_create_block(t, SPRITE_IDX_DIRT_BOTTOM_RIGHT, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_DIRT_BOTTOM_RIGHT, 16, 16);
     } else if (strcmp(tag, "DR3") == 0) {
-        tile_create_block(t, SPRITE_IDX_DIRT_BOTTOM_LEFT, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_DIRT_BOTTOM_LEFT, 16, 16);
     } else if (strcmp(tag, "DR4") == 0) {
-        tile_create_block(t, SPRITE_IDX_DIRT_TOP_LEFT, x, y, 16, 16);
+        tile_create_block(tile, SPRITE_IDX_DIRT_TOP_LEFT, 16, 16);
     } else if ((strcmp(tag, "  M") == 0) || (strcmp(tag, "D+M") == 0)) {
-        tile_create_frail(t, SPRITE_IDX_MOSS, x, y, 16, 16);
+        tile_create_frail(tile, SPRITE_IDX_MOSS, 16, 16);
     } else if (strcmp(tag, "TRK") == 0) {
-        tile_create_trunk(t, x, y);
+        tile_create_trunk(tile);
     } else if (strcmp(tag, "TR1") == 0) {
-        tile_create_tree(t, x, y, 0);
+        tile_create_tree(tile, 0);
     } else if (strcmp(tag, "TR2") == 0) {
-        tile_create_tree(t, x, y, 1);
+        tile_create_tree(tile, 1);
     } else if (strcmp(tag, "TR3") == 0) {
-        tile_create_tree(t, x, y, 2);
+        tile_create_tree(tile, 2);
     } else if (strcmp(tag, "TR4") == 0) {
-        tile_create_tree(t, x, y, 3);
+        tile_create_tree(tile, 3);
     } else if (strcmp(tag, "TR5") == 0) {
-        tile_create_tree(t, x, y, 4);
+        tile_create_tree(tile, 4);
     } else if (strcmp(tag, "TR6") == 0) {
-        tile_create_tree(t, x, y, 5);
+        tile_create_tree(tile, 5);
     } else if (strcmp(tag, "STR") == 0) {
-        tile_create_stars(t, x, y);
+        tile_create_stars(tile);
     } else if (strcmp(tag, "MON") == 0) {
-        tile_create_stars_moon(t, x, y);
+        tile_create_stars_moon(tile);
     }
+
+    return tile;
+}
+
+void tile_destroy(tile_t *tile)
+{
+    free(tile);
 }
 

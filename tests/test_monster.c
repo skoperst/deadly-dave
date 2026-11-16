@@ -17,6 +17,15 @@ uint32_t *g_pixels;
 assets_t* g_assets;
 
 
+/*
+ * Create a tile by tag and copy it into caller owned storage
+ */
+static void create_tile_copy(tile_t *dst, char tag[4], int x, int y) {
+    tile_t *tile = tile_create(tag, x, y);
+    *dst = *tile;
+    tile_destroy(tile);
+}
+
 void do_input(keys_state_t* state)
 {
     SDL_Event event;
@@ -148,47 +157,47 @@ int test_monster() {
     tile_t blockz[40];
     tile_t bottom_separator;
 
-    tile_create_block(&blockz[0], SPRITE_IDX_DIRT, 0, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[1], SPRITE_IDX_DIRT, 16, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[2], SPRITE_IDX_DIRT, 32, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[3], SPRITE_IDX_DIRT, 48, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[4], SPRITE_IDX_DIRT, 64, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[5], SPRITE_IDX_DIRT, 80, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[6], SPRITE_IDX_DIRT, 96, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[7], SPRITE_IDX_DIRT, 112, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[8], SPRITE_IDX_DIRT, 128, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[9], SPRITE_IDX_DIRT, 144, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[10], SPRITE_IDX_DIRT, 160, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[11], SPRITE_IDX_DIRT, 176, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[12], SPRITE_IDX_DIRT, 192, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[13], SPRITE_IDX_DIRT, 208, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[14], SPRITE_IDX_DIRT, 224, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[15], SPRITE_IDX_DIRT, 240, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[16], SPRITE_IDX_DIRT, 256, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[17], SPRITE_IDX_DIRT, 272, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[18], SPRITE_IDX_DIRT, 288, 16, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[19], SPRITE_IDX_DIRT, 304, 16, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&blockz[0], "DRT", 0, 16);
+    create_tile_copy(&blockz[1], "DRT", 16, 16);
+    create_tile_copy(&blockz[2], "DRT", 32, 16);
+    create_tile_copy(&blockz[3], "DRT", 48, 16);
+    create_tile_copy(&blockz[4], "DRT", 64, 16);
+    create_tile_copy(&blockz[5], "DRT", 80, 16);
+    create_tile_copy(&blockz[6], "DRT", 96, 16);
+    create_tile_copy(&blockz[7], "DRT", 112, 16);
+    create_tile_copy(&blockz[8], "DRT", 128, 16);
+    create_tile_copy(&blockz[9], "DRT", 144, 16);
+    create_tile_copy(&blockz[10], "DRT", 160, 16);
+    create_tile_copy(&blockz[11], "DRT", 176, 16);
+    create_tile_copy(&blockz[12], "DRT", 192, 16);
+    create_tile_copy(&blockz[13], "DRT", 208, 16);
+    create_tile_copy(&blockz[14], "DRT", 224, 16);
+    create_tile_copy(&blockz[15], "DRT", 240, 16);
+    create_tile_copy(&blockz[16], "DRT", 256, 16);
+    create_tile_copy(&blockz[17], "DRT", 272, 16);
+    create_tile_copy(&blockz[18], "DRT", 288, 16);
+    create_tile_copy(&blockz[19], "DRT", 304, 16);
 
-    tile_create_block(&blockz[20], SPRITE_IDX_RED_BRICK, 0, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[21], SPRITE_IDX_RED_BRICK, 16, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[22], SPRITE_IDX_RED_BRICK, 32, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[23], SPRITE_IDX_RED_BRICK, 48, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[24], SPRITE_IDX_RED_BRICK, 64, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[25], SPRITE_IDX_RED_BRICK, 80, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[26], SPRITE_IDX_RED_BRICK, 96, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[27], SPRITE_IDX_RED_BRICK, 112, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[28], SPRITE_IDX_RED_BRICK, 128, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[29], SPRITE_IDX_RED_BRICK, 144, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[30], SPRITE_IDX_RED_BRICK, 160, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[31], SPRITE_IDX_RED_BRICK, 176, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[32], SPRITE_IDX_RED_BRICK, 192, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[33], SPRITE_IDX_RED_BRICK, 208, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[34], SPRITE_IDX_RED_BRICK, 224, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[35], SPRITE_IDX_RED_BRICK, 240, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[36], SPRITE_IDX_RED_BRICK, 256, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[37], SPRITE_IDX_RED_BRICK, 272, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[38], SPRITE_IDX_RED_BRICK, 288, 160, TILE_SIZE, TILE_SIZE);
-    tile_create_block(&blockz[39], SPRITE_IDX_RED_BRICK, 304, 160, TILE_SIZE, TILE_SIZE);
+    create_tile_copy(&blockz[20], "RBK", 0, 160);
+    create_tile_copy(&blockz[21], "RBK", 16, 160);
+    create_tile_copy(&blockz[22], "RBK", 32, 160);
+    create_tile_copy(&blockz[23], "RBK", 48, 160);
+    create_tile_copy(&blockz[24], "RBK", 64, 160);
+    create_tile_copy(&blockz[25], "RBK", 80, 160);
+    create_tile_copy(&blockz[26], "RBK", 96, 160);
+    create_tile_copy(&blockz[27], "RBK", 112, 160);
+    create_tile_copy(&blockz[28], "RBK", 128, 160);
+    create_tile_copy(&blockz[29], "RBK", 144, 160);
+    create_tile_copy(&blockz[30], "RBK", 160, 160);
+    create_tile_copy(&blockz[31], "RBK", 176, 160);
+    create_tile_copy(&blockz[32], "RBK", 192, 160);
+    create_tile_copy(&blockz[33], "RBK", 208, 160);
+    create_tile_copy(&blockz[34], "RBK", 224, 160);
+    create_tile_copy(&blockz[35], "RBK", 240, 160);
+    create_tile_copy(&blockz[36], "RBK", 256, 160);
+    create_tile_copy(&blockz[37], "RBK", 272, 160);
+    create_tile_copy(&blockz[38], "RBK", 288, 160);
+    create_tile_copy(&blockz[39], "RBK", 304, 160);
 
     tile_create_bottom_separator(&bottom_separator, 0, 166);
 
